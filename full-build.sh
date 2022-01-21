@@ -4,7 +4,7 @@
 rm -rf build && mkdir build
 
 # compile rust
-cargo rustc -- --emit=obj --target riscv64gc-unknown-none-elf
+cargo rustc -- --emit=obj
 # assemble assembly
 riscv64-unknown-elf-as -c support/arch/riscv64/entry.S -o build/entry.o
 # link objects

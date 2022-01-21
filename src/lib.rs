@@ -4,6 +4,8 @@
 use core::panic::PanicInfo;
 use core::ptr;
 
+mod vga_buffer;
+
 #[panic_handler]
 pub fn panic(_info: &PanicInfo) -> ! {
     loop {}
@@ -22,6 +24,8 @@ pub extern "C" fn _start() -> ! {
             ptr::write_volatile(UART0, *byte);
         }
     }
+    // VGA
+    println!("Hello World{}", "!");
     loop {}
 }
 
