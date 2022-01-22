@@ -2,6 +2,7 @@
 name = "neutronkern"
 version = "0.1.0"
 edition = "2021"
+# crate_type = "staticlib"
 
 [dependencies]
 volatile = "0.2.6"
