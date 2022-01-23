@@ -1,3 +1,10 @@
+// TODO: set module to use for allocator/paging for configured architecture
+#[cfg(target_arch = "riscv64gc")]
+pub mod riscv64gc;
+
+#[cfg(target_arch = "aarch64")]
+pub mod aarch64;
+
 // TODO: heap allocator based on slab allocation by default
 
 // heap -> allocates variable chunks of data from a certain address
