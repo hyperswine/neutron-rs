@@ -2,11 +2,12 @@
 name = "neutronkern"
 version = "0.1.0"
 edition = "2021"
-# crate_type = "staticlib"
+# crate_type = "staticlib" # compile modules and link to a static lib neutronkern.a
 
 [dependencies]
 volatile = "0.2.6"
 spin = "0.5.2"
+linked_list_allocator = "0.9.0"
 
 [profile.dev]
 panic = "abort"

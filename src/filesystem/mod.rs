@@ -1,4 +1,6 @@
-use neutronkern::types::Binary;
+use crate::types::Binary;
+// dynamically allocated stuff
+use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
 
 // Semantic Filesystem
 pub struct EmberFS {
@@ -26,8 +28,8 @@ struct AsciiFile {
     content: Vec<u8>
 }
 
-impl Filesytem {
-    fn new() -> Filesytem {
-
+impl Filesystem {
+    fn new(self) -> Filesystem {
+        Filesystem{Vec}
     }
 }
