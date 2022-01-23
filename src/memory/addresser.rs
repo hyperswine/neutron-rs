@@ -22,20 +22,34 @@ pub struct Frame {
     data: *mut Data,
 }
 
-pub struct SingleAddressPT {
-    n_frames: u64,
-    n_free_frames: u64,
-    frames: KVec<FrameAddress>,
-
+// multiple address space -> default for aarch64 and riscv64
+mod mas {
+    // levels 1 to 4 page tables
+    // allow loopbacks for quicker page -> frame translation
+    pub struct L1PT;
+    pub struct L2PT;
+    pub struct L3PT;
+    pub struct L4PT;
 }
 
-const MAX_FRAMES_64b: Size = 32768;
-// kernel only needs 4 frames at boot
-const FRAMES_USED_KERN: Size = 4;
-
-impl SingleAddressPT {
-    fn new(self) -> SingleAddressPT {
-        SingleAddressPT{n_frames: MAX_FRAMES_64b, n_free_frames: MAX_FRAMES_64b - FRAMES_USED_KERN, frames: FrameAddress::all()}
+// single address space
+mod sas {
+    pub struct SingleAddressPT {
+        n_frames: u64,
+        n_free_frames: u64,
+        frames: KVec<FrameAddress>,
     }
+    
+    const MAX_FRAMES_64b: Size = 32768;
+    // kernel only needs 4 frames at boot
+    const FRAMES_USED_KERN: Size = 4;
+    
+    impl SingleAddressPT {
+        fn new(self) -> SingleAddressPT {
+            SingleAddressPT{n_frames: MAX_FRAMES_64b, n_free_frames: MAX_FRAMES_64b - FRAMES_USED_KERN, frames: FrameAddress::all()}
+        }
+    }
+    
 }
+
 

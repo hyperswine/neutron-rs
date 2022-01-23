@@ -19,8 +19,11 @@ struct MemoryList{
     head: Node
 }
 
+// just a linked list
 impl MemoryList {
-
+    fn new(self) -> {
+        MemoryList {}
+    } 
 }
 
 // ! for now just allocate as much space as needed to store the metadata for all the nodes
