@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+// for tests to work, you have to compile and link to the final library, i.e. specify the module here for local unittests to work
 pub mod kernel;
 pub mod filesystem;
 
