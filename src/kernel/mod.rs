@@ -1,3 +1,9 @@
+// ARCH DEPENDENT STUFF
+
+pub mod arch;
+
+// NON-ARCH KERNEL STUFF
+
 // extern crate alloc;
 // use alloc::vec;
 
@@ -17,5 +23,3 @@
 //         KernelManager {filesystem: Filesystem{files: vec!(File{size: 0})}}
 //     }
 // }
-
-pub mod arch;

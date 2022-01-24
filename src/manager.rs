@@ -28,6 +28,7 @@ use core::ptr;
 
 // use crate::filesystem::{Filesystem, File};
 
+#[cfg(not(test))]
 #[panic_handler]
 pub fn panic(_info: &PanicInfo) -> ! {
     loop {}
@@ -47,21 +48,3 @@ fn main() {
 // #[cfg(test)]
 // extern crate std;
 
-// TESTS
-#[cfg(test)]
-fn t_log(out_str: &[u8]) {
-    const UART0: *mut u8 = 0x10000000 as *mut u8;
-    // let out_str = b"succesfully loaded _start() on bare metal";
-    for byte in out_str {
-        unsafe {
-            ptr::write_volatile(UART0, *byte);
-        }
-    }
-}
-
-#[test]
-fn trivial_assertion() {
-    t_log(b"trivial assertion");
-    assert_eq!(1, 1);
-    t_log(b"ok");
-}
