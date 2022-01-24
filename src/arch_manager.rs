@@ -19,8 +19,8 @@
 // IDEA: compile the kernel to a bare static library for whatever arch you want
 // Then link to the bootloader binary for the arch you want to create a bootloader + kernel img
 
+#[cfg(not(test))]
 use core::panic::PanicInfo;
-use core::ptr;
 
 // extern crate alloc;
 // use alloc::string::String;
