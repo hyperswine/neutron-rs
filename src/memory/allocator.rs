@@ -7,6 +7,10 @@ pub mod aarch64;
 
 // TODO: heap allocator based on slab allocation by default
 
+// So use allocate(nbytes)
+// and deallocate(nbytes)
+// use these two functions to implement Box::new(), Dyn::new(), Vec::new() and vec!()
+
 // heap -> allocates variable chunks of data from a certain address
 // uses the paging system to acquire frames for a process allocating the space
 // heap always located at a certain region. Should be fine since its 64bit i think
