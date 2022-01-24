@@ -32,7 +32,7 @@ struct MemoryList{
 
 // just a linked list
 impl MemoryList {
-    fn new(self) -> {
+    fn new() -> MemoryList {
         MemoryList {}
     } 
 }
@@ -54,7 +54,7 @@ struct FixedAllocator{
 }
 
 impl FixedAllocator {
-    fn new(self) -> FixedAllocator {
+    fn new() -> FixedAllocator {
         // set the sizes for each list (of free memory blocks)
         let n_16 = 9;
 
@@ -75,16 +75,16 @@ struct BuddyAllocator{
 // type BuddySize = u16; // later
 
 impl BuddyAllocator {
-    fn new(self) -> BuddyAllocator {
+    fn new() -> BuddyAllocator {
         BuddyAllocator{}
     }
 
-    fn alloc(self, size: u64) {
+    fn alloc(&self, size: u64) {
         // choose the next highest size
     }
 
     // deallocate a node, placing it back at the head of the node's linked list (size siz)
-    fn dealloc(self, node: &mut Node) {
+    fn dealloc(&self, node: &mut Node) {
 
     }
 }

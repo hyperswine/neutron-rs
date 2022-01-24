@@ -1,11 +1,21 @@
-use crate::filesystem::Filesytem;
+// extern crate alloc;
+// use alloc::vec;
 
-pub struct KernelManager {
-    filesystem: Filesystem
-}
+// use crate::filesystem::{Filesystem, File};
 
-impl KernelManager {
-    fn main(self) {
+// pub struct KernelManager {
+//     filesystem: Filesystem
+// }
 
-    }
-}
+// impl KernelManager {
+//     fn k_main(&self) {
+//         loop {}
+//     }
+
+//     // create a default Kernel Manager with a single empty file (dir) in the HFS
+//     pub fn new() -> KernelManager {
+//         KernelManager {filesystem: Filesystem{files: vec!(File{size: 0})}}
+//     }
+// }
+
+pub mod arch;

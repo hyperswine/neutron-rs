@@ -1,4 +1,4 @@
-// #![feature(custom_test_frameworks)]
+#![feature(custom_test_frameworks)]
 #![cfg_attr(not(test), no_std)]
 
 use neutronkern::kernel::KernelManager;
@@ -8,6 +8,6 @@ use neutronkern::kernel::KernelManager;
 mod managertests {
     #[test]
     fn test_sanity() {
-        let kern_manager = KernelManager;
+        let kern_manager = KernelManager::new();
     }
 }

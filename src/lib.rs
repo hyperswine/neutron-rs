@@ -1,39 +1,21 @@
-#![no_std]
-#![no_main]
+// only put high level configs for testing, riscv build, aarch64 build
+// can use std for test
+// cargo uses this to build stuff. So if you are testing on x864 it will include everything and look at cfg(test) stuff to include and stuff that isnt marked with another arch
+// dont mark stuff with cfg(x86_64) unless you want to support it, which I dont. So just do cfg(test) for now
 
-// for tests to work, you have to compile and link to the final library, i.e. specify the module here for local unittests to work
+#[cfg(test)]
+fn tester() {
+
+}
+
+// ! wait actually just do it in kernel and arch
+// yea just do pub mod kernel here and let them handle it
 pub mod kernel;
-pub mod filesystem;
 
-// IDEA: compile the kernel to a bare static library for whatever arch you want
-// Then link to the bootloader binary for the arch you want to create a bootloader + kernel img
+// do it in arch and drag to kernel
+// #[cfg(target_arch = "riscv")]
+// pub mod kernel{arch::riscv}; // use the riscv module from kernel 
 
-use core::panic::PanicInfo;
-use core::ptr;
+// #[cfg(target_arch = "aarch64")]
+// pub mod kernel::aarch64; // use the aarch64 module from kernel 
 
-#[panic_handler]
-pub fn panic(_info: &PanicInfo) -> ! {
-    loop {}
-}
-
-// Entry point for the Kernel
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
-    const UART0: *mut u8 = 0x10000000 as *mut u8;
-    let out_str = b"succesfully loaded _start() on bare metal";
-    for byte in out_str {
-        unsafe {
-            ptr::write_volatile(UART0, *byte);
-        }
-    }
-
-    // create kernel
-    let kern_manager = kernel::KernelManager;
-
-    // CALL kernel_main()
-
-    // call clean_up() to write all pending operations to disk
-
-    // loop for now so the function wont return (later can make it 'return' to bare metal aka exit/stop execution completely without an error code)
-    loop {}
-}

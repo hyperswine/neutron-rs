@@ -6,7 +6,7 @@ struct FrameAddress {
 }
 
 impl FrameAddress {
-    fn all(self) -> KVec<FrameAddress> {
+    fn all(&self) -> KVec<FrameAddress> {
         // return frames starting at 0x0 ... 0x80000000 incrementing by 4096 each time
     }
 }
@@ -45,7 +45,7 @@ mod sas {
     const FRAMES_USED_KERN: Size = 4;
     
     impl SingleAddressPT {
-        fn new(self) -> SingleAddressPT {
+        fn new() -> SingleAddressPT {
             SingleAddressPT{n_frames: MAX_FRAMES_64b, n_free_frames: MAX_FRAMES_64b - FRAMES_USED_KERN, frames: FrameAddress::all()}
         }
     }

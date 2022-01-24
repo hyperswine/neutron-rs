@@ -1,6 +1,13 @@
 [unstable]
+# compile core, builtin stuff and alloc for each target on demand
 build-std = ["core", "compiler_builtins", "alloc"]
 build-std-features = ["compiler-builtins-mem"]
 
-[build]
-target = "riscv64gc-unknown-none-elf"
+[alias]
+barm = "rustc --target=aarch64-none-elf"
+brv = "rustc --target=riscv64gc-unknown-none-elf"
+bx86 = "rustc --target=x86_64-pc-windows-msvc"
+
+[target.test]
+# when testing, ensure compiling for x86
+rustflags = "--target=x86_64-pc-windows-msvc"
