@@ -6,7 +6,9 @@ pub mod ops;
 
 // TEST
 #[cfg(test)]
-use std::{vec, vec::Vec};
+use std::{vec, vec::Vec, string::String, result::Result};
+
+use core::option::Option;
 
 pub struct BinaryVal {
     content: Vec<bool>
@@ -66,3 +68,26 @@ impl Bytes {
 }
 
 // pub struct Size;
+
+// TIME
+pub struct KTimestamp {
+    day: u8,
+    month: u8,
+    year: u8,
+
+    hour: f32,
+    min: f32,
+    sec: f32
+}
+
+impl KTimestamp {
+    // yyyy-mm-dd
+    // pub fn new(str: &str) -> Option<KTimestamp> {
+    //     // check if in right format
+    //     if str.len() != 10 {
+    //         return Option::None;
+    //     }
+        
+
+    // }
+}
