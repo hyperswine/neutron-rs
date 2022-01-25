@@ -1,9 +1,6 @@
-// TODO: set module to use for allocator/paging for configured architecture
-#[cfg(target_arch = "riscv64gc")]
-pub mod riscv64gc;
-
-#[cfg(target_arch = "aarch64")]
-pub mod aarch64;
+// Fixed Size Block Allocator and its derivatives
+pub mod buddy;
+pub mod slab;
 
 // TODO: heap allocator based on slab allocation by default
 
@@ -54,37 +51,24 @@ struct FixedAllocator{
 }
 
 impl FixedAllocator {
-    fn new() -> FixedAllocator {
+    pub fn new() -> FixedAllocator {
         // set the sizes for each list (of free memory blocks)
         let n_16 = 9;
 
 
         FixedAllocator {}
     }
-}
 
-struct SlabAllocator;
-
-// store blocks of 2^i bytes for i=4..12
-struct BuddyAllocator{
-    start_i: u32,
-    end_i: u32,
-    
-}
-
-// type BuddySize = u16; // later
-
-impl BuddyAllocator {
-    fn new() -> BuddyAllocator {
-        BuddyAllocator{}
+    // should return the allocated node pointer
+    pub fn alloc(n_bytes: u64) -> &Node {
+        Node{}
     }
 
-    fn alloc(&self, size: u64) {
-        // choose the next highest size
-    }
-
-    // deallocate a node, placing it back at the head of the node's linked list (size siz)
-    fn dealloc(&self, node: &mut Node) {
-
+    // if operation was a success and memory was freed and placed back, return true
+    // else if something weird happened or the node was already freed, return false (for testing)
+    pub fn dealloc(node: &Node) -> bool {
+        true
     }
 }
+
+

@@ -1,13 +1,6 @@
 // use crate::types::Binary;
 
 // !TEMP: dynamically allocated stuff
-extern crate alloc;
-use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
-
-// Semantic Filesystem
-pub struct EmberFS {
-    files: Vec<File>
-}
 
 // Hierarchical Filesystem
 pub struct Filesystem {
