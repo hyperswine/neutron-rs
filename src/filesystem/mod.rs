@@ -1,23 +1,21 @@
 // use crate::types::Binary;
 
-// !TEMP: dynamically allocated stuff
-extern crate alloc;
-use alloc::{boxed::Box, vec, vec::Vec, rc::Rc};
+// use only when building
 
 // Semantic Filesystem
 pub struct EmberFS {
-    files: Vec<File>
+    files: Vec<File>,
 }
 
 // Hierarchical Filesystem
 pub struct Filesystem {
-    pub files: Vec<File>
+    pub files: Vec<File>,
 }
 
 type NBits = u64;
 
 pub struct File {
-    pub size: NBits //in bits, e.g. 10270bits
+    pub size: NBits, //in bits, e.g. 10270bits
 }
 
 struct BinaryFile {
@@ -27,12 +25,12 @@ struct BinaryFile {
 
 struct AsciiFile {
     pub metadata: File,
-    pub content: Vec<u8>
+    pub content: Vec<u8>,
 }
 
 impl Filesystem {
     pub fn new(&self) -> Filesystem {
-        let f = File{size: 100};
-        Filesystem{files: Vec::new()}
+        let f = File { size: 100 };
+        Filesystem { files: Vec::new() }
     }
 }

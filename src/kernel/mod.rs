@@ -2,6 +2,9 @@
 
 pub mod arch;
 
+// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
+// prob cant test directly, at least easily
+
 // NON-ARCH KERNEL STUFF
 
 // extern crate alloc;

@@ -1,4 +1,4 @@
-// use crate::types::Binary;
+use crate::types::Binary;
 
 // !TEMP: dynamically allocated stuff
 
@@ -10,7 +10,10 @@ pub struct Filesystem {
 type NBits = u64;
 
 pub struct File {
-    pub size: NBits //in bits, e.g. 10270bits
+    //in bits, e.g. 10270bits
+    pub size: NBits,
+    pub name: String,
+
 }
 
 struct BinaryFile {

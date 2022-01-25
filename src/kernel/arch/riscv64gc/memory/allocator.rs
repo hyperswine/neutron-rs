@@ -24,6 +24,7 @@ impl GlobalAllocator for OptimalAllocator {
 // also maybe have cfg for allocator types to compile and try out
 // allocator_optimal, allocator_fixedsize
 // NOTE: automatically implements Box, Vec, Rc once you have a global allocator
+// basically just assume this works for now and use Box, Vec, Rc freely. Just need to test those functions anyway
 #[global_allocator]
 static ALLOCATOR: OptimalAllocator = OptimalAllocator;
 

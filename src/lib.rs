@@ -17,6 +17,9 @@ fn test_process() {
     println!("created a process!");
 }
 
+#[cfg(test)]
+mod test;
+
 // ARCH DEPENDENT CODE
 
 // why isnt cfg(not(test)) working? https://github.com/rust-lang/rust/issues/59168 something to do with the fact that cargo test implementation runs it for the 'cfg(test) crate', not to any of its dependencies
@@ -32,10 +35,17 @@ fn test_process() {
 
 // workaround 2, building for aarch64 or riscv (too bad x86_64 wont be included though)
 // preferred workaround
-#[cfg(all(target_arch = "aarch64", target_arch = "riscv64"))]
+#[cfg(any(target_arch = "riscv64", target_arch = "aarch64"))]
 pub mod arch_manager;
 
 // NON ARCH DEPENDENT CODE
 
+// ! I dunno if this actually works. Does the compiler not use std maybe
+#[cfg(any(target_arch = "riscv64", target_arch = "aarch64"))]
+extern crate alloc;
+#[cfg(any(target_arch = "riscv64", target_arch = "aarch64"))]
+use alloc::{boxed::Box, vec, vec::Vec, rc::Rc, string::String};
+
 pub mod process;
 pub mod kernel;
+pub mod types;
