@@ -1,4 +1,4 @@
-#[cfg(target_arch = "riscv64")]
+#[cfg(target_arch = "riscv")]
 pub mod riscv64gc;
 
 #[cfg(target_arch = "aarch64")]

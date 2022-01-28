@@ -4,7 +4,7 @@
 // should include all the modules here for no_std to work properly I think?
 // then can remove the no_main from the arch depedent code entry point
 
-// #[cfg(target_arch = "riscv64")]
+// #[cfg(target_arch = "riscv")]
 
 // works well if you are testing for a single platform I guess, but we arent
 // #![feature(custom_test_frameworks)]
@@ -35,8 +35,8 @@ pub fn panic(_info: &PanicInfo) -> ! {
 }
 
 // Entry point for the Kernel
-#[cfg(target_arch = "riscv64")]
-pub mod kernel;
+// #[cfg(target_arch = "riscv")]
+// pub mod kernel;
 
 // Entry point for x86 (testing purposes)
 #[cfg(target_arch = "x86_64")]

@@ -8,6 +8,10 @@ pub mod ops;
 #[cfg(test)]
 use std::{vec, vec::Vec, string::String, result::Result};
 
+// RISCV
+#[cfg(target_arch = "riscv")]
+use alloc::{vec, vec::Vec, string::String};
+
 use core::option::Option;
 
 pub struct BinaryVal {
@@ -59,7 +63,7 @@ pub struct Bytes {
 
 impl Bytes {
     pub fn from_bytes(args: &[u8]) -> Bytes {
-        Bytes{content: Vec::from(args)}
+        Bytes{content: args.to_vec()}
     }
 
     pub fn from_int(i: u8) -> Bytes {
