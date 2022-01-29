@@ -18,6 +18,9 @@ Rust (rustup recommended)
  - rust-src
  - target aarch64 and riscv64 (unknown-none)
 QEMU
+Toolchains (add to path or specify sysroot when using `cargo build`)
+ - aarch64-gcc
+ - riscv64-gcc
 
 # Building
 `cargo build`

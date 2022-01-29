@@ -4,7 +4,7 @@
 rm -rf build && mkdir build
 
 # compile rust
-cargo build
+cargo brv
 # assemble assembly
 riscv64-unknown-elf-as -c support/arch/riscv64/entry.S -o build/entry.o
 # link objects
