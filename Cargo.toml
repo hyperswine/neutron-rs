@@ -35,3 +35,31 @@ features = ["spin_no_std"]
 
 [dev.dependencies]
 test-case = "1.2.1"
+
+# bootimage
+[package.metadata.bootimage]
+# The cargo subcommand that will be used for building the kernel.
+#
+# For building using the `cargo-xbuild` crate, set this to `xbuild`.
+build-command = [""]
+# The command invoked with the created bootimage (the "{}" will be replaced
+# with the path to the bootable disk image)
+# Applies to `bootimage run` and `bootimage runner`
+run-command = ["qemu-system-riscv64", "-machine", "virt", "-bios", "build/kernel.elf", "-serial", "mon:stdio"]
+
+# Additional arguments passed to the run command for non-test executables
+# Applies to `bootimage run` and `bootimage runner`
+run-args = []
+
+# Additional arguments passed to the run command for test executables
+# Applies to `bootimage runner`
+test-args = []
+
+# An exit code that should be considered as success for test executables
+test-success-exit-code = {integer}
+
+# The timeout for running a test through `bootimage test` or `bootimage runner` (in seconds)
+test-timeout = 300
+
+# Whether the `-no-reboot` flag should be passed to test executables
+test-no-reboot = true
