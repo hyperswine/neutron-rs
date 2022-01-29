@@ -9,7 +9,7 @@ pub mod ops;
 use std::{vec, vec::Vec, string::String, result::Result};
 
 // RISCV
-#[cfg(target_arch = "riscv")]
+#[cfg(target_arch = "riscv64")]
 use alloc::{vec, vec::Vec, string::String};
 
 use core::option::Option;

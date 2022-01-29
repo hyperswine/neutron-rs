@@ -24,3 +24,5 @@ SECTIONS {
 		*(.data);
 	}
 }
+
+/* Can specify elf64-little */

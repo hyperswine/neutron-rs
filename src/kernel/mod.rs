@@ -1,6 +1,8 @@
 // ARCH DEPENDENT STUFF
 
+pub mod entry;
 pub mod arch;
+// pub mod posix; // not finished
 
 // INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
 // prob cant test directly, at least easily

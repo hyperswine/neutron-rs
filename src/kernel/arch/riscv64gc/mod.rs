@@ -1,5 +1,5 @@
-#![no_main]
-#![no_std]
+pub mod memory;
+pub mod power;
 
 use core::ptr;
 

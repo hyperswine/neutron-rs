@@ -1,17 +1,13 @@
 // should only be defined once when building for a specific arch
 // if just testing out functions, test the functions directly without this module
-#![feature(alloc_error_handler)]
-
-// list allocator and fixed size allocator + variants
-pub mod list;
-pub mod fixed;
 
 // have to enable feature. Do it for riscv64 only
 use alloc::alloc::{GlobalAlloc, Layout};
+use core::ptr::null_mut;
 
 struct OptimalAllocator;
 
-impl GlobalAllocator for OptimalAllocator {
+unsafe impl GlobalAlloc for OptimalAllocator {
     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
         null_mut()
     }
