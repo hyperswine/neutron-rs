@@ -2,6 +2,9 @@
 A rust based kernel built on first principles.
 The stuff in kernel/arch should be using the high level crate:: stuff and not the other way around. Maybe.
 
+# Update
+- Has to build, then run with cfg(test) im pretty sure. Thats how `cargo test` works. I dont think it runs `main()` though rather it runs its own `test_main()` which then runs each test sequentially.
+
 # Interfaces
 DriverManager should use a backend for a specific ISA and devices or something. Then you just have to specify the cfg for the drivers when `cargo build` rather then change the non arch dependent code.
 
