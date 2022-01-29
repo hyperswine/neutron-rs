@@ -1,5 +1,0 @@
-{
-    "git.ignoreLimitWarning": true,
-    "rust-analyzer.checkOnSave.allTargets": false,
-    "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
-}
