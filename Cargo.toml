@@ -11,14 +11,20 @@ volatile = "0.4.4"
 spin = "0.9.2"
 linked_list_allocator = "0.9.0"
 
-[profile.dev_riscv]
-inherits = "dev"
+[profile.release]
 panic = "abort"
 
-[profile.release_riscv]
-inherits = "release"
-lto = true
+[profile.dev]
 panic = "abort"
+
+# [profile.dev_riscv]
+# inherits = "dev"
+# panic = "abort"
+
+# [profile.release_riscv]
+# inherits = "release"
+# lto = true
+# panic = "abort"
 
 # Dont place panic unwind cause it screws it up or something
 [profile.test]

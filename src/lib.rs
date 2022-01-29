@@ -1,5 +1,7 @@
 #![no_main]
 #![no_std]
+// works for all platforms
+#![feature(alloc_error_handler)]
 
 // TESTS
 #[cfg(test)]
