@@ -22,6 +22,6 @@ pub fn panic(_info: &PanicInfo) -> ! {
 pub mod process;
 pub mod types;
 
-// doesnt expose to the rest of the modules unfortunately
+// ! maybe doesnt expose to the rest of the modules unfortunately
 extern crate alloc;
 pub use alloc::{boxed::Box, vec, vec::Vec, rc::Rc, string::String};

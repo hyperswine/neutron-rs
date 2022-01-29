@@ -4,10 +4,11 @@ build-std = ["core", "compiler_builtins", "alloc"]
 build-std-features = ["compiler-builtins-mem"]
 
 [alias]
-barm = "rustc --target=aarch64-none-elf"
-brv = "rustc --target=riscv64gc-unknown-none-elf"
+barm = "rustc --target=aarch64-none-elf -- --emit=obj"
+brv = "rustc --target=riscv64gc-unknown-none-elf -- --emit=obj"
 bx86 = "rustc --target=x86_64-pc-windows-msvc"
-t = "test --target=x86_64-pc-windows-msvc -- --nocapture"
+# basically cargo run with cfg(test) on since we specify our own test runner
+trv = "test --target=riscv64gc-unknown-none-elf -- --nocapture"
 
 [target.test]
 # when testing, ensure compiling for x86
