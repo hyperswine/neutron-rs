@@ -13,3 +13,7 @@ trv = "test --target=riscv64gc-unknown-none-elf -- --nocapture"
 [target.test]
 # when testing, ensure compiling for x86
 # rustflags = "--target=x86_64-pc-windows-msvc"
+
+# for cargo build/run and test
+# [target.'cfg(target_os = "riscv64")']
+# runner = "bootimage runner"

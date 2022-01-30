@@ -1,10 +1,11 @@
 cargo-features = ["named-profiles"]
 
 [package]
-name = "neutronkern"
+name = "neutron_kernel"
 version = "0.1.0"
 edition = "2021"
-# crate_type = "staticlib" # compile modules and link to a static lib neutronkern.a
+description = "A rust-based kernel for riscv and arm"
+license = "BSD-3-Clause"
 
 [dependencies]
 volatile = "0.4.4"
@@ -34,4 +35,5 @@ version = "1.4.0"
 features = ["spin_no_std"]
 
 [dev.dependencies]
-test-case = "1.2.1"
+# install it instead
+# arcboot = {version = "0.1.0", git = "https://github.com/SpectralProject/Arcboot.git"}

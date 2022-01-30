@@ -1,4 +1,4 @@
-// use neutronkern::kernel::KernelManager;
+// use neutron_kernel::kernel::KernelManager;
 
 // // namespace for integration manager tests
 // #[cfg(test)]
@@ -9,7 +9,7 @@
 //     }
 // }
 
-// use neutronkern::process::Process;
+// use neutron_kernel::process::Process;
 
 // #[cfg(test)]
 // mod managertests {
