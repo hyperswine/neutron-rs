@@ -5,8 +5,6 @@ pub mod ops;
 // stores an array of bools in low-index is high format, i.e. [0] stores the most significant bit and [n-1] is the least significant bit
 
 // TEST
-#[cfg(test)]
-use std::{vec, vec::Vec, string::String, result::Result};
 
 // RISCV
 #[cfg(target_arch = "riscv64")]

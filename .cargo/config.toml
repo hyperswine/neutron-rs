@@ -9,7 +9,8 @@ barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o b
 brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
 bx86 = "rustc --target=x86_64-pc-windows-msvc"
 # basically cargo run with cfg(test) on since we specify our own test runner
-trv = "test --target=riscv64gc-unknown-none-elf -- --nocapture"
+btrv = "rustc --target=riscv64gc-unknown-none-elf --cfg 'feature=\"arctest\"' -- --crate-type=staticlib -o build/.a"
+t = ""
 
 [target.test]
 # when testing, can do extra stuff

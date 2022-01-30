@@ -26,6 +26,12 @@ panic = "abort"
 [profile.dev]
 panic = "abort"
 
+[features]
+# custom test framework, runs via arcboot test
+# multiple ways: a global function pointer list exposed from lib.rs and a macro to add a test function to that list
+# some kind of directive that tells the compiler to export that function to a place like arctest.rs
+arctest = []
+
 # [profile.dev_riscv]
 # inherits = "dev"
 # panic = "abort"
@@ -37,6 +43,7 @@ panic = "abort"
 
 # Dont place panic unwind cause it screws it up or something
 [profile.test]
+panic = "abort"
 
 [dev.dependencies]
 # install it instead
