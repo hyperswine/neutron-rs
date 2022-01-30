@@ -1,5 +1,6 @@
 [unstable]
 # compile core, builtin stuff and alloc for each target on demand
+# does not link to staticlib since need rlib. Can keep for future implementations, e.g. x86
 # build-std = ["core", "compiler_builtins", "alloc"]
 # build-std-features = ["compiler-builtins-mem"]
 
@@ -11,9 +12,12 @@ bx86 = "rustc --target=x86_64-pc-windows-msvc"
 trv = "test --target=riscv64gc-unknown-none-elf -- --nocapture"
 
 [target.test]
-# when testing, ensure compiling for x86
-# rustflags = "--target=x86_64-pc-windows-msvc"
+# when testing, can do extra stuff
 
-# for cargo build/run and test
-# [target.'cfg(target_os = "riscv64")']
+# extra stuff for cargo build/run/test on spectro only
+[target.'cfg(target_o = "riscv64")']
 # runner = "bootimage runner"
+
+# for crates.io. To build an executable image, use arcboot. This just builds the default spectro config as a static lib
+[build]
+target = "riscv64gc-unknown-none-elf"
