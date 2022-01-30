@@ -7,15 +7,8 @@
 #![test_runner(crate::test_runner)]
 
 // TESTS
-// #[cfg(feature = "artest")]
-// mod artest;
-
 #[cfg(feature = "arctest")]
-fn test_runner(tests: &[&dyn Fn()]) {
-    for test in tests {
-        test();
-    }
-}
+mod arctest;
 
 // NON ARCH DEPENDENT CODE
 
