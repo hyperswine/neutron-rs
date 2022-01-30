@@ -16,10 +16,10 @@ pub extern "C" fn _start() -> ! {
 
     // hook onto the start function to when testing, else ignore when building the final code
     #[cfg(feature = "arctest")]
-    test_main();
+    run_tests();
 
     // exit after testing
-    // #[cfg(test)]
+    // #[cfg(feature = "arctest")]
     // exit(0);
 
     // create kernel
@@ -32,6 +32,8 @@ pub extern "C" fn _start() -> ! {
     loop {}
 }
 
-fn test_main() {
-
+fn run_tests() {
+    // somehow calls all the test functions marked with #[cfg(arctest)]
+    #[some_directive_to_call_all_the_cfg_fn_here]
+    
 }

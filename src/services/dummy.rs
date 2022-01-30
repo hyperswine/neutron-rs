@@ -1,4 +1,4 @@
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn test_service() {
     // test reading from and to disk (virtual)
     let service = ServiceManager;

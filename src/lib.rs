@@ -10,7 +10,7 @@
 // #[cfg(feature = "artest")]
 // mod artest;
 
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn test_runner(tests: &[&dyn Fn()]) {
     for test in tests {
         test();

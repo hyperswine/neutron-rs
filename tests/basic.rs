@@ -1,7 +1,7 @@
 // use neutron_kernel::kernel::KernelManager;
 
 // // namespace for integration manager tests
-// #[cfg(test)]
+// #[cfg(feature = "arctest")]
 // mod managertests {
 //     #[test]
 //     fn test_sanity() {
@@ -11,7 +11,7 @@
 
 // use neutron_kernel::process::Process;
 
-// #[cfg(test)]
+// #[cfg(feature = "arctest")]
 // mod managertests {
 //     #[test]
 //     fn test_sanity_proceess() {

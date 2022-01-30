@@ -3,7 +3,7 @@
 
 // Apaprently some problems with testing on panic = abort
 // so have to define your own test framework and hook onto kernel main function
-// to run your tests. So when you run cargo test, the cfg(test) gets compiled and we boot the kernel like usual but also run the tests. Then we can make an exit function to exit out of main and close qemu, somehow.
+// to run your tests. So when you run cargo test, the cfg(feature = "arctest") gets compiled and we boot the kernel like usual but also run the tests. Then we can make an exit function to exit out of main and close qemu, somehow.
 
 
 // UNIT TESTS

@@ -1,4 +1,4 @@
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn test_process() {
     // create a single process
     let process = Process;
@@ -32,7 +32,7 @@ fn test_process() {
 }
 
 // tests should always use std:: stuff. Int tests maybe not so much
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn check_optional<T: std::fmt::Display>(optional: Option<T>) -> bool {
     match optional {
         Some(p) => true,

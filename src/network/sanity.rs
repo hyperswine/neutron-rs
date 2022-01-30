@@ -1,5 +1,5 @@
 // test the stuff
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn test_network_interfaces() {
     // start, ping and shutdown the interfaces -> would be integration testing?
 
