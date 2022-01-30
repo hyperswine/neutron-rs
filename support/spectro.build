@@ -1,0 +1,6 @@
+# build env config for spectro
+
+OUT_DIR=build
+ASM_FILES=examples/asm/boot.S
+LINK_SCRIPT=examples/link/linker.lds
+OUT_OBJ=examples/build/boot.o

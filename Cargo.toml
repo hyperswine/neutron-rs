@@ -34,4 +34,5 @@ version = "1.4.0"
 features = ["spin_no_std"]
 
 [dev.dependencies]
-arcboot = {git = "https://github.com/SpectralProject/Arcboot.git"}
+# install it instead
+# arcboot = {version = "0.1.0", git = "https://github.com/SpectralProject/Arcboot.git"}
