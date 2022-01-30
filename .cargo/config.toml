@@ -5,8 +5,8 @@
 # build-std-features = ["compiler-builtins-mem"]
 
 [alias]
-barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/rust/.a"
-brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/rust/.a"
+barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
+brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
 bx86 = "rustc --target=x86_64-pc-windows-msvc"
 # basically cargo run with cfg(test) on since we specify our own test runner
 trv = "test --target=riscv64gc-unknown-none-elf -- --nocapture"

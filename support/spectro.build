@@ -1,6 +1,13 @@
 # build env config for spectro
+# dont have an equals sign yet because arcboot doesnt read comments
+# im not sure if I added out_dir to OUT_OBJ, LINK_OBJ, OUT_IMG
+# but it seems I did add it to rust_build so I dont have to specify build/*.a for the first step, but do have to for the second step
+# ! not working for some reason. Maybe it built wrong/assembled wrong or not linking properly. The linker exits at 1.
+# apparently still doesnt work when you join them. Idk then, maybe some problem with the prev spacing or something
 
 OUT_DIR=build
-ASM_FILES=examples/asm/boot.S
-LINK_SCRIPT=examples/link/linker.lds
-OUT_OBJ=examples/build/boot.o
+ASM_FILES=support/arch/riscv64/asm/entry.S
+LINK_SCRIPT=support/arch/riscv64/link/linker.ld
+OUT_OBJ=build/entry.o
+LINK_OBJ=build/entry.o build/*.a
+OUT_IMG=build/kernel.elf
