@@ -14,16 +14,7 @@ pub fn test_types() {
     fn test_bytes() {
         let byte = crate::types::Bytes::from_int(50);
         // print!("{}", byte.content[0]);
-        // print!("Works!");
-        use core::ptr;
-        const UART0: *mut u8 = 0x10000000 as *mut u8;
-        let out_str = b"succesfully done\n";
-        for byte in out_str {
-            unsafe {
-                // maybe already filled
-                ptr::write_volatile(UART0, *byte);
-            }
-        }
+        print!("Works!");
     }
 
     test_bytes();

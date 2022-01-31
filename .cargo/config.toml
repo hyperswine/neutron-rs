@@ -3,7 +3,7 @@
 # does not link to staticlib since need rlib. Can keep for future implementations, e.g. x86
 # build-std = ["core", "compiler_builtins", "alloc"]
 # need this for memcpy and stuff
-# build-std-features = ["compiler-builtins-mem"]
+build-std-features = ["compiler-builtins-mem"]
 
 [alias]
 barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
@@ -11,7 +11,6 @@ brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=stati
 bx86 = "rustc --target=x86_64-pc-windows-msvc"
 # basically cargo run with cfg(feature = "arctest") on since we specify our own test runner
 btrv = "rustc --features arctest --target=riscv64gc-unknown-none-elf -- --crate-type=staticlib -o build/.a"
-t = ""
 
 [target.test]
 # when testing, can do extra stuff
