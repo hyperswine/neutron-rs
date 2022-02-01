@@ -14,6 +14,7 @@ pub extern "C" fn _start() -> ! {
     //         ptr::write_volatile(UART0, *byte);
     //     }
     // }
+
     use crate::println;
     println!("Loaded");
 

@@ -18,4 +18,4 @@ $LD -T support/arch/riscv64/link/linker.ld -nostdlib build/*.o build/*.a -o buil
 QEMU="qemu-system-riscv64"
 
 # multiplex the virtual serial port (UART) and QEMU monitor into stdio (UART0)
-$QEMU -machine virt -bios build/kernel.elf # -serial mon:stdio
+$QEMU -machine virt -bios build/kernel.elf -serial mon:stdio
