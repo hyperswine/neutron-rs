@@ -37,6 +37,8 @@ pub mod kernel;
 
 // RISC V
 
+use core::ptr;
+
 // Entry point for the Kernel
 #[cfg(target_arch = "riscv64")]
 #[no_mangle]
@@ -50,7 +52,7 @@ pub extern "C" fn _start() -> ! {
         }
     }
 
-    use crate::println;
+    // use crate::println;
     // println!("Loaded");
 
     // hook onto the start function to when testing, else ignore when building the final code
@@ -75,4 +77,14 @@ pub extern "C" fn _start() -> ! {
 
     // loop for now so the function wont return (later can make it 'return' to bare metal aka exit/stop execution completely without an error code)
     loop {}
+}
+
+#[cfg(test)]
+fn test_runner(tests: &[&dyn Fn()]) {
+    // #[macro_use]
+    // use crate::println;
+    // println!("Running {} tests", tests.len());
+    for test in tests {
+        test();
+    }
 }
