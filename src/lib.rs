@@ -43,27 +43,9 @@ use core::ptr;
 #[cfg(target_arch = "riscv64")]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    // ! use crate::services::print;
-    const UART0: *mut u8 = 0x10000000 as *mut u8;
-    let out_str = b"succesfully loaded _start() on bare metal\n";
-    for byte in out_str {
-        unsafe {
-            ptr::write_volatile(UART0, *byte);
-        }
-    }
-
-    // use crate::println;
-    // println!("Loaded");
-
     // hook onto the start function to when testing, else ignore when building the final code
     #[cfg(test)]
     test_main();
-
-    for byte in out_str {
-        unsafe {
-            ptr::write_volatile(UART0.offset(16), *byte);
-        }
-    }
 
     // exit after testing
     // #[cfg(test)]

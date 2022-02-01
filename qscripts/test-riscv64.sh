@@ -3,13 +3,10 @@
 AS="riscv64-unknown-elf-as"
 LD="riscv64-unknown-elf-ld"
 
-# clear
-clear
+# build the test config
+cargo rustc --target=riscv64gc-unknown-none-elf -- --test --crate-type=staticlib -o build/.a
+# cargo test --target=riscv64gc-unknown-none-elf --no-run
 
-# compile rust
-rm -rf build
-mkdir build
-cargo btrv
 # assemble assembly
 $AS -c support/arch/riscv64/asm/entry.S -o build/entry.o
 # link objects
