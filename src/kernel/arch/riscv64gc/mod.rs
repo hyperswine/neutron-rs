@@ -7,26 +7,26 @@ use core::ptr;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     // ! use crate::services::print;
-    // const UART0: *mut u8 = 0x10000000 as *mut u8;
-    // let out_str = b"succesfully loaded _start() on bare metal\n";
-    // for byte in out_str {
-    //     unsafe {
-    //         ptr::write_volatile(UART0, *byte);
-    //     }
-    // }
+    const UART0: *mut u8 = 0x10000000 as *mut u8;
+    let out_str = b"succesfully loaded _start() on bare metal\n";
+    for byte in out_str {
+        unsafe {
+            ptr::write_volatile(UART0, *byte);
+        }
+    }
 
     use crate::println;
-    println!("Loaded");
+    // println!("Loaded");
 
     // hook onto the start function to when testing, else ignore when building the final code
     #[cfg(feature = "arctest")]
     run_tests();
 
-    // for byte in out_str {
-    //     unsafe {
-    //         ptr::write_volatile(UART0, *byte);
-    //     }
-    // }
+    for byte in out_str {
+        unsafe {
+            ptr::write_volatile(UART0.offset(16), *byte);
+        }
+    }
 
     // exit after testing
     // #[cfg(feature = "arctest")]
