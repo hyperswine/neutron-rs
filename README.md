@@ -3,6 +3,7 @@ A rust based kernel built on first principles.
 
 # Testing
 A core idea is TDD. The only way to really verify that things work. Each `mod.rs` should contain cfg() for build and test, esp for arch dependent code. For arch independent code, should try not to rely on arch dependent code. I.e. only arch dependent code should rely on arch independent code. Or the interface should be isolated, i.e. in kernel manager.
+- To use cargo tests, need `arcboot test` which builds the image and links it then runs qemu.
 
 ## Arctest
 Kinda hacky to use the builtin `cargo test` and no guarentee about its reliability.
