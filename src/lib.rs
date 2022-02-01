@@ -1,14 +1,10 @@
 #![no_main]
 #![no_std]
-// works for all platforms
 #![feature(alloc_error_handler)]
+// TESTS
 #![reexport_test_harness_main = "test_main"]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
-
-// TESTS
-#[cfg(test)]
-mod test;
 
 // NON ARCH DEPENDENT CODE
 

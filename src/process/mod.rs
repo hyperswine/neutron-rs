@@ -18,4 +18,6 @@ fn test_process() {
             ptr::write_volatile(UART0, *byte);
         }
     }
+
+    assert_eq!(1, 0);
 }
