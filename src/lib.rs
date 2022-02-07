@@ -22,7 +22,7 @@ pub mod types;
 pub mod services;
 pub mod filesystem;
 pub mod drivers;
-pub mod kmod;
+pub mod kext;
 
 // ARCH DEPENDENT CODE
 
