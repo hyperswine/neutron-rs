@@ -6,7 +6,7 @@ pub enum ProcessPrivilege {
     FULL, RD_ONLY, RD_WRITE, NONE
 }
 
-#[test_case]
+#[test]
 fn test_process() {
     let process = Process{};
 
