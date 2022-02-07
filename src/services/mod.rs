@@ -12,3 +12,4 @@ pub trait Service {
     fn receive() -> MemoryBlock;
 }
 
+// WRITE TO DISPLAY BUFFER (VGA MONITOR DRIVER)

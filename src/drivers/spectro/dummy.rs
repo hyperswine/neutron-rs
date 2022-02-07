@@ -1,4 +1,4 @@
-#[cfg(test)]
+#[cfg(feature = "arctest")]
 fn test_kb() {
     // test keys
     let kb_driver = spectro::KBDriver;
