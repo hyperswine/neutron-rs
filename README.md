@@ -1,6 +1,9 @@
 # Neutron
 A rust based kernel built on first principles. Principles called the SPARX principles by yours truly.
 
+## SPARX Principles?
+Just a way to say "Shoddy, Pathetic, Abomination, Repetitive, eXceptionally horrendous" to express how software is written.
+
 ## Layout
 - build/ -> for any temporary build files
 - src/ -> for 99% of the kernel logic
