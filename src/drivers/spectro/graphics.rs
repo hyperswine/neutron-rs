@@ -4,6 +4,17 @@
 // GPU SHOULD OUTPUT BYTESTREAM TO DISPLAY MONITOR
 // FIRMWARE HANDLES THE REST, DRIVERS HANDLE TRANSLATIONS AND CALLS
 
+// ------------------
+// FRAMEBUFFER DRIVER
+// ------------------
+
+// Simply query the number of pixels and change each accordingly to their (x,y) rgba component
+struct FramebufferDriver;
+
+// ------------------
+// 3D/Vulkan DRIVER
+// ------------------
+
 // Initialise GPU for the kernel. After bootloader, will need to be able to crunch a bunch of dynamic info
 // Show a console by default
 fn open() {}

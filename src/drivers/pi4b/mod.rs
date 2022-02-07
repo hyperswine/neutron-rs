@@ -1,4 +1,2 @@
 // GPIO maybe
-
-// USB
-
+struct GPIO;
