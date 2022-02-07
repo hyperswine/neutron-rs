@@ -28,7 +28,7 @@ fn test_network_interfaces() {
     // BT
     let nic_bt = BTDevice::new(bt_device_id);
     // bd_addr: 48bit id assigned to each device. Should never be two of the same ids apparently or maybe theres a way to change it somehow
-    nic_bt.connect(bd_addr)
+    nic_bt.connect(bd_addr);
     // contents: BTPacket
     nic_bt.send_packet(bd_addr, contents);
 

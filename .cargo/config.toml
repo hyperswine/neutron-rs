@@ -1,11 +1,14 @@
 # This project should have minimal config here. Rely on Arcboot
 [unstable]
+# Apparently some core things may need to be rebuilt on demand, place them here
 
 [alias]
 barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
 brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
-bx86 = "rustc --target=x86_64-pc-windows-msvc"
 t = "test -- --nocapture"
 
 # DO NOT SPECIFY ANYTHING FOR BUILD. Use Arcboot
 [build]
+
+# STUFF FOR EACH DEP
+[target.riscv64gc-unknown-none]

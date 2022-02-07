@@ -1,3 +1,5 @@
+// SEEMS LIKE EXTRA STUFF IS NEEDED FOR INT TESTS
+
 #[test]
 fn test_kernel() {
     // use neutron_kernel::kernel::KernelManager;

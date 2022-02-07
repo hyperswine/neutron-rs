@@ -1,16 +1,11 @@
 #[cfg(feature = "arctest")]
 fn test_process() {
     // create a single process
-    let process = Process;
-    // set properties
-    process.set({
+    let process = Process{
         id: 1,
         name: "Dummy Process",
         permissions: 0, //ring 0, read, write and execute any part of the CPU and virtual memory and disk/filesystem
-        // but cannot access (read, write, open, etc) a "locked file"
-        // also impossible to write to memory or disk directly. Must write to virtual memory, which the kernel checks if the process has allocated and earned
-        // since in ring 0, can access all parts of vm though...
-    });
+    };
 
     // try to allocate a whole bunch of memory as the process
     // should frantically increase the number of pages as the stack grows down. Also for the heap, so allocator should be called
