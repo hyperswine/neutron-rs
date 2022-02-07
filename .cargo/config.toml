@@ -1,10 +1,11 @@
+# This project should have minimal config here. Rely on Arcboot
 [unstable]
 
 [alias]
 barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
 brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
 bx86 = "rustc --target=x86_64-pc-windows-msvc"
+t = "test -- --nocapture"
 
-# for crates.io. To build an executable image, use arcboot. This just builds the default spectro config as a static lib
+# DO NOT SPECIFY ANYTHING FOR BUILD. Use Arcboot
 [build]
-target = "riscv64gc-unknown-none-elf"

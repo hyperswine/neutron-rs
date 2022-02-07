@@ -1,6 +1,8 @@
 #![cfg_attr(not(test), no_main)]
-#![no_std]
-#![feature(alloc_error_handler)]
+#![cfg_attr(not(test), no_std)]
+#![cfg_attr(not(test), feature(alloc_error_handler))]
+// SUPPRESS WARNINGS
+#![allow(dead_code)]
 
 // NON ARCH DEPENDENT CODE
 
@@ -27,4 +29,3 @@ pub use alloc::{boxed::Box, vec, vec::Vec, rc::Rc, string::String};
 
 // Kernel Manager and ARCH Specific
 pub mod kernel;
-
