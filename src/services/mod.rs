@@ -1,4 +1,5 @@
 pub mod manager;
+pub mod sparc;
 
 pub struct MemoryBlock {
     mem: *mut u8,
