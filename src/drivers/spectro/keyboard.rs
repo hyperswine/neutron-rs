@@ -1,8 +1,14 @@
-// communicate with built in KB line at UART2 or some kind of multiplexer
+// communicate with built in KB line at UART2 or some kind of 
+
+// IMPORTS
+#[cfg(not(test))]
+use alloc::vec::Vec;
+#[cfg(not(test))]
+use alloc::vec;
 
 const DEFAULT_KB_LINE: u8 = 2;
 
-pub enum KEY {
+pub enum Key {
     // all the keys on the spectro kb
     // and custom keys like left and right stuff
     L_SHIFT, META, L_ALT, SPACE, FN,

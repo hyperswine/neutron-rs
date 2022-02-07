@@ -21,6 +21,7 @@ pub mod process;
 pub mod types;
 pub mod services;
 pub mod filesystem;
+pub mod drivers;
 
 // ARCH DEPENDENT CODE
 

@@ -5,44 +5,40 @@ pub struct NetworkManager {
     // NIC, assume only a single instance of each for now
     ethernet_status: bool,
     wifi_status: bool,
-    bt_status: bool
+    bt_status: bool,
 }
 
 // maybe a single manager status for every manager, place in lib.rs
 enum NetworkManagerStatus {
-    UP, DOWN
+    UP,
+    DOWN,
 }
 
-// maybe compose with this
-// struct NIC {
-//     nic_type: NICType
-//     ver: u32 //e.g. wifi6, etc
-// }
-
-// enum NICType {
-//     ETHERNET, WIFI, BT
-// }
-
 struct WifiCard {
-    _type: WifiType
+    _type: WifiType,
 }
 
 struct EthernetCard {
-    _type: EthernetType
+    _type: EthernetType,
 }
 
 struct BluetoothCard {
-    _type: BluetoothType
+    _type: BluetoothType,
 }
 
 enum WifiType {
-    WIFI5, WIFI6, WIFI6E 
+    WIFI5,
+    WIFI6,
+    WIFI6E,
 }
 
 enum EthernetType {
-    GIGABIT100, GIGABIT1000
+    GIGABIT100,
+    GIGABIT1000,
 }
 
 enum BluetoothType {
-    BT5, BT51, BT52
+    BT5,
+    BT51,
+    BT52,
 }

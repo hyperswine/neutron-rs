@@ -32,3 +32,6 @@ impl KernelManager {
         }
     }
 }
+
+#[cfg(feature = "posix")]
+pub mod posix;

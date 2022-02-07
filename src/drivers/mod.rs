@@ -7,10 +7,10 @@
 
 // idk if really needs arch dependent stuff, but at least for spectro hardware im thinking about coupling it somewhat to the kernel
 
-#[cfg(target_arch = "riscv64")]
+// #[cfg(target_arch = "riscv64")]
 pub mod spectro;
 
-#[cfg(target_arch = "aarch64")]
+// #[cfg(target_arch = "aarch64")]
 pub mod pi4b;
 
 // NON ARCH DEPENDENT

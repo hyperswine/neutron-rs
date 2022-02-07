@@ -1,7 +1,7 @@
 pub mod manager;
 
 pub struct IpPacket {
-    content: String
+    content: String,
 }
 
 pub impl IpPacket {
