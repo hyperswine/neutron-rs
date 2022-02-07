@@ -1,12 +1,17 @@
+// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
+
+// --------------------
 // ARCH DEPENDENT STUFF
+// --------------------
 
 pub mod arch;
 pub mod entry;
-// pub mod posix; // not finished
+#[cfg(feature = "posix")]
+pub mod posix;
 
-// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
-
-// NON-ARCH KERNEL STUFF
+// --------------------
+// NON-ARCH DEPENDENT STUFF
+// --------------------
 
 // ! Will be a bit hard to test directly, dont write integration tests for these modules that rely on alloc
 // Unless you can specify your own allocator based on paging somehow
@@ -33,5 +38,11 @@ impl KernelManager {
     }
 }
 
-#[cfg(feature = "posix")]
-pub mod posix;
+// --------------------
+// TESTS
+// --------------------
+
+#[test]
+fn test_kern_basics() {
+    let _kern = KernelManager::new();
+}
