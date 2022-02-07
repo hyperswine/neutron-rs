@@ -1,39 +1,42 @@
-use crate::types::Binary;
+// NOTE, not(test) basically means anything other than the host
+#[cfg(not(test))]
+use alloc::{boxed::Box, rc::Rc, string::String, vec, vec::Vec, string::ToString};
+// KERNEL IMPORTS
+use crate::types::KTimestamp;
 
-// not sure if the one in lib.rs defines it here
-// maybe have something at the root of the crate to include
-// #[cfg(any(target_arch="riscv64", target_arch="aarch64"))]
-// use alloc::{boxed::Box, vec, vec::Vec, rc::Rc, string::String};
-
+// ------------------------
 // Hierarchical Filesystem
+// ------------------------
+
 pub struct Filesystem {
     pub files: Vec<File>,
 }
 
 type NBits = u64;
+type NBytes = u64;
 
 pub struct File {
-    //in bits, e.g. 10270bits
-    pub size: NBits,
-    pub name: String,
+    // in bits, e.g. 1024B
+    size: NBytes,
+    name: String,
     created: KTimestamp,
-    parent: &Dir,
+
+    // parent: *const Dir // for faster recognition, though more metadata
     last_modified: KTimestamp,
     locked: bool,
     format: FileFormat,
+    path: String,
 }
 
 struct Dir {
     // common metadata
     created: KTimestamp,
-    parent: &File,
     last_modified: KTimestamp,
 
     // dir specific
     n_items: u64,
     children: Vec<File>,
-    parent: Dir,
-    // unix operability
+    parent: *const Dir,
     path: String,
 }
 
@@ -45,12 +48,12 @@ pub enum FileFormat {
     DOC,
     MD,
     BIN,
-    // more stuff
+    // ...more stuff
 }
 
 struct BinaryFile {
     metadata: File,
-    // content: Binary
+    // content: &[u8]
 }
 
 struct AsciiFile {
@@ -59,8 +62,37 @@ struct AsciiFile {
 }
 
 impl Filesystem {
-    pub fn new(&self) -> Filesystem {
-        let f = File { size: 100 };
-        Filesystem { files: Vec::new() }
+    pub fn new() -> Self {
+        // TECHNICALLY A DIR
+        let f = File::new("/root");
+        Self { files: Vec::new() }
     }
+}
+
+impl File {
+    pub fn new(filename: &str) -> Self {
+        Self {
+            size: 1,
+            name: filename.to_string(),
+            created: KTimestamp::new(""),
+            last_modified: KTimestamp::new(""),
+            locked: false,
+            format: FileFormat::TXT,
+            path: "/".to_string()
+        }
+    }
+
+    pub fn get_name(&self) -> &str {
+        &self.name
+    }
+}
+
+// ------------------------
+// Unit Tests
+// ------------------------
+#[test]
+fn test_file() {
+    let file = File::new("file");
+    let name = file.get_name();
+    assert_eq!(name, "file");
 }

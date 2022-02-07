@@ -1,0 +1,10 @@
+# BUILD ENV and ARCBOOT CONFIG for SpectroVM Target
+# ! Maybe some problem with paths or context or something because the link step doesnt work well
+# ! Can just run cargo brv and the usual qscripts/build-img.sh or arcboot build
+
+OUT_DIR=build
+ASM_FILES=support/arch/riscv64/asm/entry.S
+LINK_SCRIPT=support/arch/riscv64/link/linker.ld
+OUT_OBJ=build/entry.o
+LINK_OBJ=build/entry.o build/*.a
+OUT_IMG=build/kernel.elf

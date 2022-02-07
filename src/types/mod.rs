@@ -1,19 +1,14 @@
 pub mod ops;
 
-// use crate::drivers::vga_buffer::klog;
-
-// stores an array of bools in low-index is high format, i.e. [0] stores the most significant bit and [n-1] is the least significant bit
-
-// TEST
-
 // RISCV
-#[cfg(target_arch = "riscv64")]
-use alloc::{vec, vec::Vec, string::String};
-
+#[cfg(not(test))]
+use alloc::{string::String, vec, vec::Vec};
 use core::option::Option;
 
+// USEFUL CLASSES TO OPERATE ON BITS DIRECTLY
+
 pub struct BinaryVal {
-    content: Vec<bool>
+    content: Vec<bool>,
 }
 
 pub trait Condense {
@@ -22,56 +17,44 @@ pub trait Condense {
 
 impl Condense for bool {
     fn condense(&self) -> Vec<bool> {
-        vec!(*self)
+        vec![*self]
     }
 }
 
 // anything that isnt 0 gets true else false
 impl Condense for u64 {
     fn condense(&self) -> Vec<bool> {
-        vec!(*self != 0)
+        vec![*self != 0]
     }
 }
-
-// impl Condense for Vec<u64> {
-//     fn condense(&self) -> Vec<bool> {
-//         vec!(*self)
-//     }
-// }
 
 impl BinaryVal {
     // accepts strings, arrays of ints/bools and lone int/bool with the trait Condense
     fn new<T: Condense>(args: T) -> BinaryVal {
-        BinaryVal{content: args.condense()}
+        BinaryVal {
+            content: args.condense(),
+        }
     }
 }
 
 pub struct Bytes {
-    pub content: Vec<u8>
+    pub content: Vec<u8>,
 }
-
-// use self::ops::Range;
-
-// impl Range for Bytes {
-//     type Output<'a> = &'a[u8];
-//     fn range(self, start_inc: u64, end_exc: u64) -> Self::Output {
-//         self.content[start_inc..end_exc]
-//     }
-// }
 
 impl Bytes {
     pub fn from_bytes(args: &[u8]) -> Bytes {
-        Bytes{content: args.to_vec()}
+        Bytes {
+            content: args.to_vec(),
+        }
     }
 
     pub fn from_int(i: u8) -> Bytes {
-        Bytes{content: vec!(i)}
+        Bytes { content: vec![i] }
     }
 }
 
-// pub struct Size;
-
 // TIME
+
 pub struct KTimestamp {
     day: u8,
     month: u8,
@@ -79,17 +62,24 @@ pub struct KTimestamp {
 
     hour: f32,
     min: f32,
-    sec: f32
+    sec: f32,
 }
 
 impl KTimestamp {
     // yyyy-mm-dd
-    // pub fn new(str: &str) -> Option<KTimestamp> {
-    //     // check if in right format
-    //     if str.len() != 10 {
-    //         return Option::None;
-    //     }
-        
+    pub fn new(str: &str) -> Self {
+        // TODO check if in right format
+        // if str.len() != 10 {
+        //     return Option::None;
+        // }
 
-    // }
+        Self {
+            day: 1,
+            month: 1,
+            year: 1,
+            hour: 1.0,
+            min: 1.0,
+            sec: 1.0,
+        }
+    }
 }

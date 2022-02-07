@@ -1,30 +1,34 @@
 // ARCH DEPENDENT STUFF
 
-pub mod entry;
 pub mod arch;
+pub mod entry;
 // pub mod posix; // not finished
 
 // INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
-// prob cant test directly, at least easily
 
 // NON-ARCH KERNEL STUFF
 
-// extern crate alloc;
-// use alloc::vec;
+// ! Will be a bit hard to test directly, dont write integration tests for these modules that rely on alloc
+// Unless you can specify your own allocator based on paging somehow
 
-// use crate::filesystem::{Filesystem, File};
+#[cfg(not(test))]
+use alloc::vec;
 
-// pub struct KernelManager {
-//     filesystem: Filesystem
-// }
+use crate::filesystem::HFS::{File, Filesystem};
 
-// impl KernelManager {
-//     fn k_main(&self) {
-//         loop {}
-//     }
+pub struct KernelManager {
+    filesystem: Filesystem,
+}
 
-//     // create a default Kernel Manager with a single empty file (dir) in the HFS
-//     pub fn new() -> KernelManager {
-//         KernelManager {filesystem: Filesystem{files: vec!(File{size: 0})}}
-//     }
-// }
+impl KernelManager {
+    fn k_main(&self) {
+        loop {}
+    }
+
+    // create a default Kernel Manager with a single empty file (dir) in the HFS
+    pub fn new() -> KernelManager {
+        KernelManager {
+            filesystem: Filesystem::new(),
+        }
+    }
+}

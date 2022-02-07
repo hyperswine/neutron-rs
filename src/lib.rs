@@ -6,6 +6,9 @@
 
 // NON ARCH DEPENDENT CODE
 
+#[cfg(not(test))]
+extern crate alloc;
+
 use core::panic::PanicInfo;
 
 #[cfg(not(test))]
@@ -17,13 +20,7 @@ pub fn panic(_info: &PanicInfo) -> ! {
 pub mod process;
 pub mod types;
 pub mod services;
-
-// stephen's implementation, seems to have a few issues
-// pub mod stephen;
-
-// ! maybe doesnt expose to the rest of the modules unfortunately
-extern crate alloc;
-pub use alloc::{boxed::Box, vec, vec::Vec, rc::Rc, string::String};
+pub mod filesystem;
 
 // ARCH DEPENDENT CODE
 
