@@ -66,7 +66,7 @@ GPU needs to be able to read from VRAM and store previously done calculations in
 | add | src_reg1, src_reg2, dst_reg |
 
 ## Driver code
-The graphics driver is probably the most vital driver imo. A lot of work seems to be done to make them more efficient, featureful, less buggy and low latency.
+The graphics driver is probably the most vital driver imo. A lot of work seems to be done to make them more efficient, featureful, less buggy and low latency. Should run in Ring-1. Would prob be fine in Ring-0 but some extra caution seems fine.
 
 A lot of the driver code will simply make mmio calls to the GPU with all 20 of its instructions mapped to RAM. Hardware MMIO controller should be able to direct these to the GPU with low latency. Though may incur high bus traffic.
 
