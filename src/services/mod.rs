@@ -14,3 +14,7 @@ pub trait Service {
 }
 
 // WRITE TO DISPLAY BUFFER (VGA MONITOR DRIVER)
+// Need -display gtk (for a framebuffer I think or mostly controlling app level display options)
+// Maybe -vga cirrus or -vga std or -vga virtio
+
+// For hardware interrupts, https://github.com/riscv/riscv-aclint
