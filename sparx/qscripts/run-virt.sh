@@ -28,7 +28,9 @@ if [[ -n "$1" ]] && [[ "${1#*.}" == "serial" ]]; then
     $QEMU -machine virt -bios build/kernel.elf -serial mon:stdio
 fi
 
-if [[ -n "$1" ]] && [[ "${1#*.}" == "vga" ]]; then
-    echo "vga supplied, running with -vga std"
-    $QEMU -machine virt -bios build/kernel.elf -vga std
+if [[ -n "$1" ]] && [[ "${1#*.}" == "virtio" ]]; then
+    echo "virtio supplied, running with -m 512M -serial stdio -parallel none -vga virtio"
+    $QEMU -machine virt -bios build/kernel.elf -m 512M -serial stdio -parallel none -vga virtio
 fi
+
+# For info, $QEMU -M virt -s -S -monitor stdio
