@@ -1,11 +1,13 @@
 #!/bin/bash
 
+# Should extract and refactor functions to arcboot
+# as arcboot run --qemu <qemu args>
+
 AS="riscv64-unknown-elf-as"
 LD="riscv64-unknown-elf-ld"
 
 # cleanup prev builds, note, all of them (can do build/riscv-virt, build/spectro, build/pi4 later)
-rm -rf build
-mkdir build
+rm -rf build/*
 
 # compile rust code to library
 cargo brv && echo "DONE COMPILING RUST"
@@ -29,7 +31,7 @@ if [[ -n "$1" ]] && [[ "${1#*.}" == "serial" ]]; then
 fi
 
 if [[ -n "$1" ]] && [[ "${1#*.}" == "virtio" ]]; then
-    echo "virtio supplied, running with -m 512M -serial stdio -parallel none -display none -device virtio-gpu"
+    echo "virtio supplied, running with -m 512M -serial mon:stdio -parallel none -vga virtio"
     $QEMU -machine virt -bios build/kernel.elf -m 512M -serial mon:stdio -parallel none -vga virtio
 fi
 
