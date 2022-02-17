@@ -6,6 +6,7 @@
 barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
 brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
 t = "test -- --nocapture"
+arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest -- --crate-type=staticlib -o build/.a"
 
 # DO NOT SPECIFY ANYTHING FOR BUILD. Use Arcboot
 [build]

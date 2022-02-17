@@ -1,7 +1,3 @@
-# WILL BE USING LATER TO CONFIGURE SPECTRO v PI PROFILES
-# Simply allows us to specify profile.spectro or profile.pi
-# cargo-features = ["named-profiles"]
-
 [package]
 name = "neutron_kernel"
 version = "0.1.1"
@@ -34,3 +30,6 @@ panic = "abort"
 
 # Shouldnt need many dev deps. Install arcboot via cargo install arcboot
 [dev.dependencies]
+
+[features]
+arctest = []
