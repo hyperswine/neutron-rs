@@ -21,6 +21,9 @@ macro_rules! write_reg {
 
 use core::ptr;
 
+// when debugging, can use uart0 or framebuffer
+// no color coding though
+#[macro_export]
 macro_rules! write_uart {
     ($exact:expr) => {
         let p = UART0 as *mut u8;

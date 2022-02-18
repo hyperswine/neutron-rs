@@ -1,3 +1,6 @@
+// IF CAN GET REEXPORT TEST HARNESS TO WORK WITH MODULES, THEN DONT NEED ARCTEST
+// ALSO WORKS FOR INT TESTS IT SEEMS
+
 #[cfg(feature = "arctest")]
 fn test_service() {
     // test reading from and to disk (virtual)

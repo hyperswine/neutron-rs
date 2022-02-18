@@ -14,7 +14,5 @@ pub trait Service {
 }
 
 // WRITE TO DISPLAY BUFFER (VGA MONITOR DRIVER)
-// Need -display gtk (for a framebuffer I think or mostly controlling app level display options)
-// Maybe -vga cirrus or -vga std or -vga virtio
-
+// https://github.com/mit-pdos/xv6-riscv/blob/riscv/kernel/uart.c great resource, system v unix reconstruction in risc v
 // For hardware interrupts, https://github.com/riscv/riscv-aclint
