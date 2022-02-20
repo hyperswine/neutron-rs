@@ -11,49 +11,75 @@
 // FILE
 // -----------
 
-pub trait NeutronSyscall {
-    #[no_mangle]
-extern "C" fn open(file: &str, flags: u64, mode: u64) -> u64 {}
+pub enum ArcSignal {}
+pub struct HFSStat {}
 
-#[no_mangle]
-extern "C" fn close(fd: u64) -> u64 {}
+type FileDescriptor = u64;
+pub enum ServiceErrorCode {}
 
-#[no_mangle]
-extern "C" fn read(fd: u64, n_bytes: u64) -> u64 {}
+use crate::types::KTimestamp;
 
-#[no_mangle]
-extern "C" fn write(fd: u64, _str: &str) -> u64 {}
+pub enum RelativeFilePosition {
+    START,
+    CURRENT,
+    END,
+}
 
-#[no_mangle]
-extern "C" fn write(fd: u64, _str: &str) -> u64 {}
+#[cfg(not(test))]
+use alloc::string::String;
 
-#[no_mangle]
-extern "C" fn remove(path: &str) -> u64 {}
+pub trait NeutronFileService {
+    fn open(file: &str, flags: u64, mode: u64) -> Option<FileDescriptor>;
 
-#[no_mangle]
-extern "C" fn mkdir(path: &str, mode: u64) -> u64 {}
+    fn close(fd: FileDescriptor) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn rmdir(path: &str) -> u64 {}
+    fn read(fd: u64, n_bytes: u64) -> Option<String>;
 
-struct POSIX_ENV;
+    fn write(fd: u64, _str: &str) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn execve(path: &str, args: &[&str], env: &POSIX_ENV) -> u64 {}
+    fn mkdir(path: &str, mode: u64) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn fork() -> u64 {}
+    fn rmdir(path: &str) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn stat(path: &str) -> POSIX_STAT {}
+    fn duplicate(fd: u64) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn nice(increment: i32) -> u64 {}
+    fn utime(path: &str, access_time: KTimestamp, modify_time: KTimestamp) -> ServiceErrorCode;
 
-#[no_mangle]
-extern "C" fn kill(pid: u64, signal: POSIX_SIGNAL) -> u64 {}
+    fn stat(path: &str) -> Option<HFSStat>;
 
-#[no_mangle]
-extern "C" fn gettimeofday() -> u64 {}
+    fn lseek(fd: FileDescriptor, pos: i64, relative_to: RelativeFilePosition) -> ServiceErrorCode;
+}
 
+type ProcessID = u64;
+
+pub trait NeutronProcessService {
+    // create a new process using the currrent one as a template
+    fn fork() -> Option<ProcessID>;
+
+    fn exec();
+
+    fn kill(pid: u64, signal: ArcSignal) -> ServiceErrorCode;
+
+    fn nice(increment: i32) -> ServiceErrorCode;
+
+    fn waitpid();
+
+    fn get_pid();
+
+    fn chdir();
+
+    fn cwd();
+}
+
+pub trait NeutronSystemService {
+    // Seconds since last call -> user time, system time, child user, child system, elapsed real time
+    fn times() -> (f32, f32, f32, f32, f32);
+
+    // Seconds since Jan 1, 1970 at 12:00AM. Should sync to some network time
+    fn gettime() -> f64;
+
+    // sysname, nodename, release, version, machine
+    fn uname() -> (String, String, String, String, String);
+
+    fn putenv(varname: &str, value: &str) -> ServiceErrorCode;
 }
