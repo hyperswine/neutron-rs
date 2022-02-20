@@ -1,9 +1,18 @@
-// FOR POSIX IMPLEMENTATION
-// Based on https://docs.oracle.com/cd/E19048-01/chorus4/806-3328/6jcg1bm05/index.html
-// And https://sceweb.sce.uhcl.edu/helm/WEBPAGE-Python/documentation/python_tutorial/lib/module-posix.html
-// Only implements most common ones for rust-std
+// Define syscall ABI which kernel sets up in the interrupt table
+// sparx/arch/riscv64/asm/syscalls.S contains the API which programs can link to
+// Assuming: Single user, etc. For multi user, use separate partitions
+// NO SYMLINKS, NO INCOMPLETE SYSCALLS/BASIC VERSIONS
 
-#[no_mangle]
+// File: READ, WRITE, OPEN, CLOSE, MKDIR, RMDIR, DUP, UTIME, STAT, LSEEK
+// Process: FORK, EXEC, KILL, NICE, WAITPID, GETPID, CHDIR, CWD
+// System: GETTIME, UNAME, PUTENV
+
+// -----------
+// FILE
+// -----------
+
+pub trait NeutronSyscall {
+    #[no_mangle]
 extern "C" fn open(file: &str, flags: u64, mode: u64) -> u64 {}
 
 #[no_mangle]
@@ -35,10 +44,6 @@ extern "C" fn execve(path: &str, args: &[&str], env: &POSIX_ENV) -> u64 {}
 #[no_mangle]
 extern "C" fn fork() -> u64 {}
 
-enum POSIX_SIGNAL {}
-
-struct POSIX_STAT {}
-
 #[no_mangle]
 extern "C" fn stat(path: &str) -> POSIX_STAT {}
 
@@ -49,7 +54,6 @@ extern "C" fn nice(increment: i32) -> u64 {}
 extern "C" fn kill(pid: u64, signal: POSIX_SIGNAL) -> u64 {}
 
 #[no_mangle]
-extern "C" fn pipe() -> (u64, u64) {}
-
-#[no_mangle]
 extern "C" fn gettimeofday() -> u64 {}
+
+}
