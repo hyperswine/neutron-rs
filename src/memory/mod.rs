@@ -8,3 +8,6 @@
 // #[cfg(target_arch = "aarch64")]
 // #[path = "../kernel/arch/aarch64/mod.rs"]
 // pub mod aarch64;
+
+// TODO: expose alloc and paging functions to the interrupt module
+pub mod interrupt;

@@ -8,16 +8,21 @@
 // System: GETTIME, UNAME, PUTENV
 
 // -----------
-// FILE
+// COMMON STRUCTS
 // -----------
 
 pub enum ArcSignal {}
 pub struct HFSStat {}
 
-type FileDescriptor = u64;
 pub enum ServiceErrorCode {}
 
 use crate::types::KTimestamp;
+
+// -----------
+// FILE
+// -----------
+
+type FileDescriptor = u64;
 
 pub enum RelativeFilePosition {
     START,
@@ -50,6 +55,10 @@ pub trait NeutronFileService {
     fn lseek(fd: FileDescriptor, pos: i64, relative_to: RelativeFilePosition) -> ServiceErrorCode;
 }
 
+// -----------
+// PROCESS
+// -----------
+
 type ProcessID = u64;
 
 pub trait NeutronProcessService {
@@ -70,6 +79,10 @@ pub trait NeutronProcessService {
 
     fn cwd();
 }
+
+// -----------
+// SYSTEM
+// -----------
 
 pub trait NeutronSystemService {
     // Seconds since last call -> user time, system time, child user, child system, elapsed real time
