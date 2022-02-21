@@ -42,10 +42,57 @@ struct BtrfsItem {
 // Filesystem Viewer
 // ------------------
 
-struct File;
+struct FileInfo;
+
+// BTRFS FILES and DIRS
+struct File {
+    metadata: FileInfo,
+}
 // A file is contrasted to a directory since dirs have builtin children/pointers to `.` and `..`
+
+struct Dir {
+    metadata: FileInfo,
+}
+
+// Read: LBA, length, buffer
+// Write: LBA, length, buffer
+
+// given disk N, Partition P, use the underlying partition format functions to retrieve and edit the data
+// from an SSD
+pub trait FileOperations {
+    // no async
+    fn create_new(path: &str) -> Self;
+    // no async
+    fn delete();
+    // async
+    fn get_from_disk(disk_num: u64, block_address: u64, buffer: &str);
+    // no async
+    fn write_to_disk(disk_num: u64, block_address: u64, buffer: &str);
+}
+
+impl FileOperations for File {
+    fn create_new(path: &str) -> Self {
+        Self {
+            metadata: FileInfo {},
+        }
+    }
+    fn delete() {}
+    fn get_from_disk(disk_num: u64, block_address: u64, buffer: &str) {}
+    fn write_to_disk(disk_num: u64, block_address: u64, buffer: &str) {}
+}
+
+impl FileOperations for Dir {
+    fn create_new(path: &str) -> Self {
+        Self {
+            metadata: FileInfo {},
+        }
+    }
+    fn delete() {}
+    fn get_from_disk(disk_num: u64, block_address: u64, buffer: &str) {}
+    fn write_to_disk(disk_num: u64, block_address: u64, buffer: &str) {}
+}
 
 #[test]
 fn test_files() {
-    let _file = File {};
+    let _file = File::create_new("path");
 }

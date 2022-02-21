@@ -8,6 +8,8 @@ use crate::types::KTimestamp;
 // Hierarchical Filesystem
 // ------------------------
 
+// ! NOTE: use btrfs for now
+
 pub struct Filesystem {
     pub files: Vec<File>,
 }
