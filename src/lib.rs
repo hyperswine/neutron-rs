@@ -17,12 +17,12 @@ pub fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-pub mod process;
-pub mod types;
-pub mod services;
-pub mod filesystem;
 pub mod drivers;
+pub mod filesystem;
 pub mod kext;
+pub mod process;
+pub mod services;
+pub mod types;
 
 // ARCH DEPENDENT CODE
 

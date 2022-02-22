@@ -1,8 +1,8 @@
 // Fixed Size Block Allocator and its derivatives
-pub mod buddy;
-pub mod slab;
+// pub mod buddy;
+// pub mod slab;
 
-// TODO: heap allocator based on slab allocation by default
+// TODO: heap allocator based on fixed block sizes and linked lists
 
 // So use allocate(nbytes)
 // and deallocate(nbytes)
@@ -14,7 +14,6 @@ pub mod slab;
 
 // linked list and stuff too for backup allocation and special cases like initial allocation
 
-
 // a linked list for each fixed size block i=4..12. So 12-4 = 8 entries in the array
 // so [LinkedList; 8]
 // [0] => 2^4 LL(4)
@@ -22,16 +21,16 @@ pub mod slab;
 // ...
 // [7] => 2^12 LL(12)
 
-struct MemoryList{
+struct MemoryList {
     size: u8,
-    head: Node
+    head: Node,
 }
 
 // just a linked list
 impl MemoryList {
-    fn new() -> MemoryList {
-        MemoryList {}
-    } 
+    // fn new() -> MemoryList {
+    //     MemoryList {}
+    // }
 }
 
 // ! for now just allocate as much space as needed to store the metadata for all the nodes
@@ -46,29 +45,26 @@ struct Node {
 const DEFAULT_MEM_LIST_SIZ: u8 = 8;
 
 // store blocks of 2^i bytes for i=4..12
-struct FixedAllocator{
-    linked_lists: [MemoryList; DEFAULT_MEM_LIST_SIZ],
+struct FixedAllocator {
+    linked_lists: [MemoryList; DEFAULT_MEM_LIST_SIZ as usize],
 }
 
 impl FixedAllocator {
-    pub fn new() -> FixedAllocator {
-        // set the sizes for each list (of free memory blocks)
-        let n_16 = 9;
+    // pub fn new() -> FixedAllocator {
+    //     // set the sizes for each list (of free memory blocks)
+    //     let n_16 = 9;
 
-
-        FixedAllocator {}
-    }
+    //     FixedAllocator {}
+    // }
 
     // should return the allocated node pointer
-    pub fn alloc(n_bytes: u64) -> &Node {
-        Node{}
-    }
+    // pub fn alloc(n_bytes: u64) -> Node {
+    //     Node {}
+    // }
 
     // if operation was a success and memory was freed and placed back, return true
     // else if something weird happened or the node was already freed, return false (for testing)
-    pub fn dealloc(node: &Node) -> bool {
-        true
-    }
+    // pub fn dealloc(node: &Node) -> bool {
+    //     true
+    // }
 }
-
-

@@ -1,14 +1,15 @@
+pub mod interrupt;
 pub mod manager;
 pub mod sparc;
 pub mod syscall;
-pub mod interrupt;
 
 pub struct MemoryBlock {
     mem: *mut u8,
     size_bytes: u64,
 }
 
-pub trait Service {
+// ! USING SPARC INSTEAD
+pub trait OldService {
     // request this service from the kernel
     fn request();
     // receive the result in the form of a readable buffer/memory block/pages

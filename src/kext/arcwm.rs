@@ -1,6 +1,31 @@
 // WINDOW SERVER LIBRARY THAT LINKS WITH NEUTRON CORE
 
-use crate::services::sparc::{Sparc, SparcDetails, SparcReq};
+#[cfg(not(test))]
+use crate::alloc::{borrow::ToOwned, vec, vec::Vec};
+use crate::services::sparc::{Sparc, SparcDetails, SparcReq, SparcStatus};
+
+struct ArcWinManager {
+    active_windows: Vec<ArcWin>,
+    // use arcwin.sparc_status() to determine if the window is foregrounded or backgrounded
+}
+
+impl ArcWinManager {
+    pub fn new() -> Self {
+        Self {
+            active_windows: vec![],
+        }
+    }
+    // request a new window be created
+    pub fn create_new_window(&mut self) -> &ArcWin {
+        let win = ArcWin::new();
+        self.active_windows.push(win);
+        match self.active_windows.last() {
+            Some(_win) => _win,
+            // if would create so many windows as to run out of space, just panic and reset
+            None => panic!("Could not create window"),
+        }
+    }
+}
 
 enum WindowState {
     MINIMIZED,
@@ -26,14 +51,26 @@ impl ArcWin {
             responsive: true,
         }
     }
+    fn drag(&mut self, new_coords: &[f32; 2]) {
+        // drag the window to the new location
+        self.position = new_coords.to_owned();
+    }
+    fn reset_position(&mut self) {
+        self.position = [0.0, 0.0];
+    }
+    fn sparc_status(&self) -> SparcStatus {
+        self.sparc_details.status()
+    }
 }
 
 impl Sparc for ArcWin {
     // observer pattern
     fn handle_req(sparc_req: SparcReq) {}
 
+    // CREATE A WINDOW AND FOREGROUND IT
     fn start() {}
 
+    // TODO: send close signal to arcwin manager through IPC or directly
     fn close() {}
 }
 

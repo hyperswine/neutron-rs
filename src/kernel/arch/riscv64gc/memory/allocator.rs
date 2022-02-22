@@ -7,6 +7,7 @@ use core::ptr::null_mut;
 
 struct OptimalAllocator;
 
+// TODO: Implement linked list allocator, then fixed block later on
 unsafe impl GlobalAlloc for OptimalAllocator {
     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
         null_mut()

@@ -24,10 +24,10 @@ struct EmberFile {
     tags: Vec<EmberTag>,
 }
 impl EmberFile {
-    pub fn new(_name: &str) -> Self {
+    pub fn new(_name: &str, def_tag: &str) -> Self {
         Self {
             name: _name.to_string(),
-            tags: vec![EmberTag::new("")],
+            tags: vec![EmberTag::new(def_tag)],
         }
     }
     // only returns a mutable reference that does not change this ref
@@ -41,12 +41,23 @@ impl EmberFile {
         &self.tags
     }
     // if tag with the same name does not exist, add it
-    pub fn add_tag(&mut self, tag_: &str) -> bool {
+    pub fn add_tag(&mut self, tag_name: &str) -> bool {
         // can also use iter_mut() to do stuff like in place editing
-        match self.tags.iter().find(|t| t.get_name() == tag_) {
+        match self.tags.iter().find(|t| t.get_name() == tag_name) {
             Some(_val) => false,
             None => {
-                self.tags.push(EmberTag::new(tag_));
+                self.tags.push(EmberTag::new(tag_name));
+                true
+            }
+        }
+    }
+    // if tag with the same name does not exist, add it
+    pub fn add_full_tag(&mut self, tag: EmberTag) -> bool {
+        // can also use iter_mut() to do stuff like in place editing
+        match self.tags.iter().find(|t| t.get_name() == tag.get_name()) {
+            Some(_val) => false,
+            None => {
+                self.tags.push(tag);
                 true
             }
         }
@@ -74,7 +85,7 @@ impl EmberTag {
 
 #[test]
 fn create_ember_file() {
-    let mut _file = EmberFile::new("/root");
+    let mut _file = EmberFile::new("/root", "root");
     let mut r = _file.name();
     assert_eq!(r, "/root");
 
@@ -99,7 +110,8 @@ fn create_tag() {
     assert_eq!(secret_tag.get_name(), "secrets");
     assert_eq!(study_tag.get_name(), "study");
 
-    let mut _file = EmberFile::new("World History");
+    let mut _file = EmberFile::new("World History", "study");
+    // should not be added since already exists
     let r = _file.add_tag("study");
     println!("Adding tag 'study' = {}", r);
 
@@ -110,5 +122,20 @@ fn create_tag() {
     };
     println!("_str = {}", _str);
 
+    assert_eq!(_str, study_tag.get_name());
+
+    // Add a full tag
+    _file.add_full_tag(secret_tag);
+    let r = _file.get_tags();
+    let _str = match r.first() {
+        Some(v) => v.get_name(),
+        None => "",
+    };
+    for _r in r {
+        println!("r = {}", _r.get_name());
+    }
+    println!("_str = {}", _str);
+
+    // should still be study as the first tag
     assert_eq!(_str, study_tag.get_name());
 }
