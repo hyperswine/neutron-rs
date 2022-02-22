@@ -15,7 +15,7 @@ start:
 	/* Reset satp */
 	csrw satp, zero
  
-	/* Setup stack */
+	/* Setup stack from linker */
 	la sp, stack_top
  
 	/* Clear the BSS section */

@@ -1,19 +1,22 @@
-pub struct ProcessManager{
-    processes: Vec<Process> //could sort by id, name, space, 
+pub struct ProcessManager {
+    processes: Vec<Process>, //could sort by id, name, space,
 }
 
-pub struct Process{
+pub struct Process {
     id: u32,
-    name: String, //owns the name
+    name: String,         //owns the name
     space_allocated: u32, //RAM stuff
     space_used: u32,
     status: ProcessStatus,
-    pages: Vec<Page>
+    pages: Vec<Page>,
 }
 
 //* temp for paging
 struct Page;
 
+// Kind of like Sparc but not really
 enum ProcessStatus {
-    UP, DOWN, BLOCKED
+    UP,
+    DOWN,
+    BLOCKED,
 }

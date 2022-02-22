@@ -1,4 +1,3 @@
-pub mod interrupt;
 pub mod manager;
 pub mod sparc;
 pub mod syscall;

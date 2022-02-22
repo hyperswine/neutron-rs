@@ -13,6 +13,7 @@ SECTIONS
         __bss_end = .;
     }
     _end = .;
+    /* No Stack */
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }

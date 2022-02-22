@@ -83,3 +83,35 @@ impl KTimestamp {
         }
     }
 }
+
+// Data Structures
+pub struct KPrioNode {
+    next: *mut KPrioNode,
+}
+
+pub struct KPrioQueue {
+    head: KPrioNode,
+    n_elem: usize,
+}
+
+use core::ptr::null_mut;
+
+impl KPrioNode {
+    pub fn new() -> Self {
+        Self { next: null_mut() }
+    }
+}
+
+impl KPrioQueue {
+    pub fn new() -> Self {
+        Self {
+            head: KPrioNode::new(),
+            n_elem: 1,
+        }
+    }
+    // TODO
+    pub fn queue_node(node: KPrioNode) {}
+}
+
+// requires underlying RNG, assuming exists in pi4/spectro in the drivers::Random function
+pub struct KMap;

@@ -1,3 +1,4 @@
+pub mod interrupt;
 pub mod memory;
 pub mod power;
 
