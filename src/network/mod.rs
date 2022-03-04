@@ -17,3 +17,15 @@ pub impl IpPacket {
         // split up the packet into multiple packets if necessary
     }
 }
+
+// ----------------
+// INTERFACE
+// ----------------
+
+struct Socket {
+    socket_addr: Addr,
+}
+
+struct Addr {
+    addr: u64,
+}

@@ -1,4 +1,10 @@
-// Sparc = Service
+// Sparc = Daemon/Background process
+// Not a 'service' as in syscall, but a 'service' as in a process that runs in kernel mode
+// and acts like kernel modules that handle runtime code
+// or separate threads that run specific kernel code to do things like filesystem management, network management
+// Example services may manage IO for networking by looking at the socket request queue and directing each request, copying the buffers from user -> kernel buffers, calling driver code
+// and usually have a higher API for internal kernel use and can be started/closed on demand to allow certain things like disk view/filesystem view when they start
+
 pub trait Sparc {
     fn handle_req(spart_req: SparcReq);
     fn start();
