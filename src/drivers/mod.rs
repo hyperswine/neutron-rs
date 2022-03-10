@@ -19,3 +19,8 @@ pub mod generic;
 // "Driverless" Components
 // PCIE SSD (shouldnt require driver), HDMI Generic FHD Monitor (usually no driver)
 // Usually, just send mostly raw data to them
+
+// TODO: QEMU SSD INTERACTION
+// detect qemu ssd
+// load driver for it
+// check if GPT or MBR, then partitions and filesystems
