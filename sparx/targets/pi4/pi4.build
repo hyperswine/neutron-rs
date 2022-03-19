@@ -1,8 +1,0 @@
-# For pi4b
-
-OUT_DIR=build
-ASM_FILES=support/arch/aarch64/asm/entry.S
-LINK_SCRIPT=support/arch/aarch64/link/linker.ld
-OUT_OBJ=build/entry.o
-LINK_OBJ=build/entry.o build/*.a
-OUT_IMG=build/kernel.elf
