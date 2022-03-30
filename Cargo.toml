@@ -18,6 +18,9 @@ linked_list_allocator = "0.9.0"
 version = "1.4.0"
 features = ["spin_no_std"]
 
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+rustsbi = "0.2.2"
+
 [profile.release]
 panic = "abort"
 
