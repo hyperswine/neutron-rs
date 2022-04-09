@@ -4,7 +4,7 @@ A rust based kernel written with the minimalism in mind.
 
 ## TODO
 
-- make cargo test work on riscv and arm with a qemu runner
+- make cargo test work on riscv and arm with a qemu runner. Phils got it done properly
 - maybe requires xtask to do it properly. Otherwise I guess `arcutils test --elf-img build/neutron_kernel` could work
 
 ## Layout

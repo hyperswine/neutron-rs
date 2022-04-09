@@ -5,6 +5,10 @@ edition = "2021"
 description = "A full minima kernel for risc systems"
 license = "GPL-3.0-only"
 
+# [[test]]
+# name = "should_panic"
+# harness = false
+
 [dependencies]
 volatile = "0.2.6"
 spin = "0.9.2"
@@ -14,18 +18,12 @@ linked_list_allocator = "0.9.0"
 version = "1.4.0"
 features = ["spin_no_std"]
 
-[profile.release]
-panic = "abort"
-
-[profile.dev]
-panic = "abort"
-
-# Dont place panic unwind cause it screws it up or something
-[profile.test]
-panic = "abort"
-
-# Shouldnt need many dev deps. Install arcboot via cargo install arcboot
-[dev.dependencies]
+# arcboot should already have those libraries in its runtime
+# but keep for now in case of testing with qemu
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86_64 = "0.14.9"
+bootloader = "0.10.12"
+uart_16550 = "0.2.0"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]

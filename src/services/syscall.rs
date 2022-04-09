@@ -30,7 +30,6 @@ pub enum RelativeFilePosition {
     END,
 }
 
-#[cfg(not(test))]
 use alloc::string::String;
 
 pub trait NeutronFileService {
