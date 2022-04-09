@@ -2,12 +2,8 @@
 name = "neutron_kernel"
 version = "0.1.1"
 edition = "2021"
-description = "A rust-based kernel for riscv and arm"
+description = "A full minima kernel for risc systems"
 license = "GPL-3.0-only"
-
-[lib]
-crate-type = ["staticlib"]
-bench = false
 
 [dependencies]
 volatile = "0.2.6"
@@ -31,5 +27,6 @@ panic = "abort"
 # Shouldnt need many dev deps. Install arcboot via cargo install arcboot
 [dev.dependencies]
 
+# Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
 arctest = []
