@@ -3,8 +3,11 @@
 # Apparently some core things may need to be rebuilt on demand, place them here
 
 [alias]
-barm = "rustc --target=aarch64-none-elf --release -- --crate-type=staticlib -o build/.a"
+# BUILD
+barm = "rustc --target=aarch64-unknown-none --release -- --crate-type=staticlib -o build/.a"
 brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
+bx86 = "rustc --target=x86_64-unknown-none --release -- --crate-type=staticlib -o build/.a"
+# TESTS
 t = "test -- --nocapture"
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest -- --crate-type=staticlib -o build/.a"
 
@@ -12,4 +15,4 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest -- --cr
 [build]
 
 # STUFF FOR EACH DEP
-[target.riscv64gc-unknown-none]
+[target.riscv64]
