@@ -26,3 +26,15 @@ Neutron relies heavily on ACPI for device discovery and loading suitable drivers
 
 - supports hot plugs. Will load and unload devices on the fly/each cpu cycle if an interrupt occurs for a plugged in/out device
 - userspace apps/code using a plugged in device will prob be interrupted and aborted for safety. So one of the things is to always eject properly
+
+## Syscalls I
+
+- file like handling of most things. Descriptors for files, processes (pid), sockets (all networking), drivers/devices
+- also for stuff like virtual fs/images/volumes. And anonymous pipes
+
+## Syscalls II and IPC
+
+neutron service ii is another implementation of syscalls, using kqueue.
+
+Implements the [Ardaku interface](https://github.com/ardaku/ardaku/blob/main/SYSCALLS.md).
+Most of the stuff would be in `src/services/ardaku`.

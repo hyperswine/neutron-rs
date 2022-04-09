@@ -1,6 +1,6 @@
 # Building
 
-Neutron is built as an ELF image or a binary blob using `cargo build`.
+Neutron is built as an ELF64 image using `cargo build`. Note I haven't tried out x86 but Im pretty sure its ELF as well or maybe just a blob.
 
 - the resulting `/build/neutron` can be placed on an NeFS partition on `/sys`
 - if using arcboot, it should automatically detect any multiboot kernel imgs using GPT entries

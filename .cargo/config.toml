@@ -1,18 +1,21 @@
 # This project should have minimal config here. Rely on Arcboot
 [unstable]
-# Apparently some core things may need to be rebuilt on demand, place them here
+build-std = ["core", "compiler_builtins", "alloc"]
+build-std-features = ["compiler-builtins-mem"]
+unstable-options = true
 
 [alias]
 # BUILD
-barm = "rustc --target=aarch64-unknown-none --release -- --crate-type=staticlib -o build/.a"
-brv = "rustc --target=riscv64gc-unknown-none-elf --release -- --crate-type=staticlib -o build/.a"
-bx86 = "rustc --target=x86_64-unknown-none --release -- --crate-type=staticlib -o build/.a"
+# pass --release or --debug. Default is --debug
+barm = "build --target aarch64-unknown-none"
+brv = "build --target riscv64gc-unknown-none-elf"
+bx86 = "build --target x86_64-unknown-none"
 # TESTS
 t = "test -- --nocapture"
-arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest -- --crate-type=staticlib -o build/.a"
+arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 
-# DO NOT SPECIFY ANYTHING FOR BUILD. Use Arcboot
 [build]
+out-dir = "build"
 
-# STUFF FOR EACH DEP
-[target.riscv64]
+# STUFF FOR EACH ARCH
+# [target.riscv64]
