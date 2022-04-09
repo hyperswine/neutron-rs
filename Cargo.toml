@@ -5,8 +5,9 @@ edition = "2021"
 description = "A full minima kernel for risc systems"
 license = "GPL-3.0-only"
 
+# FOR INTEGRATION TESTS
 # [[test]]
-# name = "should_panic"
+# name = "main"
 # harness = false
 
 [dependencies]
@@ -24,6 +25,9 @@ features = ["spin_no_std"]
 x86_64 = "0.14.9"
 bootloader = "0.10.12"
 uart_16550 = "0.2.0"
+
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+riscv-rt = "0.8.1"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]

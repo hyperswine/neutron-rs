@@ -1,9 +1,10 @@
 pub mod interrupt;
 pub mod memory;
 pub mod power;
+use riscv_rt::entry;
 
-const UART0: u64 = 0x10000000;
-const REG_OFFSET: u64 = UART0;
+pub const UART0: u64 = 0x10000000;
+pub const REG_OFFSET: u64 = UART0;
 
 static GREETING: &[u8] = b"Hello World!\n";
 
@@ -20,21 +21,33 @@ macro_rules! write_reg {
     };
 }
 
-use core::ptr;
-
 // when debugging, can use uart0 or framebuffer
 // no color coding though
 #[macro_export]
 macro_rules! write_uart {
     ($exact:expr) => {
-        let p = UART0 as *mut u8;
-        for byte in $exact {
+        let p = 0x10000000 as *mut u8;
+        let _bytes = $exact.bytes();
+        for byte in _bytes {
             unsafe {
-                ptr::write_volatile(p, *byte);
+                match byte {
+                    0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
+                    _ => core::ptr::write(p, 0xfe),
+                }
             }
         }
     };
 }
+
+// pub fn write_string(&mut self, s: &str) {
+//     let p = 0x10000000 as *mut u8;
+//     for byte in s.bytes() {
+//         match byte {
+//             0x20..=0x7e | b'\n' => ptr::write_volatile(p, byte);
+//             _ => ptr::write_byte(0xfe),
+//         }
+//     }
+// }
 
 pub fn init_uart() {
     // disable interrupts
@@ -64,12 +77,12 @@ pub fn init_uart() {
 }
 
 #[cfg(not(test))]
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+#[entry]
+fn main() -> ! {
     init_uart();
 
-    write_uart!(GREETING);
-    write_uart!(GREETING);
+    write_uart!("Hello World!\n");
+    write_uart!("Hello World!\n");
 
     loop {}
 }

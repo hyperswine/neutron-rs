@@ -12,8 +12,6 @@ Neutron is built as an ELF64 image using `cargo build`. Note I haven't tried out
 
 `cargo t` -> builds neutron for the host (assumed x86_64) and runs cargo test suite for unit and integration tests
 
-
-
 ## Dependencies
 
 Rust

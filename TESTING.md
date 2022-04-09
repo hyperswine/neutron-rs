@@ -1,5 +1,11 @@
 # Testing
 
+Basically, build with `cargo t*` and then run the test config with:
+
+```bash
+qemu-system-riscv64 -M virt -kernel build/neutron_kernel -nographic -serial mon:stdio
+```
+
 ## TDD
 
 A core idea is TDD, write tests for expected behavior then implement functionality until the tests passes.
