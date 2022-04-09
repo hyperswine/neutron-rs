@@ -36,7 +36,7 @@ macro_rules! write_uart {
     };
 }
 
-fn init_uart() {
+pub fn init_uart() {
     // disable interrupts
     write_reg!(1, 0x00);
 

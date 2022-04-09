@@ -12,6 +12,7 @@ brv = "build --target riscv64gc-unknown-none-elf"
 bx86 = "build --target x86_64-unknown-none"
 # TESTS
 trv = "test --target riscv64gc-unknown-none-elf -- --nocapture --no-run"
+# ! for now, use arctest from arcutils
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 
 [build]
