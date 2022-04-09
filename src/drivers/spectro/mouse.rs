@@ -2,9 +2,7 @@ pub enum MouseButtons {
     LEFT_CLICK, RIGHT_CLICK, MIDDLE_CLICK, L1, L2, L3, LMID, R1, R2, R3, R4
 }
 
-#[cfg(not(test))]
 use alloc::vec::Vec;
-#[cfg(not(test))]
 use alloc::vec;
 
 

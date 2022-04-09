@@ -1,5 +1,4 @@
 // NOTE, not(test) basically means anything other than the host
-#[cfg(not(test))]
 use alloc::{boxed::Box, rc::Rc, string::String, vec, vec::Vec, string::ToString};
 // KERNEL IMPORTS
 use crate::types::KTimestamp;
@@ -92,7 +91,7 @@ impl File {
 // ------------------------
 // Unit Tests
 // ------------------------
-#[test]
+#[test_case]
 fn test_file() {
     let file = File::new("file");
     let name = file.get_name();

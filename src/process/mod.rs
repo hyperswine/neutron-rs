@@ -3,7 +3,6 @@
 use crate::types::KPrioQueue;
 use lazy_static::lazy_static;
 
-#[cfg(not(test))]
 use crate::alloc::{vec, vec::Vec};
 
 type ThreadID = u64;
@@ -67,11 +66,11 @@ impl Process {
 // UNIT CARGO TEST
 // -------------
 
-#[test]
+#[test_case]
 fn test_process() {
     let process = Process::new(0);
     assert_eq!(1, 1);
-    println!("process succesfully created!");
+    // println!("process succesfully created!");
 }
 
 // -------------

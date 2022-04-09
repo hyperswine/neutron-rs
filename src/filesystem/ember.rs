@@ -1,7 +1,6 @@
 // Semantic Filesystem
 // An instance of Ember is created on top of an HFS as a key-value store database file
 
-#[cfg(not(test))]
 use alloc::{string::String, string::ToString, vec, vec::Vec};
 
 // Each Ember instance has a single header with a unique ID and a key val store of [file_name: pointer_to_file]
@@ -83,7 +82,7 @@ impl EmberTag {
     }
 }
 
-#[test]
+#[test_case]
 fn create_ember_file() {
     let mut _file = EmberFile::new("/root", "root");
     let mut r = _file.name();
@@ -94,15 +93,15 @@ fn create_ember_file() {
     assert_eq!(r, "/boot");
 
     // that changes r but not _file.name()
-    println!("_file.name() = {}", _file.name());
+    // println!("_file.name() = {}", _file.name());
     // assert_eq!(_file.name(), "/boot");
 
     _file.set_name("/boot");
-    println!("_file.name() = {}", _file.name());
+    // println!("_file.name() = {}", _file.name());
     assert_eq!(_file.name(), "/boot");
 }
 
-#[test]
+#[test_case]
 fn create_tag() {
     let secret_tag = EmberTag::new("secrets");
     let study_tag = EmberTag::new("study");
@@ -113,14 +112,14 @@ fn create_tag() {
     let mut _file = EmberFile::new("World History", "study");
     // should not be added since already exists
     let r = _file.add_tag("study");
-    println!("Adding tag 'study' = {}", r);
+    // println!("Adding tag 'study' = {}", r);
 
     let r = _file.get_tags();
     let _str = match r.first() {
         Some(v) => v.get_name(),
         None => "",
     };
-    println!("_str = {}", _str);
+    // println!("_str = {}", _str);
 
     assert_eq!(_str, study_tag.get_name());
 
@@ -132,9 +131,9 @@ fn create_tag() {
         None => "",
     };
     for _r in r {
-        println!("r = {}", _r.get_name());
+        // println!("r = {}", _r.get_name());
     }
-    println!("_str = {}", _str);
+    // println!("_str = {}", _str);
 
     // should still be study as the first tag
     assert_eq!(_str, study_tag.get_name());

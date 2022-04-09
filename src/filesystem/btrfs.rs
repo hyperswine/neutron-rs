@@ -1,6 +1,5 @@
 // Based on https://btrfs.wiki.kernel.org/index.php/Btrfs_design
 
-#[cfg(not(test))]
 use alloc::{boxed::Box, rc::Rc, string::String, string::ToString, vec, vec::Vec};
 
 // ---------------
@@ -92,7 +91,7 @@ impl FileOperations for Dir {
     fn write_to_disk(disk_num: u64, block_address: u64, buffer: &str) {}
 }
 
-#[test]
+#[test_case]
 fn test_files() {
     let _file = File::create_new("path");
 }

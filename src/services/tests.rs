@@ -13,5 +13,5 @@ fn test_service() {
     // blocking IO => have to implement async?
     let result = services::read_service(disk_number, offset, bytes);
 
-    println!("result = {}", result);
+    // println!("result = {}", result);
 }
