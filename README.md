@@ -2,6 +2,10 @@
 
 A rust based kernel written with the minimalism in mind.
 
+- multiboot compliant. Should be able to use GRUB, U-boot, oreboot to boot kernel ELF img in S-Mode/Ring-1
+- neutron filesystem used by default
+- rei shell is the default shell for interacting with the kernel on neutron arc
+
 ## TODO
 
 - make cargo test work on riscv and arm with a qemu runner
