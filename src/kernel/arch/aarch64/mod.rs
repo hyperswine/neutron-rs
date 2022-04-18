@@ -15,3 +15,9 @@ macro_rules! write_uart {
         }
     };
 }
+
+#[cfg(not(test))]
+#[no_mangle]
+extern "C" fn _start() {
+    loop {}
+}
