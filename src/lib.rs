@@ -36,14 +36,14 @@ where
     T: Fn(),
 {
     fn run(&self) {
-        write_uart!("Running...\t");
+        write_uart!(b"Running...\t");
         self();
-        write_uart!("[ok]");
+        write_uart!(b"[ok]");
     }
 }
 
 pub fn test_runner(tests: &[&dyn Testable]) {
-    write_uart!("Running tests");
+    write_uart!(b"Running tests");
     for test in tests {
         test.run();
     }
@@ -51,7 +51,7 @@ pub fn test_runner(tests: &[&dyn Testable]) {
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
-    write_uart!("[failed]\n");
+    write_uart!(b"[failed]\n");
     loop {}
 }
 
@@ -73,7 +73,7 @@ pub extern "C" fn _start() -> ! {
     }
 
     // all arches should export write_uart
-    write_uart!("Running Test Config...");
+    write_uart!(b"Running Test Config...");
 
     test_main();
 

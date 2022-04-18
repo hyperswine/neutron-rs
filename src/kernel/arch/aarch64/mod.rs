@@ -2,15 +2,23 @@ pub mod memory;
 
 #[macro_export]
 macro_rules! write_uart {
+    // ($exact:expr) => {
+    //     let p = 0x09000000 as *mut u64;
+    //     let _bytes = $exact.bytes();
+    //     for byte in _bytes {
+    //         unsafe {
+    //             match byte {
+    //                 0x20..=0x7e | b'\n' => core::ptr::write_volatile(p, byte.into()),
+    //                 _ => core::ptr::write_volatile(p, 0xfe),
+    //             }
+    //         }
+    //     }
+    // };
     ($exact:expr) => {
         let p = 0x09000000 as *mut u8;
-        let _bytes = $exact.bytes();
-        for byte in _bytes {
+        for byte in $exact {
             unsafe {
-                match byte {
-                    0x20..=0x7e | b'\n' => core::ptr::write_volatile(p, byte),
-                    _ => core::ptr::write_volatile(p, 0xfe),
-                }
+                core::ptr::write_volatile(p, *byte);
             }
         }
     };
@@ -23,9 +31,11 @@ macro_rules! write_uart {
 //         s++;	        
 //     }
 // }
+static GREETING: &[u8] = b"Hello World!\n";
 
-#[cfg(not(test))]
-#[no_mangle]
-extern "C" fn _start() {
-    loop {}
-}
+// #[cfg(not(test))]
+// #[no_mangle]
+// extern "C" fn _start() {
+//     write_uart!(b"Hello, World!");
+//     loop {}
+// }

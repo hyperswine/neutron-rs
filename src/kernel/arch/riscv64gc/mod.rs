@@ -1,7 +1,7 @@
 pub mod interrupt;
 pub mod memory;
 pub mod power;
-use riscv_rt::entry;
+// use riscv_rt::entry;
 
 pub const UART0: u64 = 0x10000000;
 pub const REG_OFFSET: u64 = UART0;
@@ -25,15 +25,23 @@ macro_rules! write_reg {
 // no color coding though
 #[macro_export]
 macro_rules! write_uart {
+    // ($exact:expr) => {
+    //     let p = 0x10000000 as *mut u8;
+    //     let _bytes = $exact.bytes();
+    //     for byte in _bytes {
+    //         unsafe {
+    //             match byte {
+    //                 0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
+    //                 _ => core::ptr::write(p, 0xfe),
+    //             }
+    //         }
+    //     }
+    // };
     ($exact:expr) => {
         let p = 0x10000000 as *mut u8;
-        let _bytes = $exact.bytes();
-        for byte in _bytes {
+        for byte in $exact {
             unsafe {
-                match byte {
-                    0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
-                    _ => core::ptr::write(p, 0xfe),
-                }
+                core::ptr::write_volatile(p, *byte);
             }
         }
     };
@@ -77,12 +85,12 @@ pub fn init_uart() {
 }
 
 #[cfg(not(test))]
-#[entry]
-fn main() -> ! {
+#[no_mangle]
+extern "C" fn _start() -> ! {
     init_uart();
 
-    write_uart!("Hello World!\n");
-    write_uart!("Hello World!\n");
+    write_uart!(b"Hello World!\n");
+    write_uart!(b"Hello World!\n");
 
     loop {}
 }
