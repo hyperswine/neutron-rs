@@ -42,7 +42,6 @@ where
     }
 }
 
-#[cfg(test)]
 pub fn test_runner(tests: &[&dyn Testable]) {
     write_uart!("Running tests");
     for test in tests {
@@ -51,7 +50,6 @@ pub fn test_runner(tests: &[&dyn Testable]) {
     loop {}
 }
 
-#[cfg(test)]
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
     write_uart!("[failed]\n");
     loop {}

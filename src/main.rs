@@ -5,7 +5,7 @@
 #![allow(dead_code)]
 #![feature(custom_test_frameworks)]
 #![reexport_test_harness_main = "test_main"]
-#![test_runner(test_runner)]
+#![test_runner(neutron_kernel::test_runner)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
@@ -15,10 +15,11 @@
 use neutron_kernel::write_uart;
 use core::panic::PanicInfo;
 
+// If running the test config directly, use test_panic_handler
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    test_panic_handler(info)
+    neutron_kernel::test_panic_handler(info)
 }
 
 #[cfg(not(test))]
