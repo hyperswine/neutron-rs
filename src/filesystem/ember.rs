@@ -2,6 +2,7 @@
 // An instance of Ember is created on top of an HFS as a key-value store database file
 
 use alloc::{string::String, string::ToString, vec, vec::Vec};
+use core::option::*;
 
 // Each Ember instance has a single header with a unique ID and a key val store of [file_name: pointer_to_file]
 // NOTE: within the kernel, we cant use HashMap so either implement it using KRandom() and Vec<T>, Vec<K> or just use an array

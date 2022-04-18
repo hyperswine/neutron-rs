@@ -2,7 +2,7 @@
 name = "neutron_kernel"
 version = "0.1.1"
 edition = "2021"
-description = "A full minima kernel for risc systems"
+description = "A full minimal kernel for risc systems"
 license = "GPL-3.0-only"
 
 # FOR INTEGRATION TESTS

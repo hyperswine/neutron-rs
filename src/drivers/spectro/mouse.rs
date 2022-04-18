@@ -5,7 +5,6 @@ pub enum MouseButtons {
 use alloc::vec::Vec;
 use alloc::vec;
 
-
 // when a mouse button is pressed, will inform the interrupt multiplexer
 // happens as quickly as clk or something or to match human reflexes somehow
 
