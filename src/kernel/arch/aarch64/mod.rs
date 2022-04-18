@@ -3,7 +3,7 @@ pub mod memory;
 #[macro_export]
 macro_rules! write_uart {
     ($exact:expr) => {
-        let p = 0x10000000 as *mut u8;
+        let p = 0x09000000 as *mut u8;
         let _bytes = $exact.bytes();
         for byte in _bytes {
             unsafe {
