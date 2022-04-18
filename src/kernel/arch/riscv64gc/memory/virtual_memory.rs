@@ -3,7 +3,6 @@
 // TODO: allocate a frame when needed and swap a frame to disk if needed (not too big of a deal with 64bit addressing but good to test)
 // TODO: set the bits of CSR
 
-#[cfg(not(test))]
 use crate::alloc::{vec, vec::Vec};
 
 pub struct FrameAddress {

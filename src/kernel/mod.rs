@@ -16,7 +16,6 @@ pub mod posix;
 // ! Will be a bit hard to test directly, dont write integration tests for these modules that rely on alloc
 // Unless you can specify your own allocator based on paging somehow
 
-#[cfg(not(test))]
 use alloc::vec;
 
 use crate::filesystem::HFS::{File, Filesystem};
@@ -42,7 +41,7 @@ impl KernelManager {
 // TESTS
 // --------------------
 
-#[test]
+#[test_case]
 fn test_kern_basics() {
     let _kern = KernelManager::new();
 }

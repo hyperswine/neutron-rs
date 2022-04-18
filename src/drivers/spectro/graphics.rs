@@ -58,7 +58,7 @@ fn output_framebuffer() -> Framebuffer {
     Framebuffer {}
 }
 
-#[test]
+#[test_case]
 fn test_framebuffer() {
     output_framebuffer();
 }

@@ -8,10 +8,10 @@ fn test_kb() {
     // press one key "A"
     let key_pressed = 0; // A = key 0
     let res = kb_driver.handle_interrupt(vec![0]);
-    println!("key press recorded = {}", res);
+    // println!("key press recorded = {}", res);
 
     // press ctrl + A
     let keys_pressed = vec![0, 10];
     let res = kb_driver.handle_interrupt(keys_pressed);
-    println!("key presses recorded = {}", res);
+    // println!("key presses recorded = {}", res);
 }

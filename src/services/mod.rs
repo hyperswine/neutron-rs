@@ -51,7 +51,7 @@ fn dismount(filepath: &str) -> ServiceStatus {
     ServiceStatus::new()
 }
 
-#[test]
+#[test_case]
 fn test_basic_mounting() {
     // TODO: represent a device in drivers. A driver should correspond to a device type
     // A device type can be either generic (GenericDevice) or specific (DeviceSpec)

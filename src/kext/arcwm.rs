@@ -1,6 +1,5 @@
 // WINDOW SERVER LIBRARY THAT LINKS WITH NEUTRON CORE
 
-#[cfg(not(test))]
 use crate::alloc::{borrow::ToOwned, vec, vec::Vec};
 use crate::services::sparc::{Sparc, SparcDetails, SparcReq, SparcStatus};
 
@@ -78,7 +77,7 @@ const DEFAULT_Z_INDEX: i32 = 100;
 const SCR_HEIGHT: i32 = 1080;
 const SCR_WIDTH: i32 = 1920;
 
-#[test]
+#[test_case]
 fn test_basics_sparc() {
     let _sparc = ArcWin {
         sparc_details: SparcDetails::new(),

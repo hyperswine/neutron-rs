@@ -1,7 +1,6 @@
 pub mod ops;
 
 // RISCV
-#[cfg(not(test))]
 use alloc::{string::String, vec, vec::Vec};
 use core::option::Option;
 

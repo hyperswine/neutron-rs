@@ -13,7 +13,6 @@ struct IDT;
 
 use lazy_static::lazy_static;
 
-#[cfg(not(test))]
 use crate::alloc::{vec, vec::Vec};
 
 // define interrupt handler function type
