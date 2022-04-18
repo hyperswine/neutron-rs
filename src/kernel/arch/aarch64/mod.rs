@@ -8,13 +8,21 @@ macro_rules! write_uart {
         for byte in _bytes {
             unsafe {
                 match byte {
-                    0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
-                    _ => core::ptr::write(p, 0xfe),
+                    0x20..=0x7e | b'\n' => core::ptr::write_volatile(p, byte),
+                    _ => core::ptr::write_volatile(p, 0xfe),
                 }
             }
         }
     };
 }
+
+// extern "C" fn print_uart0() {
+//     const char *s;
+//     while(*s != '\0') {
+//         *UART0DR = (unsigned int)(*s);
+//         s++;	        
+//     }
+// }
 
 #[cfg(not(test))]
 #[no_mangle]
