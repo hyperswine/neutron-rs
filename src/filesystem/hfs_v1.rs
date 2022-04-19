@@ -7,7 +7,7 @@ use crate::types::KTimestamp;
 // Hierarchical Filesystem
 // ------------------------
 
-// ! NOTE: use btrfs for now
+// Basically a generic hierarchical filesystem for testing
 
 pub struct Filesystem {
     pub files: Vec<File>,
@@ -75,8 +75,9 @@ impl File {
         Self {
             size: 1,
             name: filename.to_string(),
-            created: KTimestamp::new(""),
-            last_modified: KTimestamp::new(""),
+            // TODO: check it before Self{} instead of unwrapping
+            created: KTimestamp::from_yyyy_mm_dd("").unwrap(),
+            last_modified: KTimestamp::from_yyyy_mm_dd("").unwrap(),
             locked: false,
             format: FileFormat::TXT,
             path: "/".to_string()

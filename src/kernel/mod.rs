@@ -18,7 +18,7 @@ pub mod posix;
 
 use alloc::vec;
 
-use crate::filesystem::HFS::{File, Filesystem};
+use crate::filesystem::hfs_v1::{File, Filesystem};
 
 pub struct KernelManager {
     filesystem: Filesystem,

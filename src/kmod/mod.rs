@@ -1,7 +1,7 @@
 // enable by default for testing
-// #[cfg(feature = "arcwm")]
-pub mod arcwm;
+// #[cfg(feature = "graphics")]
+pub mod graphics;
 // #[cfg(feature = "driver_ext")]
-pub mod driver_ext;
+pub mod driver_extensions;
 // #[cfg(feature = "wasm_support")]
 pub mod wasm;

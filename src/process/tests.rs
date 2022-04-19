@@ -22,8 +22,6 @@ fn test_process() {
     // try to illegally access memory chunks bigger than was allocated
     let res = process.access_addr(0x60000000, 501);
     std::assert!(!check_optional(res));
-
-
 }
 
 // tests should always use std:: stuff. Int tests maybe not so much

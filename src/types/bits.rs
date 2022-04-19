@@ -5,6 +5,7 @@
 use alloc::{vec, vec::Vec};
 
 // USEFUL CLASSES TO OPERATE ON BITS DIRECTLY
+// for networking and non-byte like protocols
 
 pub struct BinaryVal {
     content: Vec<bool>,

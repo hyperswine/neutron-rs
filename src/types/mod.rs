@@ -1,7 +1,6 @@
 pub mod bits;
-pub mod ops;
 
-use alloc::{string::String, vec, vec::Vec};
+use alloc::{borrow::ToOwned, string::String, vec, vec::Vec};
 use core::option::Option;
 
 // -------------------
@@ -124,11 +123,8 @@ type Font = Path;
 
 type Resolution = (u64, u64);
 
-// a shell is a single process with its own path and ELF virtual memory
-
-// when kernel starts, it
-// start a shell with a given pid
-// and render it as the default shell
+// A graphical line-by-line interface
+// that can be rendered directly by GraphicalShell in kext/graphics/default_shell
 pub struct Shell {
     resolution: Resolution,
     font: Font,
@@ -154,6 +150,33 @@ impl Shell {
     }
 }
 
+// might be better to do in services/ but whatever
+impl ShellFunctions for Shell {
+    fn write(&self, _str: &str) {
+        todo!()
+    }
+
+    fn writeln(&self, _str: &str) {
+        todo!()
+    }
+
+    fn scroll_y(&self, offset: u64) {
+        todo!()
+    }
+
+    fn scroll_x(&self, offset: u64) {
+        todo!()
+    }
+
+    fn use_font(&self, font: Font) {
+        todo!()
+    }
+
+    fn use_color(&self, color: ColorCode) {
+        todo!()
+    }
+}
+
 // -------------------
 // TIME
 // -------------------
@@ -161,7 +184,7 @@ impl Shell {
 pub struct KTimestamp {
     day: u8,
     month: u8,
-    year: u8,
+    year: u64,
 
     hour: f32,
     min: f32,
@@ -170,19 +193,76 @@ pub struct KTimestamp {
 
 impl KTimestamp {
     // yyyy-mm-dd
-    pub fn new(str: &str) -> Self {
-        // TODO check if in right format
-        // if str.len() != 10 {
-        //     return Option::None;
-        // }
-
-        Self {
-            day: 1,
-            month: 1,
-            year: 1,
-            hour: 1.0,
-            min: 1.0,
-            sec: 1.0,
+    pub fn from_yyyy_mm_dd(str: &str) -> Option<Self> {
+        // check if in right format
+        if str.len() != 12 {
+            return None;
         }
+
+        let s = str.to_owned();
+        let s = s.replace("-", "");
+        // check first four are numbers 0-9
+        let year = &s[0..3];
+        let month = &s[4..5];
+        let day = &s[6..7];
+
+        let year = year.parse::<u64>();
+        let year: u64 = match year {
+            Ok(_) => year.unwrap(),
+            Err(_) => return None,
+        };
+
+        let month = month.parse::<u8>();
+        let month = match month {
+            Ok(m) => {
+                // check if m is between 1 and 12
+                if m >= 1 && m <= 12 {
+                    m
+                } else {
+                    return None;
+                }
+            }
+            Err(_) => return None,
+        };
+
+        let month_31days = [1, 3, 5, 7, 8, 10, 12];
+
+        let day = day.parse::<u8>();
+        // depending on the month and year (leap year), get the max date
+        let day_max = match day {
+            Ok(d) => {
+                // if january, march, etc. always 31 days
+                if month_31days.contains(&month) {
+                    31 as u8
+                }
+                // if feb, check if leap year
+                else if month == 2 {
+                    if (year % 400 == 0 && year % 100 == 0) || (year % 4 == 0 && year % 100 != 0) {
+                        29
+                    } else {
+                        28
+                    }
+                }
+                // if june, nov, etc
+                else {
+                    30
+                }
+            }
+            Err(_) => return None,
+        };
+
+        let day = day.unwrap();
+        if day > day_max {
+            return None;
+        }
+
+        Some(Self {
+            day,
+            month,
+            year,
+            hour: 0.0,
+            min: 0.0,
+            sec: 0.0,
+        })
     }
 }

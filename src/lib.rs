@@ -11,7 +11,7 @@
 
 pub mod drivers;
 pub mod filesystem;
-pub mod kext;
+pub mod kmod;
 pub mod process;
 pub mod services;
 pub mod types;

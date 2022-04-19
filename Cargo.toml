@@ -32,3 +32,7 @@ riscv-rt = "0.8.1"
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
 arctest = []
+graphics = []
+arcwm = []
+driver_ext = []
+wasm_support = []
