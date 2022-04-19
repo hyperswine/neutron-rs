@@ -1,6 +1,7 @@
 pub mod interrupt;
 pub mod memory;
 pub mod power;
+// Apparently this doesnt link properly?
 // use riscv_rt::entry;
 
 pub const UART0: u64 = 0x10000000;
@@ -25,37 +26,19 @@ macro_rules! write_reg {
 // no color coding though
 #[macro_export]
 macro_rules! write_uart {
-    // ($exact:expr) => {
-    //     let p = 0x10000000 as *mut u8;
-    //     let _bytes = $exact.bytes();
-    //     for byte in _bytes {
-    //         unsafe {
-    //             match byte {
-    //                 0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
-    //                 _ => core::ptr::write(p, 0xfe),
-    //             }
-    //         }
-    //     }
-    // };
     ($exact:expr) => {
         let p = 0x10000000 as *mut u8;
-        for byte in $exact {
+        let _bytes = $exact.bytes();
+        for byte in _bytes {
             unsafe {
-                core::ptr::write_volatile(p, *byte);
+                match byte {
+                    0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
+                    _ => core::ptr::write(p, 0xfe),
+                }
             }
         }
     };
 }
-
-// pub fn write_string(&mut self, s: &str) {
-//     let p = 0x10000000 as *mut u8;
-//     for byte in s.bytes() {
-//         match byte {
-//             0x20..=0x7e | b'\n' => ptr::write_volatile(p, byte);
-//             _ => ptr::write_byte(0xfe),
-//         }
-//     }
-// }
 
 pub fn init_uart() {
     // disable interrupts

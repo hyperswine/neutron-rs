@@ -12,8 +12,8 @@
 // -----------------------
 
 // required for main.rs
-use neutron_kernel::write_uart;
 use core::panic::PanicInfo;
+use neutron_kernel::write_uart;
 
 // If running the test config directly, use test_panic_handler
 #[cfg(test)]
@@ -30,7 +30,10 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[cfg(not(test))]
 #[no_mangle]
+#[cfg(not(target_arch = "riscv64"))]
 extern "C" fn _start() -> ! {
+    use neutron_kernel::kernel::arch::aarch64::print_uart0;
+
     write_uart!(b"Hello World!\n");
     write_uart!(b"Hello World!\n");
 
@@ -44,6 +47,8 @@ extern "C" fn _start() -> ! {
     unsafe {
         core::ptr::write_volatile(p, b"H"[0]);
     }
+
+    print_uart0(b"Hello, World!");
 
     loop {}
 }

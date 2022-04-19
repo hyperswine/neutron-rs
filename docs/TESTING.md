@@ -6,6 +6,12 @@ Basically, build with `cargo t*` and then run the test config with:
 qemu-system-riscv64 -M virt -kernel build/neutron_kernel -nographic -serial mon:stdio
 ```
 
+or
+
+```bash
+qemu-system-aarch64 -M virt -cpu cortex-a57 -nographic -kernel build/neutron_kernel -serial mon:stdio
+```
+
 ## TDD
 
 A core idea is TDD, write tests for expected behavior then implement functionality until the tests passes.

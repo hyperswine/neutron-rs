@@ -1,5 +1,9 @@
 // EXPERIMENTAL x86 SUPPORT FOR EASE OF TESTING ON QEMU
 
+// A lot of nice crates on x86_64 we could rip off, I meant use
+
+pub mod virtual_memory;
+
 // TODO: memory allocator
 // TODO: boot entry asm and linker script
 

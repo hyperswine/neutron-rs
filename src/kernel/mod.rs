@@ -5,16 +5,13 @@
 // --------------------
 
 pub mod arch;
-pub mod entry;
+pub mod acpi;
 #[cfg(feature = "posix")]
 pub mod posix;
 
 // --------------------
 // NON-ARCH DEPENDENT STUFF
 // --------------------
-
-// ! Will be a bit hard to test directly, dont write integration tests for these modules that rely on alloc
-// Unless you can specify your own allocator based on paging somehow
 
 use alloc::vec;
 

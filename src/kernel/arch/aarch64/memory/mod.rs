@@ -1,2 +1,2 @@
 pub mod allocator;
-pub mod vm;
+pub mod virtual_memory;
