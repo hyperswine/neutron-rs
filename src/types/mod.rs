@@ -1,5 +1,5 @@
-pub mod ops;
 pub mod bits;
+pub mod ops;
 
 use alloc::{string::String, vec, vec::Vec};
 use core::option::Option;
@@ -11,32 +11,33 @@ use core::option::Option;
 // Data Structures
 
 // Useful for comparable (<) data
-pub struct KPriorityNode<T: PartialOrd> {
-    next: *mut KPriorityNode<T>,
-    t: T
+pub struct KPriorityQueue<T: Ord> {
+    queue: Vec<T>,
+    size: usize,
 }
 
-pub struct KPriorityQueue<T: PartialOrd> {
-    head: KPriorityNode<T>,
-    n_elem: usize,
-}
-
-impl<T: PartialOrd> KPriorityNode<T> {
-    pub fn new(t: T) -> Self {
-        use core::ptr::null_mut;
-        Self { next: null_mut(), t }
-    }
-}
-
-impl<T: PartialOrd> KPriorityQueue<T> {
-    pub fn new(t: T) -> Self {
+impl<T: Ord> KPriorityQueue<T> {
+    // default constructor
+    pub fn new() -> Self {
         Self {
-            head: KPriorityNode::new(t),
-            n_elem: 1,
+            queue: vec![],
+            size: 0,
         }
     }
-    pub fn queue_node(&mut self, node: KPriorityNode<T>) {
-        self.head;
+
+    // insert data in order
+    pub fn insert_data(&mut self, data: T) {
+        let pos = self.queue.binary_search(&data).unwrap_or_else(|e| e);
+        self.queue.insert(pos, data);
+    }
+
+    // pop from front of the queue
+    pub fn pop(&mut self) -> Option<T> {
+        self.queue.pop()
+    }
+
+    pub fn size(&self) -> usize {
+        self.size
     }
 }
 
@@ -44,18 +45,15 @@ impl<T: PartialOrd> KPriorityQueue<T> {
 pub struct KMap;
 
 // generic node
-struct Node;
+struct KQueue;
+struct KHeapQueue;
 
-struct Queue;
-struct PriorityQueue;
-struct HeapQueue;
+struct KStack;
+struct KHeap;
 
-struct Stack;
-struct Heap;
-
-struct BinaryTree;
+struct KBinaryTree;
 // should be used for neutron filesystem
-struct BalanceTree;
+struct KBalanceTree;
 
 pub trait Search {
     fn breadth_first_search();
@@ -99,24 +97,32 @@ pub enum Color {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(transparent)]
-struct ColorCode(u8);
+pub struct ColorCode(u8);
 
 impl ColorCode {
-    fn new(foreground: Color, background: Color) -> ColorCode {
+    pub fn new(foreground: Color, background: Color) -> ColorCode {
         ColorCode((background as u8) << 4 | (foreground as u8))
     }
 }
 
 // stores all the chars that have been written to it
-struct ShellBuffer;
+struct ShellBuffer {
+    buffer: String,
+    size_bytes: usize,
+    n_lines: usize,
+}
 
-// the resolution framebuffer that is refreshed (usually rewritten entirely) on every write
-// to shell buffer
-struct Framebuffer;
+// the resolution framebuffer that is refreshed (usually rewritten entirely) on every write the to shell buffer
+struct Framebuffer {
+    framebuffer_addr: u64,
+}
 
-type Path = [u8; 300];
+type Path = String;
 
-type Font = u64;
+// * for now, a font is simply the path to the font, implemented by neutron
+type Font = Path;
+
+type Resolution = (u64, u64);
 
 // a shell is a single process with its own path and ELF virtual memory
 
@@ -124,22 +130,29 @@ type Font = u64;
 // start a shell with a given pid
 // and render it as the default shell
 pub struct Shell {
-    resolution: (u64, u64),
+    resolution: Resolution,
     font: Font,
-    color: Color,
+    color: ColorCode,
 }
 
 pub trait ShellFunctions {
-    fn new(res: (u64, u64)) -> Self;
     fn write(&self, _str: &str);
     fn writeln(&self, _str: &str);
     fn scroll_y(&self, offset: u64);
     fn scroll_x(&self, offset: u64);
     fn use_font(&self, font: Font);
-    fn use_color(&self, color: Color);
+    fn use_color(&self, color: ColorCode);
 }
 
-
+impl Shell {
+    pub fn new(resolution: Resolution, font: Font, color: ColorCode) -> Self {
+        Self {
+            resolution,
+            font,
+            color,
+        }
+    }
+}
 
 // -------------------
 // TIME
