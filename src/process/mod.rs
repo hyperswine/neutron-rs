@@ -1,6 +1,6 @@
 // pub mod manager;
 
-use crate::types::KPrioQueue;
+use crate::types::KPriorityQueue;
 use lazy_static::lazy_static;
 
 use crate::alloc::{vec, vec::Vec};
@@ -63,7 +63,7 @@ impl Process {
 }
 
 // -------------
-// UNIT CARGO TEST
+// TEST
 // -------------
 
 #[test_case]
@@ -74,7 +74,7 @@ fn test_process() {
 }
 
 // -------------
-// INTEGRATION ARCTEST
+// ARCTEST
 // -------------
 
 // WHEN TRYING TO TEST DRIVER AND OUTPUT, USE THE HIGHER LEVEL FUNCTIONS AND CHECK OUTPUT DIRECTLY
