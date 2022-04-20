@@ -6,10 +6,11 @@ macro_rules! write_uart {
         let p = 0x09000000 as *mut u8;
         for byte in $exact {
             unsafe {
-                match byte {
-                    0x20..=0x7e | b'\n' => core::ptr::write_volatile(p, *byte),
-                    _ => core::ptr::write_volatile(p, 0xfe),
-                }
+                // match byte {
+                //     0x20..=0x7e | b'\n' => core::ptr::write_volatile(p, *byte),
+                //     _ => core::ptr::write_volatile(p, 0xfe),
+                // }
+                core::ptr::write_volatile(p, *byte);
             }
         }
     };
