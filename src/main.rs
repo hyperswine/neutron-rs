@@ -32,6 +32,54 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[cfg(not(target_arch = "riscv64"))]
 extern "C" fn _start() -> ! {
+    #[cfg(target_arch = "aarch64")]
+    {
+        unsafe {
+            use cortex_a::{asm, registers::*};
+            use tock_registers::interfaces::Readable;
+            use tock_registers::interfaces::Writeable;
+
+            // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
+            const CORE_MASK: u64 = 0x3;
+            const STACK_START: u64 = 0x80_000;
+
+            match MPIDR_EL1.get() & CORE_MASK {
+                0 => {
+                    SP.set(STACK_START);
+                }
+                _ => loop {
+                    // if not core0, infinitely wait for events
+                    asm::wfe();
+                },
+            }
+
+            // GO INTO EL2 (from EL1)
+            CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
+
+            // No offset for reading the counters.
+            CNTVOFF_EL2.set(0);
+
+            // Set EL1 execution state to AArch64.
+            HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
+
+            // Set up a simulated exception return.
+            // SPSR_EL2.write(
+            //     SPSR_EL2::D::Masked
+            //         + SPSR_EL2::A::Masked
+            //         + SPSR_EL2::I::Masked
+            //         + SPSR_EL2::F::Masked
+            //         + SPSR_EL2::M::EL1h,
+            // );
+        }
+    }
+
+    basic_greet();
+
+    loop {}
+}
+
+#[cfg(target_arch = "aarch64")]
+fn basic_greet() {
     use neutron_kernel::kernel::arch::aarch64::print_uart0;
 
     write_uart!(b"Hello World!\n");

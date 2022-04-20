@@ -20,5 +20,8 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 [build]
 out-dir = "build"
 
+[target.aarch64-unknown-none]
+# rustflags = ["-C", "link-arg=-Tsrc/aarch64.x"]
+
 # STUFF FOR EACH ARCH
 # [target.riscv64]
