@@ -6,7 +6,7 @@
 // you can also just use guest containers with a simpler semantic fs for a multi user setup or vm
 
 // get MMIO addresses from ACPI or device tree for a specific partition
-// 
+//
 
 struct MMIO_API {
     // address LBA of disk
@@ -15,7 +15,12 @@ struct MMIO_API {
 }
 
 impl MMIO_API {
-    fn new(write_LBA_addr: u64, read_LBA_addr: u64) -> Self { Self { write_LBA_addr, read_LBA_addr } }
+    fn new(write_LBA_addr: u64, read_LBA_addr: u64) -> Self {
+        Self {
+            write_LBA_addr,
+            read_LBA_addr,
+        }
+    }
 }
 
 // TODO: query kernel device tree (not firmware) for partition num
@@ -28,14 +33,13 @@ fn get_mmio_api_from_partition() -> MMIO_API {
 // PARTITION METADATA
 // ------------------
 
-// inode tables, etc.
 struct Superblock {}
 
 use alloc::collections::btree_map::BTreeMap;
 
 use crate::types::KTimestamp;
 
-// there can be 1.8 quintillion users 
+// there can be 1.8 quintillion users
 type NeutronUUID = u64;
 
 const MAX_FILE_SIZE_BYTES: u64 = 1024_u64.pow(6);
@@ -43,15 +47,47 @@ const MAX_FILE_SIZE_BYTES: u64 = 1024_u64.pow(6);
 const BLOCK_SIZE_BYTES: usize = 4192;
 
 // ------------------
-// INodes
+// Nodes
 // ------------------
-
-// a step below vnodes
 
 type FilePermissions = u16;
 
+struct NeutronFSKey {}
+
+// TODO
+enum DType {}
+
+struct NeutronFSItem {
+    // the key of the inode_item or root_item associated with this item
+    // prob the key of the parent dir
+    key: NeutronFSKey,
+    offset: u32,
+    size: u32,
+}
+
+// Actual NeutronFS item
+// Can either be another dir, regular file, device file, link
+struct NeutronFSDirItem {
+    location: NeutronFSKey,
+    transaction_id: u64,
+    // length of the extended attributes associated with this item. Just 0 for a dir. For a file or something else, might be 0-16k
+    data_length: u16,
+    // name of the directory entry (not the file)
+    name_length: u16,
+    d_type: DType,
+}
+
+// Supposed to be indexed through (inode_number, inode_item, parent_inode)
+// to find the DirItem entires/filename for a given inode
+struct NeutronFSInodeRef {
+    index: u64,
+    name_length: u16,
+}
+
+// A type of Node that describes a file
+// https://btrfs.wiki.kernel.org/index.php/Data_Structures#btrfs_inode_item
 #[repr(C, packed)]
-struct INode {
+struct NeutronFSINode {
     // ------USER INFO------
     creator_id: NeutronUUID,
     owner_id: NeutronUUID,
@@ -83,10 +119,9 @@ struct INode {
     curr_size: u64,
     // should always be MAX_FILE_SIZE_BYTES (16 EiB)
     max_size: u64,
-    block_btree: BTreeMap<u64, Block>,
 }
 
-impl INode {
+impl NeutronFSINode {
     fn new(
         creator_id: NeutronUUID,
         owner_id: NeutronUUID,
@@ -106,7 +141,6 @@ impl INode {
         last_changed: KTimestamp,
         curr_size: u64,
         max_size: u64,
-        block_btree: BTreeMap<u64, Block>,
     ) -> Self {
         Self {
             creator_id,
@@ -127,9 +161,9 @@ impl INode {
             last_changed,
             curr_size,
             max_size: MAX_FILE_SIZE_BYTES,
-            block_btree,
         }
     }
 }
 
+// Logical block / payload of a leaf node
 struct Block {}
