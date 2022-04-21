@@ -5,6 +5,25 @@
 // like btrfs but pretty cool (not unstable)
 // you can also just use guest containers with a simpler semantic fs for a multi user setup or vm
 
+// get MMIO addresses from ACPI or device tree for a specific partition
+// 
+
+struct MMIO_API {
+    // address LBA of disk
+    write_LBA_addr: u64,
+    read_LBA_addr: u64,
+}
+
+impl MMIO_API {
+    fn new(write_LBA_addr: u64, read_LBA_addr: u64) -> Self { Self { write_LBA_addr, read_LBA_addr } }
+}
+
+// TODO: query kernel device tree (not firmware) for partition num
+// and extra details
+fn get_mmio_api_from_partition() -> MMIO_API {
+    MMIO_API::new(0, 0)
+}
+
 // ------------------
 // PARTITION METADATA
 // ------------------
@@ -20,6 +39,7 @@ use crate::types::KTimestamp;
 type NeutronUUID = u64;
 
 const MAX_FILE_SIZE_BYTES: u64 = 1024_u64.pow(6);
+// TODO: technically, the sector size should be 4KiB. But the 'Node' size should be 16KiB
 const BLOCK_SIZE_BYTES: usize = 4192;
 
 // ------------------
@@ -30,7 +50,7 @@ const BLOCK_SIZE_BYTES: usize = 4192;
 
 type FilePermissions = u16;
 
-#[repr(C)]
+#[repr(C, packed)]
 struct INode {
     // ------USER INFO------
     creator_id: NeutronUUID,
