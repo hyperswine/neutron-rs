@@ -2,7 +2,7 @@
 // QUICK FILESYSTEM
 // ----------------
 
-// A FAT32 like filesystem
+// A FAT32 like filesystem compatible with the EFI system partition standard
 // implemented quickly
 
 use alloc::borrow::ToOwned;

@@ -89,21 +89,182 @@ impl NeutronDevice {
     }
 }
 
+// Device types are pretty much inspired by linux
+
+// ----------------
+// PCI DEVICES
+// ----------------
+
+// Here https://docs.oracle.com/cd/E37670_01/E52461/html/ch06s04.html
+
+// Usually an extra layer of comms or simply just PCI is enough
+// Can implement several traits, PCI + Char for example
+// where the char will have to also go through the PCI details
+
+const MAX_PCI_NODE_CHILDREN: u8 = 12;
+
+// PCI (not PCIe)
+pub struct PCIBus {
+    name: [u8; 48],
+    parent: *mut PCIBus,
+    children: [*mut PCIBus; MAX_PCI_NODE_CHILDREN as usize],
+    bus_number: u8,
+    // primary, secondary
+    bridge_numbers: [u8; 2],
+    max_bus_speed: u8,
+    cur_bus_speed: u8,
+}
+
+pub struct PCISlot {}
+
+// should be kept by NeutronDevice as NeutronPCIDevice or NeutronPCIeDevice
+struct PCIDevice {}
+
+struct PCIeDevice {}
+
+struct NeutronPCIDevice {
+    pci_device: PCIDevice,
+}
+
+struct NeutronPCIeDevice {
+    pcie_device: PCIeDevice,
+}
+
+// ----------------
+// CHAR DEVICES
+// ----------------
+
 // useful abstractions for kernel subsystems and certain device types
-// for char devices
+// for char devices like KB and MICE
 // generic, spectro and rk3399 drivers should implement traits like this
 pub trait CharDeviceFunctions<Data> {
+    // BASIC INIT
     fn dev_open(&self);
+    // used mainly for shutdown and sleep (S0x, S3)
     fn dev_close(&self);
+    // if unplugged and shutdown
+    fn dev_release(&mut self);
+
+    // DATA
+    fn dev_llseek(&mut self);
     fn dev_read(&self, data: Data);
     fn dev_write(&self, data: Data);
+
+    // SPECIAL -> driver ext
+}
+
+// ----------------
+// USB DEVICES
+// ----------------
+
+// Mostly a char like thing where you transfer blocks of data in parallel
+// To and from the USB controller
+pub trait USBDeviceFunctions {
+    // INIT
+    fn probe(&mut self);
+    fn disconnect(&mut self);
+    fn resume(&mut self);
+    // pretty important for a well functioning system
+    fn suspend(&mut self);
+    fn reset(&mut self);
+
+    // DATA
+    fn transfer_to(&mut self, data: *const u8, size_bytes: u64);
+    fn transfer_from(&mut self, kbuf: *const u8, size_bytes: u64);
+}
+
+// ----------------
+// STORAGE DEVICES
+// ----------------
+
+pub const LBA_SIZE_BYTES: u64 = 4192;
+
+// Basically Block Devices in UNIX world
+// any SSD, HDD, USB-plugged in mass storage device
+// transfers fixed blocks of data (4KiB) back and forths rather than a stream
+// Should require kernel and user buffers as well as microcontroller drivers
+// unlike char devices
+pub trait StorageDeviceFunctions<Data> {
+    // BASIC INIT
+    fn dev_open(&self);
+    // hot unplug -> uefi support as well
+    fn dev_release(&mut self);
+
+    // DATA
+    fn dev_read(&self, data: Data);
+    fn dev_write(&self, data: Data);
+
+    // SPECIAL -> driver ext
+}
+
+// ----------------
+// NETWORK DEVICES
+// ----------------
+
+// driver ext -> needs to be implemented by the specific driver
+// struct NetworkSpecialFunction {
+//     function: String,
+// }
+
+// Ethernet adapaters, Wifi, BT
+pub trait NetworkDeviceFunctions<Data> {
+    // BASICS
+    fn dev_init(&self);
+    fn dev_stop(&self);
+    fn dev_open(&self);
+    fn dev_close(&self);
+
+    // CONFIG
+    fn dev_set_mac_addr(&mut self);
+    fn dev_set_timeout(&mut self);
+
+    // DATA PASSING BACK AND FORTH
+    fn dev_read(&self, data: Data);
+    fn dev_write(&self, data: Data);
+
+    // EXTENDED / SPECIAL -> basically ioctl, only in driver ext
+    // fn dev_special_functionality(&self, functions: &[NetworkSpecialFunction]);
+}
+
+// ----------------
+// GRAPHICS DEVICES
+// ----------------
+
+// Based on VESA Standards
+// Basically a more complex version of a char driver
+pub trait GraphicsDeviceFunctions<Data> {
+    // BASICS
+    fn dev_init(&self);
+    fn dev_stop(&self);
+    fn dev_open(&self);
+    fn dev_close(&self);
+
+    // FEATURES & CONFIG OPTIONS
+    fn dev_hdr_settings(&mut self);
+    fn dev_monitor_control_commands(&mut self);
+    fn dev_channel_settings(&mut self);
+
+    // OUTPUT
+    fn dev_port_output(&mut self);
+
+    // DATA PASSING BACK AND FORTH
+    fn dev_read(&self, data: Data);
+    fn dev_write(&self, data: Data);
+
+    // EXTENDED / SPECIAL -> basically ioctl, only in driver ext
+    // fn dev_special(&self);
 }
 
 // -------------------
 // Driver Management
 // -------------------
 
+// Usually, when a driver is loaded, it shouldnt be unloaded during the runtime of the kernel
+// even if the device is unplugged, and no devices are using the driver
+// though driverd could apply some heuristics to handle it, just not here
+
 extern crate alloc;
+use alloc::string::String;
 use alloc::vec::Vec;
 
 // A generic driver class
