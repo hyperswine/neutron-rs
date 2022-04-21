@@ -4,6 +4,10 @@ Neutron in its default config is a multiboot kernel that can be booted by Arcboo
 
 - It is a "minima" kernel in that the core module only does the bare minimum of what it needs to do, and hands off other stuff to userspace utilities or loadable kernel modules
 
+## Everything is a URI
+
+I saw that Jeremy's redox os has something like it. You have a scheme and a URL. Then you expose that to the shell.
+
 ## Drivers
 
 Neutron itself has quite a few drivers for most peripherals to use in the main shell and NeutronWM. It also implements WASI for wasm containers.

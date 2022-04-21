@@ -1,6 +1,12 @@
 pub mod bits;
 
-use alloc::{borrow::ToOwned, string::String, vec, vec::Vec};
+use alloc::{
+    borrow::ToOwned,
+    fmt,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
 use core::option::Option;
 
 // -------------------
@@ -174,6 +180,32 @@ impl ShellFunctions for Shell {
 
     fn use_color(&self, color: ColorCode) {
         todo!()
+    }
+}
+
+type Scheme = String;
+type UniformResourceLocator = String;
+
+// URI: Uniform Resource Identifier
+// for logical resources -> uses HAL DeviceManager
+struct URI {
+    scheme: Scheme,
+    url: UniformResourceLocator,
+}
+
+impl URI {
+    pub fn new(scheme: Scheme, url: UniformResourceLocator) -> Self {
+        Self { scheme, url }
+    }
+}
+
+impl ToString for URI {
+    fn to_string(&self) -> String {
+        let mut output = String::new();
+        match core::fmt::write(&mut output, format_args!("{}://{}", self.scheme, self.url)) {
+            Ok(_) => output,
+            Err(_) => "URI Error".to_string(),
+        }
     }
 }
 

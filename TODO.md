@@ -1,6 +1,8 @@
 # TODO
 
-- write to uart doesnt seem to be working on qemu system aarch64
+- write to uart doesnt seem to be working on qemu system aarch64. SIGTRAP. Maybe didnt setup stack properly at a specific v addr. Gonna just use a linker script and see the ELF output because it looks right
+- make cargo test work on riscv and arm with a qemu runner. Phils got it done properly
+- maybe requires xtask to do it properly. Otherwise I guess `arcutils test --elf-img build/neutron_kernel` could work
 
 ## Problem: SIGTRAP
 

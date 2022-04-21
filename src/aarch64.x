@@ -2,7 +2,8 @@ ENTRY(_Reset)
 SECTIONS
 {
 	. = 0x40000000;
-	.startup . : { build/entry.o(.text) }
+	# not required
+	# .startup . : { build/entry.o(.text) }
 	.text : { *(.text) }
 	.data : { *(.data) }
 	.bss : { *(.bss COMMON) }
