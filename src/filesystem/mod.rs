@@ -1,4 +1,5 @@
 pub mod neutronfs;
+pub mod quickfs;
 pub mod fat32;
 pub mod exfat;
 pub mod btrfs;
