@@ -14,14 +14,17 @@ bx86 = "build --target x86_64-unknown-none"
 trv = "test --target riscv64gc-unknown-none-elf --no-run"
 tarm = "test --target aarch64-unknown-none --no-run"
 tx86 = "test --target x86_64-unknown-none --no-run"
-# ! for now, use arctest from arcutils
+# Run with arcutils test build/neutron_kernel
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 
 [build]
 out-dir = "build"
 
 [target.aarch64-unknown-none]
-# rustflags = ["-C", "link-arg=-Tsrc/aarch64.x"]
+rustflags = ["-C", "link-arg=-Tsrc/kernel/arch/aarch64.x"]
 
 # STUFF FOR EACH ARCH
-# [target.riscv64]
+
+# [target.riscv64gc-unknown-none-elf]
+
+# [target.x86_64-unknown-none]

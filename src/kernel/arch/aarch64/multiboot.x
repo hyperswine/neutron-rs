@@ -1,9 +1,14 @@
-ENTRY(_Reset)
+ENTRY(_multiboot_entry)
+
+/* TODO: setup the right headers
+ also in main.rs */
+
 SECTIONS
 {
-	. = 0x40000000;
-	# not required
-	# .startup . : { build/entry.o(.text) }
+	. = 1M;
+
+    .boot : { *(.multiboot_header) }
+
 	.text : { *(.text) }
 	.data : { *(.data) }
 	.bss : { *(.bss COMMON) }

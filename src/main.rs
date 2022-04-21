@@ -41,7 +41,10 @@ extern "C" fn _start() -> ! {
 
             // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
             const CORE_MASK: u64 = 0x3;
-            const STACK_START: u64 = 0x80_000;
+            const STACK_START: u64 = 0x7fff_ffff_0000_0000;
+            // usually 2x page size, grows down infinitely until "hole"/47bit region
+            const PER_THREAD_STACK_SIZE: u64 = 8192;
+            const PHYSICAL_STACK_START: u64 = 0x40_000_000;
 
             match MPIDR_EL1.get() & CORE_MASK {
                 0 => {
@@ -75,6 +78,12 @@ extern "C" fn _start() -> ! {
 
     basic_greet();
 
+    loop {}
+}
+
+#[cfg(feature = "multiboot")]
+#[no_mangle]
+extern "C" fn _multiboot_entry() -> ! {
     loop {}
 }
 
