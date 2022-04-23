@@ -32,14 +32,15 @@ fn get_mmio_api_from_partition() -> MMIO_API {
 // PARTITION METADATA
 // ------------------
 
-type FSUUID = [u8; 10];
+type FSUUID = [u8; 16];
 // CRC32
-type Checksum20 = [u8; 20];
+type Checksum256 = [u8; 256];
 
 // might have to be the same size as btrfs superblock for checksums to work properly
+// should be exactly 65536 Bytes. So 256 256-blocks for CRC32C or SHA-2 (slower)
 #[repr(C)]
 struct Superblock {
-    checksum: Checksum20,
+    checksum: Checksum256,
     fs_uuid: FSUUID,
     // on disk LBA of the start of this block
     physical_addr: u64,
@@ -48,8 +49,48 @@ struct Superblock {
     // unless its an extension or modified version of NeFS
     magic: u64,
     generation: u64,
-    core_root_logical_addr: u64,
-    chunk_root_logical_addr: u64, 
+
+    // ROOT POINTERS
+    core_tree_root_logical_addr: u64,
+    chunk_tree_root_logical_addr: u64,
+    log_tree_root_logical_addr: u64,
+    // transaction id for log root
+    log_root_transaction_id: u64,
+
+    // SIZE
+    // size of partition
+    total_bytes: u64,
+    // size of used blocks, including superblocks and redundancies
+    bytes_used: u64,
+    // usually 6 for the root filesystem
+    root_dir_object_id: u64,
+    // at least one. Could be 2^64 for RAID
+    number_of_devices: u64,
+    sector_size: u32,
+    node_size: u32,
+    leaf_size: u32,
+    stripe_size: u32,
+    // size of a single chunk (array of chunks)
+    system_chunk_array_size: u32,
+
+    // OTHER
+    chunk_root_generation: u64,
+    compatibility_flags: u64,
+    compatibility_read_only_flags: u64,
+    incompatibility_flags: u64,
+    // should be CRC32C
+    checksum_type: u16,
+    root_level: u8,
+    chunk_root_level: u8,
+    dev_item: [u8; 0x62],
+    // label for the partition
+    label: [u8; 0x100],
+    cache_generation: u64,
+    uuid_tree_generation: u64,
+    reserved: [u8; 0xF0],
+    sys_chunk_array: [u8; 0x800],
+    super_roots: [u8; 0x2A0],
+    unused: [u8; 0x235],
 }
 
 use alloc::collections::btree_map::BTreeMap;
@@ -69,7 +110,48 @@ const BLOCK_SIZE_BYTES: usize = 4192;
 
 type FilePermissions = u16;
 
-struct NeutronFSKey {}
+struct NeutronFSNodeHeader {
+    checksum: Checksum256,
+    fs_uuid: FSUUID,
+    logical_address: u64,
+    flags: [u8; 7],
+    // should be 1 for new filesystems otherwise 0 for an old filesystem
+    back_reference: u8,
+    chunk_tree_uuid: FSUUID,
+    // ? the generation of the header
+    generation: u64,
+    id_of_parent: u64,
+    number_of_child_items: u32,
+    // 0 = leaf, I think also includes core root nodes
+    level: u8,
+}
+
+// yyyy-mm--ddThh:mm:ss + nanosecs
+// prob not that accurate anyway due to hardware latency
+struct UnixTime {
+    seeconds_since_epoch: u64,
+    nanoseconds: u32,
+}
+
+struct NeutronFSKey {
+    object_id: u64,
+    item_type: u8,
+    // meaning of this actually depends on the type
+    offset: u64,
+}
+
+struct InternalNode {
+    key: NeutronFSKey,
+    block_num: u64,
+    generation: u64,
+}
+
+struct LeafNode {
+    key: NeutronFSKey,
+    // relative to the end of the header. So where the first payload starts for the data section
+    data_offset: u32,
+    data_size: u32,
+}
 
 // TODO
 enum DType {}
