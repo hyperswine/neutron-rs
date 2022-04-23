@@ -220,6 +220,7 @@ struct NeutronFSINode {
     max_size: u64,
 }
 
+// just needs to contain the stat struct https://linux.die.net/man/2/stat
 impl NeutronFSINode {
     fn new(
         creator_id: NeutronUUID,
