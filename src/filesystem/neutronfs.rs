@@ -6,7 +6,6 @@
 // you can also just use guest containers with a simpler semantic fs for a multi user setup or vm
 
 // get MMIO addresses from ACPI or device tree for a specific partition
-//
 
 struct MMIO_API {
     // address LBA of disk
@@ -33,7 +32,25 @@ fn get_mmio_api_from_partition() -> MMIO_API {
 // PARTITION METADATA
 // ------------------
 
-struct Superblock {}
+type FSUUID = [u8; 10];
+// CRC32
+type Checksum20 = [u8; 20];
+
+// might have to be the same size as btrfs superblock for checksums to work properly
+#[repr(C)]
+struct Superblock {
+    checksum: Checksum20,
+    fs_uuid: FSUUID,
+    // on disk LBA of the start of this block
+    physical_addr: u64,
+    flags: u64,
+    // technically just 8 ASCII bytes, should be "__NeFS__"
+    // unless its an extension or modified version of NeFS
+    magic: u64,
+    generation: u64,
+    core_root_logical_addr: u64,
+    chunk_root_logical_addr: u64, 
+}
 
 use alloc::collections::btree_map::BTreeMap;
 
