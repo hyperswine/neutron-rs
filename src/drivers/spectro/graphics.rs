@@ -11,9 +11,15 @@
 // Simply query the number of pixels and change each accordingly to their (x,y) rgba component
 struct FramebufferDriver;
 
+// possible to rasterise a png by Sample2D
+
 // ------------------
-// 3D/Vulkan DRIVER
+// 3D DRIVER
 // ------------------
+
+struct GraphicsDriver3D;
+
+// TODO: Implement GraphicsDriverFunctions
 
 // Initialise GPU for the kernel. After bootloader, will need to be able to crunch a bunch of dynamic info
 // Show a console by default
@@ -28,27 +34,6 @@ fn read() {}
 
 // Vulkan -> Write vertex data to VRAM
 fn write() {}
-
-// Primitive Assembly
-fn assemble_verts() {}
-
-// Vertex Shading
-fn shade_vertices() {}
-
-// Tessellate
-fn tessellate() {}
-
-// Geometry Shading
-fn shade_geometry() {}
-
-// Rasterise
-fn rasterize() {}
-
-// Fragment Shading
-fn shade_fragments() {}
-
-// Blend Colors
-fn blend_colors() {}
 
 // a framebuffer to be used/reused
 struct Framebuffer;

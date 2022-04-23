@@ -36,7 +36,11 @@ type FSUUID = [u8; 16];
 // CRC32
 type Checksum256 = [u8; 256];
 
-// might have to be the same size as btrfs superblock for checksums to work properly
+const SUPERBLOCK_PRIMARY_PLACEMENT: u64 = 0x10_000;
+const SUPERBLOCK_SECONDARY_PLACEMENT: u64 = 0x20_000;
+const SUPERBLOCK_TERTIARY_PLACEMENT: u64 = 0x30_000;
+
+// might have to be the same size as btrfs superblock for checksums to work properly. Make sure to place this at 0x10_000
 // should be exactly 65536 Bytes. So 256 256-blocks for CRC32C or SHA-2 (slower)
 #[repr(C)]
 struct Superblock {
@@ -93,7 +97,7 @@ struct Superblock {
     unused: [u8; 0x235],
 }
 
-use alloc::collections::btree_map::BTreeMap;
+use alloc::{collections::btree_map::BTreeMap, vec};
 
 use crate::types::KTimestamp;
 
@@ -109,6 +113,41 @@ const BLOCK_SIZE_BYTES: usize = 4192;
 // ------------------
 
 type FilePermissions = u16;
+
+// not to be confused with dir item, when you know the node is a dir
+// all NeutronItem must have a NeutronItemType
+// TODO: could just make this a trait and just do the vital types
+enum NeutronItemType {
+    // Vital type
+    InodeItem,
+    // Vital type
+    InodeRef,
+    InodeExtraRef,
+    XAttrItem,
+    OrphanItem,
+    DirLogItem,
+    DirLogIndex,
+    // Vital type
+    DirItem,
+    DirIndex,
+    ExtentData,
+    ExtentChecksum,
+    RootItem,
+    RootBackRef,
+    RootRef,
+    ExtentItem,
+    MetadataItem,
+    TreeBlockRef,
+    ExtentDataRef,
+    ExtentRefV0,
+    SharedBlockRef,
+    SharedDataRef,
+    BlockGroupItem,
+    DevExtent,
+    DevItem,
+    ChunkItem,
+    StringItem,
+}
 
 struct NeutronFSNodeHeader {
     checksum: Checksum256,
@@ -153,8 +192,17 @@ struct LeafNode {
     data_size: u32,
 }
 
-// TODO
-enum DType {}
+enum DirItemType {
+    Unknown,
+    RegularFile,
+    Dir,
+    CharDevice,
+    BlockDevice,
+    Fifo,
+    Socket,
+    Symlink,
+    XAttr,
+}
 
 struct NeutronFSItem {
     // the key of the inode_item or root_item associated with this item
@@ -173,7 +221,7 @@ struct NeutronFSDirItem {
     data_length: u16,
     // name of the directory entry (not the file)
     name_length: u16,
-    d_type: DType,
+    d_type: DirItemType,
 }
 
 // Supposed to be indexed through (inode_number, inode_item, parent_inode)
@@ -267,3 +315,82 @@ impl NeutronFSINode {
 
 // Logical block / payload of a leaf node
 struct Block {}
+
+// -------------
+// FUNCTIONALITY
+// -------------
+
+// NOTE: copy on write for all write ops
+// when reading, dont do anything to the data, just copy it once to RAM
+// and have the kernelmanager/sparx handle concurrency
+
+fn compute_crc32c() {}
+
+// uses crc32c backend
+fn generate_checksum256() {}
+
+// DISK FUNCTIONALITY
+
+// being used
+fn delete_extent_block(block_addr: u64) {}
+
+// add an unused block
+// always add in multiples of BLOCK_SIZE. So if a file needs +300 extra bytes
+// and BLOCK_SIZE = 512B, then we assign 512B for the write (save)
+fn assign_blocks(n: usize) -> Vec<Block> {
+    // 1. find free blocks and get their logical addr and ref
+    // 2. mark them as being used and delete them from extent tree
+    // 3. return the data
+    vec![]
+}
+
+// -------------
+// Driver API
+// -------------
+
+// NeutronFSDriver should use these functions/expose them to KernelManager
+// and VFS
+
+// 2 pages
+const DEFAULT_FILE_SIZE_ON_DISK: u64 = 8192;
+
+// CREATION / DESTRUCTION Methods
+
+enum NeFSOpcode {
+    SUCCESS,
+    FAIL,
+}
+
+// creation methods can maybe return the logical addr of the newly created file/dir
+
+fn create_file(name: &str, size_bytes: usize) {
+    let n_blocks_to_assign = size_bytes / BLOCK_SIZE_BYTES;
+    // assign blocks from extent tree
+    let blocks = assign_blocks(n_blocks_to_assign);
+}
+
+fn delete_file(curr_file_path: &str) {}
+
+fn create_dir(name: &str) {}
+
+// Content Get
+
+use alloc::vec::Vec;
+
+// open() should copy the entire file to RAM at offset 0 to n_bytes-1
+// read() in the userspace should see that the file is in RAM and not request driver access and instead use VFS/memory mapped file
+// no exceptions
+fn read_from_file(file_path: &str, offset: u64, n_bytes: u64) -> Vec<u8> {
+    let res: Vec<u8> = vec![];
+    res
+}
+
+// Content Modification
+
+fn write_to_file(file_path: &str, data: &[u8]) {}
+
+// Path Modification
+
+// new file path must be correct
+// also works for dirs
+fn move_file(curr_file_path: &str, new_file_path: &str) {}
