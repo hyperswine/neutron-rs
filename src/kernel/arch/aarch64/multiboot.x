@@ -2,6 +2,7 @@ ENTRY(_multiboot_entry)
 
 /* TODO: setup the right headers
  also in main.rs */
+/* Even better, do the whole thing in asm! */
 
 SECTIONS
 {

@@ -46,26 +46,35 @@ extern "C" fn _start() -> ! {
             const PER_THREAD_STACK_SIZE: u64 = 8192;
             const PHYSICAL_STACK_START: u64 = 0x40_000_000;
 
-            match MPIDR_EL1.get() & CORE_MASK {
-                0 => {
-                    SP.set(STACK_START);
-                }
-                _ => loop {
-                    // if not core0, infinitely wait for events
-                    asm::wfe();
-                },
-            }
+            // ? Apparently not working
+            // match MPIDR_EL1.get() & CORE_MASK {
+            //     0 => {
+            //         SP.set(STACK_START);
+            //     }
+            //     _ => loop {
+            //         // if not core0, infinitely wait for events
+            //         asm::wfe();
+            //     },
+            // }
+
+            // setup stack for core0
+            core::arch::asm!(
+                "
+                ldr x30, =stack_top
+                mov sp, x30
+                "
+            );
 
             // GO INTO EL2 (from EL1)
             CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
 
-            // No offset for reading the counters.
+            // No offset for reading the counters
             CNTVOFF_EL2.set(0);
 
-            // Set EL1 execution state to AArch64.
+            // Set EL1 execution state to AArch64
             HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
 
-            // Set up a simulated exception return.
+            // Set up a simulated exception return
             // SPSR_EL2.write(
             //     SPSR_EL2::D::Masked
             //         + SPSR_EL2::A::Masked
