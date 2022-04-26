@@ -21,7 +21,7 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 out-dir = "build"
 
 [target.aarch64-unknown-none]
-rustflags = ["-C", "link-arg=-Tsrc/kernel/arch/aarch64/aarch64.x"]
+rustflags = ["-C", "link-arg=-Tsrc/kernel/arch/aarch64/entry/multiboot.x"]
 
 # STUFF FOR EACH ARCH
 

@@ -30,3 +30,8 @@ pub fn print_uart0(bytes: &[u8]) {
 pub fn display_greeting() {
     print_uart0(GREETING);
 }
+
+// KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
+pub fn _load() {
+
+}
