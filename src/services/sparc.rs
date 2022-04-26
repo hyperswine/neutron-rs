@@ -1,4 +1,4 @@
-// Sparc = Daemon/Background process
+// Sparc = Daemon/Background process (Although prob better to be in userspace as a process)
 // Not a 'service' as in syscall, but a 'service' as in a process that runs in kernel mode
 // and acts like kernel modules that handle runtime code
 // or separate threads that run specific kernel code to do things like filesystem management, network management
