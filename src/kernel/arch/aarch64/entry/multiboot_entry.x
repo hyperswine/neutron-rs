@@ -2,11 +2,12 @@ ENTRY(_multiboot_entry)
 
 SECTIONS
 {
+	.startup . : { multiboot.o(.text) }
 	/* should start at 1MB for multiboot */
 	/* 0x100000 = 1MiB */
 	. = 0x100000;
 
-    .boot : { *(.multiboot_header) }
+    /* .multiboot : { *(.multiboot_header) } */
 	.text : { *(.text) }
 	.data : { *(.data) }
 	.bss : { *(.bss COMMON) }

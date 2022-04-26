@@ -41,10 +41,10 @@ header_end:
 .section .text
 
 _multiboot_entry:
-    # TODO: set stack pointer
-    # hand off to kernel
-    ldr x9, _start
-    br x9
+    ldr x30, =stack_top
+    mov sp, x30
+    bl _start
+    bl .
 
 # Setup stack segment
 .section .stack

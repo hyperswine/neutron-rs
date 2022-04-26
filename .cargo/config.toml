@@ -6,8 +6,8 @@ unstable-options = true
 
 [alias]
 # BUILD
-# pass --release or --debug. Default is --debug
-barm = "build --target aarch64-unknown-none"
+# pass --release or --debug. Default is --debug with multiboot
+barm = "build --target aarch64-unknown-none --features multiboot"
 brv = "build --target riscv64gc-unknown-none-elf"
 bx86 = "build --target x86_64-unknown-none"
 # TESTS
@@ -21,7 +21,8 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 out-dir = "build"
 
 [target.aarch64-unknown-none]
-rustflags = ["-C", "link-arg=-Tsrc/kernel/arch/aarch64/entry/multiboot.x"]
+# default is multiboot
+rustflags = ["-C", "link-arg=-Tsrc/kernel/arch/aarch64/entry/multiboot_entry.x"]
 
 # STUFF FOR EACH ARCH
 
