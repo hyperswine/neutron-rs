@@ -31,6 +31,15 @@ pub fn print_uart0(bytes: &[u8]) {
     }
 }
 
+extern "C" fn print_uart0_c() {
+    let p = 0x09000000 as *mut u8;
+    for byte in b"Hello World!" {
+        unsafe {
+            core::ptr::write_volatile(p, *byte);
+        }
+    }
+}
+
 pub fn display_greeting() {
     print_uart0(GREETING);
 }
@@ -39,7 +48,7 @@ pub fn display_greeting() {
 // SETUP
 // -------------
 
-use core::arch::{asm};
+use core::arch::asm;
 
 // KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
 pub fn _load() {
@@ -104,20 +113,21 @@ fn __exception_return() {
 #[cfg(target_arch = "aarch64")]
 pub fn basic_greet() {
     write_uart!(b"Hello World!\n");
-    write_uart!(b"Hello World!\n");
+    print_uart0_c();
+    // write_uart!(b"Hello World!\n");
 
-    let p = 0x09000000 as *mut u8;
-    for byte in b"Hi!" {
-        unsafe {
-            core::ptr::write_volatile(p, *byte);
-        }
-    }
+    // let p = 0x09000000 as *mut u8;
+    // for byte in b"Hi!" {
+    //     unsafe {
+    //         core::ptr::write_volatile(p, *byte);
+    //     }
+    // }
 
-    unsafe {
-        core::ptr::write_volatile(p, b"H"[0]);
-    }
+    // unsafe {
+    //     core::ptr::write_volatile(p, b"H"[0]);
+    // }
 
-    print_uart0(b"Hello, World!");
+    // print_uart0(b"Hello, World!");
 
     loop {}
 }
