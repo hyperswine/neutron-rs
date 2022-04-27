@@ -36,11 +36,11 @@ uart_16550 = "0.2.0"
 riscv-rt = "0.8.1"
 
 # * STACK UNWINDING not yet supported
-[profile.dev]
-panic = "abort"
+# [profile.dev]
+# panic = "abort"
 
-[profile.release]
-panic = "abort"
+# [profile.release]
+# panic = "abort"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]

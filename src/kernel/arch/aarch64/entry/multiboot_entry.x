@@ -4,7 +4,8 @@ SECTIONS
 {
 	/* should start at 1MB for multiboot */
 	/* 0x100000 = 1MiB */
-	. = 0x100000;
+	/* GONNA DO 0x4M for now */
+	. = 0x40000000;
 
     /* .multiboot : { *(.multiboot_header) } */
 	.text : { *(.text) }
