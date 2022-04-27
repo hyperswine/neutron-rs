@@ -1,15 +1,33 @@
 # TODO
 
-- write to uart doesnt seem to be working on qemu system aarch64. SIGTRAP. Maybe didnt setup stack properly at a specific v addr. Gonna just use a linker script and see the ELF output because it looks right
-- make cargo test work on riscv and arm with a qemu runner. Phils got it done properly
-- maybe requires xtask to do it properly. Otherwise I guess `arcutils test --elf-img build/neutron_kernel` could work
+- everything else is meh
+- rn, i have no idea why this is happening:
 
-## Problem: SIGTRAP
+```asm
+40001048 e8 03 1f aa     mov        x8,xzr
+4000104c 00 00 00 00     udf        0x0
+```
 
-SIGTRAP upon getting to `_start`. On the lldb remote debugger.
-I have no idea what is going on. Seems to be some issue with QEMU getting to the entry??
-I dont know if it even loaded the ELF file properly.
+Apparently this means [undefined instruction](https://en-support.renesas.com/knowledgeBase/16980260):
 
-I dunno how to analyse QEMU runs. Maybe check the exit code. UPDATE: it is `1`. So that means SIGTRAP wasnt forwarded right and QEMU just `exit 1`.
+```c++
+UNRECOVERED_JUMPTABLE = (code *)UndefinedInstructionException(0,0x4000104c);
+(*UNRECOVERED_JUMPTABLE)();
+```
 
-I dunno how gdb analyse symbols work. I wanna print the elf headers and symtab.
+Can mean:
+
+- Various noise
+- Data corruption
+- Device destruction
+- **Stack not set**
+- **Stack overflow**
+- A target device does not correspond to the endian setting of debugger
+- Jump to the wrong destination
+- Flash memory access wait is not set
+
+ALSO:
+
+```c++
+halt_baddata();
+```

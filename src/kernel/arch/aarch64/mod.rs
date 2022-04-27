@@ -78,20 +78,20 @@ pub fn _load() {
         );
     }
 
-    use cortex_a::registers::*;
-    use tock_registers::interfaces::Writeable;
+    // use cortex_a::registers::*;
+    // use tock_registers::interfaces::Writeable;
 
-    // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
-    const CORE_MASK: u64 = 0x3;
+    // // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
+    // const CORE_MASK: u64 = 0x3;
 
-    // GO INTO EL2 (from EL1)
-    CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
+    // // GO INTO EL2 (from EL1)
+    // CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
 
-    // No offset for reading the counters
-    CNTVOFF_EL2.set(0);
+    // // No offset for reading the counters
+    // CNTVOFF_EL2.set(0);
 
-    // Set EL1 execution state to AArch64
-    HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
+    // // Set EL1 execution state to AArch64
+    // HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
 
     // Set up a simulated exception return
     // __exception_return();
