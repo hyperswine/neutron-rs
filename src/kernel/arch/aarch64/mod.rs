@@ -39,14 +39,18 @@ pub fn display_greeting() {
 // SETUP
 // -------------
 
-use core::arch::{asm, global_asm};
+use core::arch::{asm};
 
 // KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
 pub fn _load() {
     unsafe {
-        use cortex_a::{registers::*};
-        use tock_registers::interfaces::Readable;
-        use tock_registers::interfaces::Writeable;
+        // SET STACK POINTER
+        asm!(
+            "
+            ldr x30, =stack_top
+            mov sp, x30
+            "
+        );
 
         // MULTIBOOT HEADER
         asm!(
@@ -60,44 +64,41 @@ pub fn _load() {
                 .word 0
                 .word 0
                 .quad 8
-            header_end:
-
-            .section .text
-            _multiboot_entry:
-                ldr x30, =stack_top
-                mov sp, x30
-                bl _start
-                bl .
-            
-            .section .data
+            header_end: 
             "
         );
-
-        // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
-        const CORE_MASK: u64 = 0x3;
-        const STACK_START: u64 = 0x7fff_ffff_0000_0000;
-        // usually 2x page size, grows down infinitely until "hole"/47bit region
-        const PER_THREAD_STACK_SIZE: u64 = 8192;
-        const PHYSICAL_STACK_START: u64 = 0x40_000_000;
-
-        // GO INTO EL2 (from EL1)
-        CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
-
-        // No offset for reading the counters
-        CNTVOFF_EL2.set(0);
-
-        // Set EL1 execution state to AArch64
-        HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
-
-        // Set up a simulated exception return
-        // SPSR_EL2.write(
-        //     SPSR_EL2::D::Masked
-        //         + SPSR_EL2::A::Masked
-        //         + SPSR_EL2::I::Masked
-        //         + SPSR_EL2::F::Masked
-        //         + SPSR_EL2::M::EL1h,
-        // );
     }
+
+    use cortex_a::registers::*;
+    use tock_registers::interfaces::Writeable;
+
+    // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
+    const CORE_MASK: u64 = 0x3;
+
+    // GO INTO EL2 (from EL1)
+    CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
+
+    // No offset for reading the counters
+    CNTVOFF_EL2.set(0);
+
+    // Set EL1 execution state to AArch64
+    HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
+
+    // Set up a simulated exception return
+    // __exception_return();
+}
+
+fn __exception_return() {
+    use cortex_a::registers::SPSR_EL2;
+    use tock_registers::interfaces::Writeable;
+
+    SPSR_EL2.write(
+        SPSR_EL2::D::Masked
+            + SPSR_EL2::A::Masked
+            + SPSR_EL2::I::Masked
+            + SPSR_EL2::F::Masked
+            + SPSR_EL2::M::EL1h,
+    );
 }
 
 #[cfg(target_arch = "aarch64")]

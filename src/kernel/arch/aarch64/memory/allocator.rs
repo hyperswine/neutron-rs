@@ -16,11 +16,8 @@ fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
 }
 
 pub fn init_heap() {
-    let heap_start = HEAP_START;
-    let heap_end = HEAP_START - HEAP_SIZE;
-    let heap_size = heap_end - heap_start;
     unsafe {
-        ALLOCATOR.lock().init(heap_start, heap_size);
+        ALLOCATOR.lock().init(HEAP_START, HEAP_SIZE);
     }
 }
 
@@ -42,9 +39,9 @@ type OptimalAllocator = FixedAllocator;
 // -----------------
 
 // Arbitary starting address (vaddr)
-pub const HEAP_START: usize = 0x100000;
-// 100 KiB by default for the kernel. For programs, idk
-pub const HEAP_SIZE: usize = 100 * 1024;
+pub const HEAP_START: usize = 0x8000_0000;
+// 4 * 4 KiB by default for the kernel. For programs, idk
+pub const HEAP_SIZE: usize = 4 * 0x1000;
 
 // TODO: Implement fixed allocator
 struct FixedAllocator;

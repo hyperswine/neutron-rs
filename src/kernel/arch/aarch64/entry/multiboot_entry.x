@@ -1,8 +1,7 @@
-ENTRY(_multiboot_entry)
+ENTRY(_start)
 
 SECTIONS
 {
-	.startup . : { multiboot.o(.text) }
 	/* should start at 1MB for multiboot */
 	/* 0x100000 = 1MiB */
 	. = 0x100000;
