@@ -39,15 +39,39 @@ pub fn display_greeting() {
 // SETUP
 // -------------
 
-use core::arch::global_asm;
-
+use core::arch::{asm, global_asm};
 
 // KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
 pub fn _load() {
     unsafe {
-        use cortex_a::{asm, registers::*};
+        use cortex_a::{registers::*};
         use tock_registers::interfaces::Readable;
         use tock_registers::interfaces::Writeable;
+
+        // MULTIBOOT HEADER
+        asm!(
+            "
+            .section .multiboot_header
+            header_start:
+                .quad 0xe85250d6
+                .quad 0
+                .quad header_end - header_start
+                .quad 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
+                .word 0
+                .word 0
+                .quad 8
+            header_end:
+
+            .section .text
+            _multiboot_entry:
+                ldr x30, =stack_top
+                mov sp, x30
+                bl _start
+                bl .
+            
+            .section .data
+            "
+        );
 
         // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
         const CORE_MASK: u64 = 0x3;
