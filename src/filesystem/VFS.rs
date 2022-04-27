@@ -49,10 +49,13 @@ nefs-hierarchy.cfg
         /system
             __sparx_system_init # the main init daemon that spawns all other processes like the cli shell or DE. The DE then becomes the defacto spawner of GUI apps. But make no mistake, its still a child of system_init
 
-/desktop # DE + workspaces
+/home # DE + workspaces
+/dev
+/mnt
 
 # RECOMMENDED
 /packages
+/snapshots
 */
 
 // the hierarchy depends on nefs-hierarchy.cfg
