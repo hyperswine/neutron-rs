@@ -7,6 +7,7 @@
 #![reexport_test_harness_main = "test_main"]
 #![test_runner(neutron_kernel::test_runner)]
 #![allow(named_asm_labels)]
+#![feature(global_asm)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE

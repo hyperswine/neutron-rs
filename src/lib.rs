@@ -5,6 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(alloc_error_handler)]
 #![allow(named_asm_labels)]
+#![feature(global_asm)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE

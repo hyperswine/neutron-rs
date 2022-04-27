@@ -50,33 +50,33 @@ pub fn display_greeting() {
 
 use core::arch::asm;
 
+// IDK how to ensure the labels are placed near the top
+// I think we can maybe specify .multiboot_header = . + 0x10o or something
+
+// ensure this is included
+core::arch::global_asm!(
+    r#"
+    .global _setup_stack
+    _setup_stack:
+        ldr x30, =stack_top
+        mov sp, x30
+        b _start
+    
+    .section .multiboot_header
+    header_start:
+        .quad 0xe85250d6
+        .quad 0
+        .quad header_end - header_start
+        .quad 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
+        .word 0
+        .word 0
+        .quad 8
+    header_end:
+    "#
+);
+
 // KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
 pub fn _load() {
-    unsafe {
-        // SET STACK POINTER
-        asm!(
-            "
-            ldr x30, =stack_top
-            mov sp, x30
-            "
-        );
-
-        // MULTIBOOT HEADER
-        asm!(
-            "
-            .section .multiboot_header
-            header_start:
-                .quad 0xe85250d6
-                .quad 0
-                .quad header_end - header_start
-                .quad 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
-                .word 0
-                .word 0
-                .quad 8
-            header_end: 
-            "
-        );
-    }
 
     // use cortex_a::registers::*;
     // use tock_registers::interfaces::Writeable;
