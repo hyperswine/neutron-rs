@@ -45,16 +45,12 @@ where
 }
 
 pub fn test_runner(tests: &[&dyn Testable]) {
-    write_uart!(b"Running tests\n");
     let mut i = 0;
-    let mut _out1 = String::new();
 
     for test in tests {
         // I THINK IT PANICS HERE SINCE ALLOCATOR ISNT SET UP PROPERLY
         // CAN JUST USE STACK SOMEHOW
-        fmt::write(&mut _out1, format_args!("Running Test {}", i))
-            .expect("Could not write to string");
-        write_uart!(_out1.as_bytes());
+        println!("Running Test {}", i);
         test.run();
         i = i + 1;
         write_uart!(b"Test [Passed]!\n\n");

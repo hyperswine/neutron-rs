@@ -1,5 +1,7 @@
 // enable with #[cfg(feature = 'arcwm')]
 pub mod arcwm;
+// SHOULD BE ENABLED REGARDLESS
+pub mod kconsole;
 
 // ------------------------
 // USERSPACE GRAPHICS LAYER
