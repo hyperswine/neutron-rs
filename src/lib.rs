@@ -24,7 +24,9 @@ pub mod types;
 
 extern crate alloc;
 
-use core::panic::PanicInfo;
+use core::{fmt, panic::PanicInfo};
+
+use alloc::string::String;
 
 // Kernel Manager and ARCH Specific
 pub mod kernel;
@@ -38,22 +40,30 @@ where
     T: Fn(),
 {
     fn run(&self) {
-        write_uart!(b"Running...\t");
         self();
-        write_uart!(b"[ok]");
     }
 }
 
 pub fn test_runner(tests: &[&dyn Testable]) {
-    write_uart!(b"Running tests");
+    write_uart!(b"Running tests\n");
+    let mut i = 0;
+    let mut _out1 = String::new();
+
     for test in tests {
+        // I THINK IT PANICS HERE SINCE ALLOCATOR ISNT SET UP PROPERLY
+        // CAN JUST USE STACK SOMEHOW
+        fmt::write(&mut _out1, format_args!("Running Test {}", i))
+            .expect("Could not write to string");
+        write_uart!(_out1.as_bytes());
         test.run();
+        i = i + 1;
+        write_uart!(b"Test [Passed]!\n\n");
     }
     loop {}
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
-    write_uart!(b"[failed]\n");
+    write_uart!(b"Test [Failed]\n");
     loop {}
 }
 
@@ -68,14 +78,14 @@ fn panic(info: &PanicInfo) -> ! {
 #[no_mangle]
 #[cfg(test)]
 pub extern "C" fn _start() -> ! {
-    #[cfg(target_arch="riscv64")]
+    #[cfg(target_arch = "riscv64")]
     {
         use kernel::arch::riscv64gc::init_uart;
         init_uart();
     }
 
     // all arches should export write_uart
-    write_uart!(b"Running Test Config...");
+    write_uart!(b"Running Test Config...\n");
 
     test_main();
 

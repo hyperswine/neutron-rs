@@ -30,7 +30,6 @@ fn panic(info: &PanicInfo) -> ! {
     loop {}
 }
 
-#[cfg(not(test))]
 #[no_mangle]
 extern "C" fn _start() -> ! {
     #[cfg(target_arch = "aarch64")]
@@ -38,6 +37,9 @@ extern "C" fn _start() -> ! {
         neutron_kernel::kernel::arch::aarch64::_load();
         neutron_kernel::kernel::arch::aarch64::basic_greet();
     }
+
+    #[cfg(test)]
+    test_main();
 
     loop {}
 }

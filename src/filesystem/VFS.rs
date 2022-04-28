@@ -58,6 +58,13 @@ nefs-hierarchy.cfg
 /snapshots
 */
 
+// AFTER THE ROOTFS is mounted:
+// read() /sys/config/disk.load
+// this is similar to fstab
+// load disk partitions from /dev/nvme0p2, etc into /mnt/<name_of_partition>
+// extra devices can also be loaded into /dev
+// such as any virtual devices or virtual fs 
+
 // the hierarchy depends on nefs-hierarchy.cfg
 struct RootFS;
 

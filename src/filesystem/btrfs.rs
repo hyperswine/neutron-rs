@@ -2,6 +2,8 @@
 
 use alloc::{boxed::Box, rc::Rc, string::String, string::ToString, vec, vec::Vec};
 
+use crate::write_uart;
+
 // ---------------
 // BTRFS B-TREE
 // ---------------
@@ -94,4 +96,5 @@ impl FileOperations for Dir {
 #[test_case]
 fn test_files() {
     let _file = File::create_new("path");
+    write_uart!(b"Successfully created a btrfs file!\n");
 }
