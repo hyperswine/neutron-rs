@@ -33,3 +33,9 @@ struct PageTableEntry {
 // CANT USE
 // because it relies on paging
 // use alloc::vec::Vec;
+
+// MMU
+// https://github.com/bztsrc/raspi3-tutorial/blob/master/10_virtualmemory/mmu.c
+// identity mapping on L1, L2, L3
+// with TTBR0 and TTBR1
+// then do the kernel L1, L2, L3 on the paging struct
