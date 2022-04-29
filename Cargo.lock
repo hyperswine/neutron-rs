@@ -3,6 +3,15 @@
 version = 3
 
 [[package]]
+name = "aarch64"
+version = "0.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9d48df31899ce44f6ca081b39bcf4f9913e4435e3ec4287283451f71f1577ab3"
+dependencies = [
+ "cortex-a",
+]
+
+[[package]]
 name = "aho-corasick"
 version = "0.7.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -138,6 +147,7 @@ checksum = "bc4010833aea396656c2f91ee704d51a6f1329ec2ab56ffd00bfd56f7481ea94"
 name = "neutron_kernel"
 version = "0.1.1"
 dependencies = [
+ "aarch64",
  "bootloader",
  "cortex-a",
  "embedded-graphics",
