@@ -4,6 +4,10 @@
 
 // Image -> Container -> Volume
 
+// --------------
+// Arc Compose
+// --------------
+
 // To build an image, best to use a compose file
 // which allows multi container apps instead of only a single container or single volume
 // https://docs.docker.com/compose/compose-file/

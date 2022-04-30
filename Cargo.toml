@@ -49,7 +49,5 @@ riscv-rt = "0.8.1"
 [features]
 arctest = []
 graphics = []
-arcwm = []
 driver_ext = []
-wasm_support = []
 multiboot = []
