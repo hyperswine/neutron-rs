@@ -17,7 +17,13 @@ linked_list_allocator = "0.9.1"
 tock-registers = "0.7.0"
 # CPU graphics on framebuffer
 embedded-graphics = "0.7.1"
-goblin = { version = "0.5.0", std = false, elf64 = true, default-features = false }
+goblin = { version = "0.5.1", default-features = false, features = [
+    "elf64",
+    "elf32",
+    "archive",
+    "endian_fd",
+    "alloc",
+] }
 
 [dependencies.lazy_static]
 version = "1.4.0"
