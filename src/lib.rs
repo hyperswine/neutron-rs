@@ -23,6 +23,7 @@ pub mod types;
 // -----------------------
 
 extern crate alloc;
+extern crate goblin;
 
 use core::{fmt, panic::PanicInfo};
 

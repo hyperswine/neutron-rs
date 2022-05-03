@@ -1,4 +1,5 @@
 // pub mod manager;
+pub mod elf;
 
 use crate::types::KPriorityQueue;
 use lazy_static::lazy_static;
