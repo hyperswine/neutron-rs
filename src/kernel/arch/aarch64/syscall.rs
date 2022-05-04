@@ -11,6 +11,8 @@ use crate::services::syscall::*;
 // -----------
 
 // VECTOR HANDLER, from https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/tree/master/11_exceptions_part1_groundwork
+
+// TODO: can be used with include_str!("syscall.S")
 core::arch::global_asm!(
     "
 .macro CALL_WITH_CONTEXT handler

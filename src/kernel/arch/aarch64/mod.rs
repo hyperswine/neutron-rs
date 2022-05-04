@@ -1,5 +1,6 @@
 pub mod memory;
 pub mod syscall;
+pub mod entry;
 
 // -----------------
 // BASIC UART OUTPUT
@@ -96,28 +97,6 @@ core::arch::global_asm!(
     header_end:
     "#
 );
-
-// KEY FUNCTION. MUST LOAD RIGHT AFTER _start to set the right registers and confirm paging
-pub fn _load() {
-
-    // use cortex_a::registers::*;
-    // use tock_registers::interfaces::Writeable;
-
-    // // BOOT CORES from https://docs.rs/crate/cortex-a/2.5.0
-    // const CORE_MASK: u64 = 0x3;
-
-    // // GO INTO EL2 (from EL1)
-    // CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
-
-    // // No offset for reading the counters
-    // CNTVOFF_EL2.set(0);
-
-    // // Set EL1 execution state to AArch64
-    // HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
-
-    // Set up a simulated exception return
-    // __exception_return();
-}
 
 fn __exception_return() {
     use cortex_a::registers::SPSR_EL2;

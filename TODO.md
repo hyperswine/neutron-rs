@@ -6,3 +6,12 @@
 4. proprietary wifi and bt drivers (openbsd/linux ax200) inclusion. And open source driver conversion to rust
 5. open source drivers for mouse + kb and other common ports and devices. Rust embedded has a bunch of them
 6. VFS and Virtual layers for controlling those devices before init. Also allow syscalls to be used on files or URLs
+
+## NOTES
+
+Lifetime categories:
+
+```rust
+<'os> => entire duration of the kernel from boot to shutdown
+<'service> => duration of a service
+```

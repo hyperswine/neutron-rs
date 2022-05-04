@@ -6,6 +6,7 @@
 #![feature(alloc_error_handler)]
 #![allow(named_asm_labels)]
 #![feature(global_asm)]
+#![feature(asm_const)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE

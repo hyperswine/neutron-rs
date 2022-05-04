@@ -14,6 +14,7 @@ pub mod posix;
 // --------------------
 
 /*
+AARCH64
 FINDING CURR EXCEPTION LEVEL
 
 .globl get_el
