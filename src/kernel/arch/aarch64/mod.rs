@@ -1,4 +1,5 @@
 pub mod memory;
+pub mod syscall;
 
 // -----------------
 // BASIC UART OUTPUT
