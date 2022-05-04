@@ -51,8 +51,9 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
     );
 
     // TODO: in _start (aarch64/mod.rs), do this instead https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/master/09_privilege_level/src/_arch/aarch64/cpu/boot.s
+    // then create a kernel_init
     // Second, let the link register point to kernel_init().
-    ELR_EL2.set(crate::kernel_init as *const () as u64);
+    ELR_EL2.set(super::kernel_init as *const () as u64);
 
     // Set up SP_EL1 (stack pointer), which will be used by EL1 once we "return" to it. Since there
     // are no plans to ever return to EL2, just re-use the same stack.

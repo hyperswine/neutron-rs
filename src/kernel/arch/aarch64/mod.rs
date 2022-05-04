@@ -1,6 +1,6 @@
+pub mod entry;
 pub mod memory;
 pub mod syscall;
-pub mod entry;
 
 // -----------------
 // BASIC UART OUTPUT
@@ -76,6 +76,7 @@ use core::arch::asm;
 // IDK how to ensure the labels are placed near the top
 // I think we can maybe specify .multiboot_header = . + 0x10o or something
 
+// TODO: modify this
 // ensure this is included
 core::arch::global_asm!(
     r#"
@@ -98,6 +99,9 @@ core::arch::global_asm!(
     "#
 );
 
+// TODO: implement this
+pub fn kernel_init() {}
+
 fn __exception_return() {
     use cortex_a::registers::SPSR_EL2;
     use tock_registers::interfaces::Writeable;
@@ -115,20 +119,6 @@ fn __exception_return() {
 pub fn basic_greet() {
     write_uart!(b"Hello World!\n");
     print_uart0_c();
-    // write_uart!(b"Hello World!\n");
-
-    // let p = 0x09000000 as *mut u8;
-    // for byte in b"Hi!" {
-    //     unsafe {
-    //         core::ptr::write_volatile(p, *byte);
-    //     }
-    // }
-
-    // unsafe {
-    //     core::ptr::write_volatile(p, b"H"[0]);
-    // }
-
-    // print_uart0(b"Hello, World!");
 
     loop {}
 }

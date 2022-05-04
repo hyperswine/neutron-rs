@@ -34,7 +34,6 @@ fn panic(info: &PanicInfo) -> ! {
 extern "C" fn _start() -> ! {
     #[cfg(target_arch = "aarch64")]
     {
-        neutron_kernel::kernel::arch::aarch64::_load();
         neutron_kernel::kernel::arch::aarch64::basic_greet();
     }
 
