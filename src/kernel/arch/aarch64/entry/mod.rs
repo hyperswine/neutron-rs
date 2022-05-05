@@ -9,6 +9,8 @@ use tock_registers::{
     registers::InMemoryRegister,
 };
 
+use crate::kernel::final_setup;
+
 // ---------------
 // PRIVILEGE LEVEL
 // ---------------
@@ -33,9 +35,7 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
     // Set EL1 execution state to AArch64.
     HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
 
-    // Set up a simulated exception return.
-    // First, fake a saved program status where all interrupts were masked and SP_EL1 was used as a
-    // stack pointer.
+    // Set up a simulated exception return to go back to EL1
     SPSR_EL2.write(
         SPSR_EL2::D::Masked
             + SPSR_EL2::A::Masked
@@ -44,12 +44,10 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
             + SPSR_EL2::M::EL1h,
     );
 
-    // then create a kernel_init
     // Second, let the link register point to kernel_init().
-    ELR_EL2.set(crate::kernel_init as *const () as u64);
+    ELR_EL2.set(kernel_init as *const () as u64);
 
-    // Set up SP_EL1 (stack pointer), which will be used by EL1 once we "return" to it. Since there
-    // are no plans to ever return to EL2, just re-use the same stack.
+    // Set up SP_EL1 (stack pointer), which will be used by EL1 once we "return" to it. Since there are no plans to ever return to EL2, just re-use the same stack.
     SP_EL1.set(phys_boot_core_stack_end_exclusive_addr);
 }
 
@@ -57,8 +55,57 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
 // SETUP
 // -------------
 
-// IDK how to ensure the labels are placed near the top
-// I think we can maybe specify .multiboot_header = . + 0x10o or something
+unsafe fn kernel_init() -> ! {
+    // use driver::interface::DriverManager;
+
+    // for i in bsp::driver::driver_manager().all_device_drivers().iter() {
+    //     if let Err(x) = i.init() {
+    //         panic!("Error loading driver: {}: {}", i.compatible(), x);
+    //     }
+    // }
+    // bsp::driver::driver_manager().post_device_driver_init();
+    // println! is usable from here on.
+
+    // Transition from unsafe to safe.
+    // use bsp::console::console;
+    // use console::interface::All;
+    // use core::time::Duration;
+    // use driver::interface::DriverManager;
+    // use time::interface::TimeManager;
+
+    // info!(
+    //     "{} version {}",
+    //     env!("CARGO_PKG_NAME"),
+    //     env!("CARGO_PKG_VERSION")
+    // );
+    // info!("Booting on: {}", bsp::board_name());
+
+    // let (_, privilege_level) = exception::current_privilege_level();
+    // info!("Current privilege level: {}", privilege_level);
+
+    // info!("Exception handling state:");
+    // exception::asynchronous::print_state();
+
+    // info!(
+    //     "Architectural timer resolution: {} ns",
+    //     time::time_manager().resolution().as_nanos()
+    // );
+
+    // info!("Drivers loaded:");
+    // for (i, driver) in bsp::driver::driver_manager()
+    //     .all_device_drivers()
+    //     .iter()
+    //     .enumerate()
+    // {
+    //     info!("      {}. {}", i + 1, driver.compatible());
+    // }
+
+    // info!("Timer test, spinning for 1 second");
+    // time::time_manager().spin_for(Duration::from_secs(1));
+    
+    // Transition to common code in kernel
+    final_setup()
+}
 
 // * Ensure this is included
 core::arch::global_asm!(include_str!("meta.s"), include_str!("entry.s"));
@@ -67,8 +114,4 @@ core::arch::global_asm!(include_str!("meta.s"), include_str!("entry.s"));
 // EXCEPTIONS
 // -------------
 
-// core::arch::global_asm!(
-//     include_str!("exception.s"),
-//     CONST_CURRENTEL_EL2 = const 0x8,
-//     CONST_CORE_ID_MASK = const 0b11
-// );
+// TODO: exceptions

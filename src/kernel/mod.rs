@@ -49,6 +49,12 @@ impl KernelManager {
     }
 }
 
+/// Creates a kernel manager and calls init
+pub fn final_setup() -> !{
+    let kernel_manager = KernelManager::new();
+    kernel_manager.init();
+}
+
 // --------------------
 // TESTS
 // --------------------

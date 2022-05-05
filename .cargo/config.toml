@@ -25,7 +25,7 @@ out-dir = "build"
 
 [target.aarch64-unknown-none]
 # default is multiboot
-rustflags = ["-C", "link-arg=-Tbuild/multiboot_entry.x"]
+rustflags = ["-C", "link-arg=-Tbuild/multiboot_entry.ld"]
 runner = "qemu-system-aarch64 -M virt -cpu cortex-a57 -nographic -kernel build/neutron_kernel -serial mon:stdio"
 
 # STUFF FOR EACH ARCH
