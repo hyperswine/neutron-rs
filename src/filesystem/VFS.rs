@@ -63,50 +63,70 @@ nefs-hierarchy.cfg
 // TYPES
 // ----------------------
 
-// * FS drivers should implement these functions for the VFS
-trait InodeFunctions {}
+// * open(), write(), etc. services should use these primitives
 
-enum VNodeType {}
+pub enum VNodeType {
+    RegularFile,
+    Dir,
+    Device,
+    Fifo,
+    Socket,
+    Symlink,
+}
 
 // the hierarchy depends on nefs-hierarchy.cfg
-struct RootFS;
+pub struct RootFS;
 
 // represents a specific fs' superblock
-struct VFSSuperBlock;
+pub struct VFSSuperBlock;
 
 // remember to cache as much as possible in the vnode (in memory structure)
 // so we dont have to make a request to disk for it or the inode cache
 // basically everything in stat
-struct VNode<'os> {
+
+// A pointer to an inode in a filesystem or device
+pub struct VNode {
     // flags
     is_root: bool,
     // meta
     // when written to, CoW
-    ref_count: u64,
+    ref_count: usize,
     // reference to the mounted root. Could use a number instead
-    mount_root: &'os VNode<'os>,
+    mount_root: u64,
     // cache the type in the vnode itself
     vnode_type: VNodeType,
 }
 
-struct VFSFile;
+const LOGICAL_BLOCK_SIZE: usize = 4096;
 
-/*
-For reference, this is the stat struct of linux:
-
-struct stat {
-    dev_t     st_dev;          ID of device containing file
-    ino_t     st_ino;          Inode number
-    mode_t    st_mode;         File type and mode
-    nlink_t   st_nlink;        Number of hard links
-    uid_t     st_uid;          User ID of owner
-    gid_t     st_gid;          Group ID of owner
-    dev_t     st_rdev;         Device ID (if special file)
-    off_t     st_size;         Total size, in bytes
-    blksize_t st_blksize;      Block size for filesystem I/O
-    blkcnt_t  st_blocks;       Number of 512B blocks allocated
-    struct timespec st_atim;   Time of last access
-    struct timespec st_mtim;   Time of last modification
-    struct timespec st_ctim;   Time of last status change
+// all filesystem drivers should implement this
+pub struct FileStat {
+    // should only be kept in vnodes. VFS supports up to 2^64 devices
+    // if it is a special file like a gpu, it should be that instead
+    dev_id: u64,
+    inode_id: u64,
+    n_hard_links: usize,
+    total_size_bytes: usize,
+    // generally 4K. Though depends on the filesystem. If a char device, then it is 1 since we are always streaming data to/from it serially
+    io_block_size: usize,
+    // in multiples of logical block size, always multiples of 4K (LOGICAL_BLOCK_SIZE)
+    n_blocks_allocated: usize,
 }
-*/
+
+// Files should be opened by processes in read mode only
+// And only granted write permissions when the user accepts the prompt
+
+// ----------------------
+// OPEN FILE TABLE
+// ----------------------
+
+// note, paging and heap needs to be initialised before the open file table
+// do so in `kernel_entry`
+
+use alloc::vec::Vec;
+
+// Main table in memory that stores a reference to each file descriptor -> vnode
+// Files that have a ref count of 0 may be cleaned up or left there in case the user wants to reopen it
+struct OpenFileTable<'os> {
+    open_vnodes: Vec<&'os VNode>,
+}

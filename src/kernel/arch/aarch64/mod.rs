@@ -100,19 +100,8 @@ core::arch::global_asm!(
 );
 
 // TODO: implement this
-pub fn kernel_init() {}
-
-fn __exception_return() {
-    use cortex_a::registers::SPSR_EL2;
-    use tock_registers::interfaces::Writeable;
-
-    SPSR_EL2.write(
-        SPSR_EL2::D::Masked
-            + SPSR_EL2::A::Masked
-            + SPSR_EL2::I::Masked
-            + SPSR_EL2::F::Masked
-            + SPSR_EL2::M::EL1h,
-    );
+pub fn kernel_init() {
+    
 }
 
 #[cfg(target_arch = "aarch64")]
