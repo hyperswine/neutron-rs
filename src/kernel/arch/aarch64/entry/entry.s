@@ -31,8 +31,8 @@ _setup:
 	ADR_REL	x0, __boot_core_stack_end_exclusive
 	mov	sp, x0
 
-	// Jump to Rust code. x0 holds the function argument provided to _start
-	b	_start
+	// Jump to Rust code. x0 holds the function argument provided to _start_rust
+	b	_start_rust
 
 	// Infinitely wait for events (aka "park the core").
 .L_parking_loop:

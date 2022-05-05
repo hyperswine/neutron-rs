@@ -1,4 +1,7 @@
+// ---------------
 // COMMON
+// ---------------
+
 use core::{arch::global_asm, cell::UnsafeCell, fmt};
 use cortex_a::{asm::barrier, registers::*};
 use tock_registers::{
@@ -10,10 +13,7 @@ use tock_registers::{
 // PRIVILEGE LEVEL
 // ---------------
 
-// use this https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/tree/master/09_privilege_level
-// basically,
-
-// method 1: use ERET to go to a lower execution level. Requires extra code
+// Use ERET to go to a lower execution level. Requires extra code
 #[no_mangle]
 pub unsafe extern "C" fn _start_rust(phys_boot_core_stack_end_exclusive_addr: u64) -> ! {
     prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr);
