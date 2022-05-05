@@ -15,4 +15,3 @@ pub mod virtual_memory;
 // TTBCR -> for controlling
 // TTBR0 -> base addr of TTB0 and etc
 // TTBR1 -> base addr of TTB1 and etc
-

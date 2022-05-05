@@ -10,12 +10,32 @@
 #![feature(global_asm)]
 
 // -----------------------
+// RENDEVOUS POINT
+// -----------------------
+
+// After arch specific entry mechanisms, they should always end up calling _start
+
+#[no_mangle]
+extern "C" fn _common() -> ! {
+    #[cfg(target_arch = "aarch64")]
+    {
+        use neutron_kernel::{kernel::arch::aarch64::entry::basic_greet, write_uart};
+
+        basic_greet();
+    }
+
+    #[cfg(test)]
+    test_main();
+
+    loop {}
+}
+
+// -----------------------
 // NON ARCH DEPENDENT CODE
 // -----------------------
 
 // required for main.rs
 use core::panic::PanicInfo;
-use neutron_kernel::write_uart;
 
 // If running the test config directly, use test_panic_handler
 #[cfg(test)]
@@ -27,18 +47,5 @@ fn panic(info: &PanicInfo) -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    loop {}
-}
-
-#[no_mangle]
-extern "C" fn _start() -> ! {
-    #[cfg(target_arch = "aarch64")]
-    {
-        neutron_kernel::kernel::arch::aarch64::basic_greet();
-    }
-
-    #[cfg(test)]
-    test_main();
-
     loop {}
 }
