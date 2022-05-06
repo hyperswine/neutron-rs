@@ -3,6 +3,7 @@
 _setup:
     // Only proceed if the core executes in EL2. Park it otherwise.
 	mrs	x0, CurrentEL
+	// TODO: where is this?
 	cmp	x0, {CONST_CURRENTEL_EL2}
 	b.ne	.L_parking_loop
 

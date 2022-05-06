@@ -18,6 +18,7 @@ pub mod kmod;
 pub mod process;
 pub mod services;
 pub mod types;
+pub mod memory;
 
 // -----------------------
 // ARCH DEPENDENT CODE

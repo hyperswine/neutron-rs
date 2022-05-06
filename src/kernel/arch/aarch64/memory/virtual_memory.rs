@@ -5,7 +5,7 @@
 // needs to be turned on in order to use heap allocation
 // on 4K pages
 
-use aarch64::paging;
+// use aarch64::paging;
 
 // dynamically allocate all entries
 // per level

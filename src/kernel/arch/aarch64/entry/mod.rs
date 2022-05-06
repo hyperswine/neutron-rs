@@ -108,7 +108,8 @@ unsafe fn kernel_init() -> ! {
 }
 
 // * Ensure this is included
-core::arch::global_asm!(include_str!("meta.s"), include_str!("entry.s"));
+core::arch::global_asm!(include_str!("meta.s"));
+core::arch::global_asm!(include_str!("entry.s"));
 
 // -------------
 // EXCEPTIONS
