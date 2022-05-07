@@ -19,9 +19,7 @@
 extern "C" fn _common() -> ! {
     #[cfg(target_arch = "aarch64")]
     {
-        use neutron_kernel::{kernel::arch::aarch64::entry::basic_greet, write_uart};
-
-        basic_greet();
+        neutron_kernel::kernel::arch::aarch64::basic_greet();
     }
 
     #[cfg(test)]

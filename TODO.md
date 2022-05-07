@@ -1,5 +1,11 @@
 # TODO
 
+## Les Go
+
+- fix paging, EL not defined
+
+## Big Stuff
+
 1. nefs driver implementation for searching subvolumes. Managing CoW on trees like the subvol tree and extent tree. Also checksum tree
 2. link the compiled drivers in build/ and build.rs + wrap around midgard drivers in the driver extension layer
 3. kernel mode graphics driver writeup for spectro MPU Compute Cores / Command buffers and RTU Command buffers
