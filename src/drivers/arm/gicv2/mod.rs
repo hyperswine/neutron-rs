@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
 
-//! GICv2 Driver - ARM Generic Interrupt Controller v2.
+// GICv2 Driver - ARM Generic Interrupt Controller v2.
 
 mod gicc;
 mod gicd;
@@ -125,7 +125,6 @@ impl exception::asynchronous::interface::IRQManager for GICv2 {
         ic: &exception::asynchronous::IRQContext<'irq_context>,
     ) {
         // Extract the highest priority pending IRQ number from the Interrupt Acknowledge Register
-        // (IAR).
         let irq_number = self.gicc.pending_irq_number(ic);
 
         // Guard against spurious interrupts.
@@ -148,17 +147,17 @@ impl exception::asynchronous::interface::IRQManager for GICv2 {
         self.gicc.mark_comleted(irq_number as u32, ic);
     }
 
-    fn print_handler(&self) {
-        use crate::info;
+    // fn print_handler(&self) {
+    //     use crate::info;
 
-        info!("      Peripheral handler:");
+    //     info!("      Peripheral handler:");
 
-        self.handler_table.read(|table| {
-            for (i, opt) in table.iter().skip(32).enumerate() {
-                if let Some(handler) = opt {
-                    info!("            {: >3}. {}", i + 32, handler.name);
-                }
-            }
-        });
-    }
+    //     self.handler_table.read(|table| {
+    //         for (i, opt) in table.iter().skip(32).enumerate() {
+    //             if let Some(handler) = opt {
+    //                 info!("            {: >3}. {}", i + 32, handler.name);
+    //             }
+    //         }
+    //     });
+    // }
 }

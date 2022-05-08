@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
 
-use crate::{
+use super::{
     bsp::device_driver::common::MMIODerefWrapper,
     state, synchronization,
     synchronization::{IRQSafeNullLock, InitStateLock},

@@ -2,7 +2,7 @@
 
 ## Les Go
 
-- fix paging, EL not defined
+- fix paging, src/memory/mmu
 - fix exceptions and CPU boot, like setting the right CSRs (CSSRW) on M mode
 - remove all the cfg(feature = "pi4") etc. Get the board name from the device tree id
 

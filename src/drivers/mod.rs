@@ -10,6 +10,8 @@ pub mod riscv;
 
 // Allow space for optimisation for a more optimal user xp
 
+// Some devices can be supported pretty hard
+
 #[cfg(target_arch = "riscv64")]
 pub mod spectro;
 
