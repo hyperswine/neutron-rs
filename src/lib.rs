@@ -19,6 +19,7 @@ pub mod process;
 pub mod services;
 pub mod types;
 pub mod memory;
+pub mod exception;
 
 // -----------------------
 // ARCH DEPENDENT CODE

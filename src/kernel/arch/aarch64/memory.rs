@@ -1,4 +1,4 @@
-pub mod virtual_memory;
+pub mod translation;
 
 // ------------
 // TRANSLATION TABLES

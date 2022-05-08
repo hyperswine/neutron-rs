@@ -1,6 +1,7 @@
 pub mod entry;
 pub mod memory;
 pub mod syscall;
+pub mod exception;
 
 // -----------------
 // BASIC UART OUTPUT

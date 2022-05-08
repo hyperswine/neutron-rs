@@ -2,6 +2,12 @@
 // ARCH DEPENDENT
 // -------------------
 
+// GENERIC ARM DRIVERS
+pub mod arm;
+
+// GENERIC RISCV DRIVERS
+pub mod riscv;
+
 // Allow space for optimisation for a more optimal user xp
 
 #[cfg(target_arch = "riscv64")]
