@@ -14,19 +14,26 @@ pub mod posix;
 // NON-ARCH DEPENDENT STUFF
 // --------------------
 
+// Kernel Privilege Level, kind of like CPU but system wide/non arch dependent
+#[derive(PartialEq)]
+pub enum PrivilegeLevel {
+    User,
+    Kernel,
+    Hypervisor,
+    Unknown,
+}
+
 use crate::filesystem::VFS;
 
 pub struct KernelManager {
     vfs: VFS::RootFS,
 }
 
-
 impl KernelManager {
     pub fn kernel_manager_entry(&self) -> ! {
         loop {}
     }
 
-    
     pub fn init(&self) -> ! {
         // CHECK VFS IS IN THE RIGHT FORMAT
         // AND ALL FILES THAT NEED TO BE THERE ARE THERE
@@ -50,8 +57,7 @@ impl KernelManager {
     }
 }
 
-
-pub fn final_setup() -> !{
+pub fn final_setup() -> ! {
     let kernel_manager = KernelManager::new();
     kernel_manager.init();
 }

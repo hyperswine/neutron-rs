@@ -3,40 +3,6 @@ pub mod common;
 pub mod gicv2;
 
 // -------------------------
-// Driver interfaces for ARM
-// -------------------------
-
-// ? Use these as ArmDriver maybe
-// Then wrap around them with Neutron Driver
-// Nah, this is basically a Neutron Char Driver. We just need these functions
-
-pub trait DeviceDriver {
-    fn compatible(&self) -> &'static str;
-
-    unsafe fn init(&self) -> Result<(), &'static str> {
-        Ok(())
-    }
-
-    fn register_and_enable_irq_handler(&'static self) -> Result<(), &'static str> {
-        Ok(())
-    }
-
-    fn virt_mmio_start_addr(&self) -> Option<usize> {
-        None
-    }
-}
-
-pub trait DriverManager {
-    fn all_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)];
-
-    fn early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)];
-
-    fn non_early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)];
-
-    fn post_early_print_device_driver_init(&self);
-}
-
-// -------------------------
 // State for ARM CPUs
 // -------------------------
 

@@ -12,20 +12,19 @@ pub mod memory;
 
 use super::arm::bcm::PL011Uart;
 
-static GPIO: device_driver::GPIO =
-    unsafe { device_driver::GPIO::new(MMIODescriptor::new(mmio::GPIO_START, mmio::GPIO_SIZE)) };
+static GPIO: GPIO = unsafe { GPIO::new(MMIODescriptor::new(GPIO_START, GPIO_SIZE)) };
 
 static PL011_UART: PL011Uart = unsafe {
-    device_driver::PL011Uart::new(
-        MMIODescriptor::new(mmio::PL011_UART_START, mmio::PL011_UART_SIZE),
-        exception::asynchronous::irq_map::PL011_UART,
+    PL011Uart::new(
+        MMIODescriptor::new(PL011_UART_START, PL011_UART_SIZE),
+        PL011_UART,
     )
 };
 
-static INTERRUPT_CONTROLLER: device_driver::GICv2 = unsafe {
-    device_driver::GICv2::new(
-        MMIODescriptor::new(mmio::GICD_START, mmio::GICD_SIZE),
-        MMIODescriptor::new(mmio::GICC_START, mmio::GICC_SIZE),
+static INTERRUPT_CONTROLLER: GICv2 = unsafe {
+    GICv2::new(
+        MMIODescriptor::new(GICD_START, GICD_SIZE),
+        MMIODescriptor::new(GICC_START, GICC_SIZE),
     )
 };
 

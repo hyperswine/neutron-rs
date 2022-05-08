@@ -5,6 +5,8 @@ use tock_registers::{
     registers::InMemoryRegister,
 };
 
+use crate::{memory::{mmu::translation_table::TranslationTable, Virtual, Physical}, types::paging::{MemoryRegion, AttributeFields}};
+
 register_bitfields! {u64,
     STAGE1_TABLE_DESCRIPTOR [
         NEXT_LEVEL_TABLE_ADDR_64KiB OFFSET(16) NUMBITS(32) [], // [47:16]
@@ -297,8 +299,7 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
 // OS Interface Code
 //-------------------
 
-impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
-    memory::mmu::translation_table::interface::TranslationTable
+impl<const NUM_TABLES: usize, const START_FROM_TOP: bool> TranslationTable
     for FixedSizeTranslationTable<NUM_TABLES, START_FROM_TOP>
 {
     fn init(&mut self) -> Result<(), &'static str> {
@@ -308,7 +309,7 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
 
         for (lvl2_nr, lvl2_entry) in self.lvl2.iter_mut().enumerate() {
             let virt_table_addr = self.lvl3[lvl2_nr].virt_start_addr();
-            let phys_table_addr = memory::mmu::try_kernel_virt_addr_to_phys_addr(virt_table_addr)?;
+            let phys_table_addr = try_kernel_virt_addr_to_phys_addr(virt_table_addr)?;
 
             let new_desc = TableDescriptor::from_next_lvl_table_addr(phys_table_addr);
             *lvl2_entry = new_desc;
@@ -331,8 +332,7 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
             return Err("Tried to map memory regions with unequal sizes");
         }
 
-        if phys_region.end_exclusive_page_addr() > memory::phys_addr_space_end_exclusive_addr()
-        {
+        if phys_region.end_exclusive_page_addr() > memory::phys_addr_space_end_exclusive_addr() {
             return Err("Tried to map outside of physical address space");
         }
 

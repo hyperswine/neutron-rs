@@ -2,6 +2,9 @@
 // Export
 // ----------
 
+// TODO: this should be in kernel::memory instead
+// then exported to src::memory
+
 // Types
 
 impl<ATYPE: AddressType> Step for PageAddress<ATYPE> {

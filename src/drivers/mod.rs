@@ -149,6 +149,21 @@ struct NeutronPCIeDevice {
 // for char devices like KB and MICE
 // generic, spectro and rk3399 drivers should implement traits like this
 pub trait CharDeviceFunctions<Data> {
+    // TODO: implement CharDeviceFunctions
+    fn compatible(&self) -> &'static str;
+
+    unsafe fn init(&self) -> Result<(), &'static str> {
+        Ok(())
+    }
+
+    fn register_and_enable_irq_handler(&'static self) -> Result<(), &'static str> {
+        Ok(())
+    }
+
+    fn virt_mmio_start_addr(&self) -> Option<usize> {
+        None
+    }
+
     // BASIC INIT
     fn dev_open(&self);
     // used mainly for shutdown and sleep (S0x, S3)
@@ -386,6 +401,14 @@ impl DriverManager {
             }
         }
     }
+
+    fn all_device_drivers(&self) -> &[&'static NeutronDriver] {}
+
+    // fn early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {}
+
+    // fn non_early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {}
+
+    // fn post_early_print_device_driver_init(&self) {}
 }
 
 // most should be non arch dependent, e.g., Generic Mouse, Generic KB, Generic Headphones, Generic Mic
