@@ -1,36 +1,22 @@
-// General Interrupt Controller
-// GICC Driver - GIC CPU interface.
+// General Interrupt Controller. Interfaces with the CPU
 
-use crate::{
-    bsp::device_driver::common::MMIODerefWrapper, exception, synchronization::InitStateLock,
-};
 use tock_registers::{
     interfaces::{Readable, Writeable},
     register_bitfields, register_structs,
     registers::ReadWrite,
 };
 
-// Private Definitions
-
 register_bitfields! {
     u32,
-
-
     CTLR [
         Enable OFFSET(0) NUMBITS(1) []
     ],
-
-
     PMR [
         Priority OFFSET(0) NUMBITS(8) []
     ],
-
-
     IAR [
         InterruptID OFFSET(0) NUMBITS(10) []
     ],
-
-
     EOIR [
         EOIINTID OFFSET(0) NUMBITS(10) []
     ]
@@ -50,15 +36,9 @@ register_structs! {
 
 type Registers = MMIODerefWrapper<RegisterBlock>;
 
-// Public Definitions
-
 pub struct GICC {
     registers: InitStateLock<Registers>,
 }
-
-// Public Code
-
-use crate::synchronization::interface::ReadWriteEx;
 
 impl GICC {
     pub const unsafe fn new(mmio_start_addr: usize) -> Self {

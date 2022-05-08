@@ -1,14 +1,8 @@
-// GPIO maybe
-struct GPIO;
+// Top-level BSP file for the Raspberry Pi 4B
 
-// how to use drivers:
-// compile neutron kernel with all drivers enabled
-// load a bsp on the fly when you confirm what device you are using
-
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
-
-// Top-level BSP file for the Raspberry Pi 3 and 4.
+// * NOTE: this is the BSP for Pi 4B Only
+// for kernel stuff, use memory/, kernel/arch/aarch64/memory and etc.
+// actually Idk if src/memory is really needed. Can just use kernel/arch/...
 
 pub mod console;
 pub mod cpu;
@@ -16,29 +10,19 @@ pub mod driver;
 pub mod exception;
 pub mod memory;
 
-use super::device_driver;
-use crate::memory::mmu::MMIODescriptor;
-use memory::map::mmio;
-
-// Global instances
+use super::arm::bcm::PL011Uart;
 
 static GPIO: device_driver::GPIO =
     unsafe { device_driver::GPIO::new(MMIODescriptor::new(mmio::GPIO_START, mmio::GPIO_SIZE)) };
 
-static PL011_UART: device_driver::PL011Uart = unsafe {
+static PL011_UART: PL011Uart = unsafe {
     device_driver::PL011Uart::new(
         MMIODescriptor::new(mmio::PL011_UART_START, mmio::PL011_UART_SIZE),
         exception::asynchronous::irq_map::PL011_UART,
     )
 };
 
-#[cfg(feature = "bsp_rpi3")]
-static INTERRUPT_CONTROLLER: device_driver::InterruptController = unsafe {
-    device_driver::InterruptController::new(
-        MMIODescriptor::new(mmio::LOCAL_IC_START, mmio::LOCAL_IC_SIZE),
-        MMIODescriptor::new(mmio::PERIPHERAL_IC_START, mmio::PERIPHERAL_IC_SIZE),
-    )
-};
+
 
 #[cfg(feature = "bsp_rpi4")]
 static INTERRUPT_CONTROLLER: device_driver::GICv2 = unsafe {
@@ -48,17 +32,6 @@ static INTERRUPT_CONTROLLER: device_driver::GICv2 = unsafe {
     )
 };
 
-// Public Code
-
-
 pub fn board_name() -> &'static str {
-    #[cfg(feature = "bsp_rpi3")]
-    {
-        "Raspberry Pi 3"
-    }
-
-    #[cfg(feature = "bsp_rpi4")]
-    {
-        "Raspberry Pi 4"
-    }
+    "Raspberry Pi 4"
 }

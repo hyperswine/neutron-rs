@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
-
-// BSP driver support.
-
-use crate::driver;
-
-// Private Definitions
-
+// Pi 4B Driver Support
+// TODO: implement these for neutron drivers instead
 
 struct BSPDriverManager {
     device_drivers: [&'static (dyn DeviceDriver + Sync); 3],
 }
-
-// Global instances
 
 static BSP_DRIVER_MANAGER: BSPDriverManager = BSPDriverManager {
     device_drivers: [
@@ -22,19 +13,15 @@ static BSP_DRIVER_MANAGER: BSPDriverManager = BSPDriverManager {
     ],
 };
 
-// Public Code
-
-
-pub fn driver_manager() -> &'static impl driver::interface::DriverManager {
+pub fn driver_manager() -> &'static impl DriverManager {
     &BSP_DRIVER_MANAGER
 }
 
-//------------------------------------------------------------------------------
+//-------------------
 // OS Interface Code
-//------------------------------------------------------------------------------
-use driver::interface::DeviceDriver;
+//-------------------
 
-impl driver::interface::DriverManager for BSPDriverManager {
+impl DriverManager for BSPDriverManager {
     fn all_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {
         &self.device_drivers[..]
     }

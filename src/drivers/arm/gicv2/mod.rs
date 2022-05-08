@@ -3,31 +3,21 @@
 mod gicc;
 mod gicd;
 
-use crate::types::{synchronisation::InitStateLock};
+use crate::types::synchronisation::InitStateLock;
 use core::sync::atomic::{AtomicBool, Ordering};
 
-// Private Definitions
-
 type HandlerTable = [Option<exception::asynchronous::IRQDescriptor>; GICv2::NUM_IRQS];
-
-// Public Definitions
 
 pub type IRQNumber = exception::asynchronous::IRQNumber<{ GICv2::MAX_IRQ_NUMBER }>;
 
 pub struct GICv2 {
     gicd_mmio_descriptor: memory::mmu::MMIODescriptor,
     gicc_mmio_descriptor: memory::mmu::MMIODescriptor,
-
     gicd: gicd::GICD,
-
     gicc: gicc::GICC,
-
     is_mmio_remapped: AtomicBool,
-
     handler_table: InitStateLock<HandlerTable>,
 }
-
-// Public Code
 
 impl GICv2 {
     // Normally 1019, but keep it lower to save some space.
@@ -112,15 +102,12 @@ impl exception::asynchronous::interface::IRQManager for GICv2 {
         &'irq_context self,
         ic: &exception::asynchronous::IRQContext<'irq_context>,
     ) {
-        // Extract the highest priority pending IRQ number from the Interrupt Acknowledge Register
         let irq_number = self.gicc.pending_irq_number(ic);
 
-        // Guard against spurious interrupts.
         if irq_number > GICv2::MAX_IRQ_NUMBER {
             return;
         }
 
-        // Call the IRQ handler. Panic if there is none.
         self.handler_table.read(|table| {
             match table[irq_number] {
                 None => panic!("No handler registered for IRQ {}", irq_number),
@@ -131,7 +118,6 @@ impl exception::asynchronous::interface::IRQManager for GICv2 {
             }
         });
 
-        // Signal completion of handling.
         self.gicc.mark_comleted(irq_number as u32, ic);
     }
 }

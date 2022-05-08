@@ -6,6 +6,10 @@ pub mod gicv2;
 // Driver interfaces for ARM
 // -------------------------
 
+// ? Use these as ArmDriver maybe
+// Then wrap around them with Neutron Driver
+// Nah, this is basically a Neutron Char Driver. We just need these functions
+
 pub trait DeviceDriver {
     fn compatible(&self) -> &'static str;
 
@@ -36,13 +40,7 @@ pub trait DriverManager {
 // State for ARM CPUs
 // -------------------------
 
-// State information about the kernel itself.
-
 use core::sync::atomic::{AtomicU8, Ordering};
-
-// ----------------
-// Private Definitions
-// ----------------
 
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum State {

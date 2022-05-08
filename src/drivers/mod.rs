@@ -2,24 +2,27 @@
 // ARCH DEPENDENT
 // -------------------
 
+// How to use drivers:
+// compile neutron kernel with all drivers enabled
+// load a bsp on the fly when you confirm what device you are using
+
+// IDK if its better to store stuff like spectro under riscv/ and pi under aarch64/
+// Maybe just leave it for now since it works and kinda makes sense
+
 // GENERIC ARM DRIVERS
 pub mod arm;
-
-// GENERIC RISCV DRIVERS
-pub mod riscv;
-
-// Allow space for optimisation for a more optimal user xp
-
-// Some devices can be supported pretty hard
-
-#[cfg(target_arch = "riscv64")]
-pub mod spectro;
 
 #[cfg(target_arch = "aarch64")]
 pub mod pi4b;
 
 #[cfg(target_arch = "aarch64")]
 pub mod rk3399;
+
+// GENERIC RISCV DRIVERS
+pub mod riscv;
+
+#[cfg(target_arch = "riscv64")]
+pub mod spectro;
 
 // -------------------
 // NON ARCH DEPENDENT

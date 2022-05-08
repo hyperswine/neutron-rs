@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
-use super::{
-    bsp::device_driver::common::MMIODerefWrapper,
-    state, synchronization,
-    synchronization::{IRQSafeNullLock, InitStateLock},
-};
 use tock_registers::{
     interfaces::{Readable, Writeable},
     register_bitfields, register_structs,
     registers::{ReadOnly, ReadWrite},
 };
-
-// Private Definitions
 
 register_bitfields! {
     u32,
@@ -60,14 +50,9 @@ register_structs! {
     }
 }
 
-
 type SharedRegisters = MMIODerefWrapper<SharedRegisterBlock>;
 
-
 type BankedRegisters = MMIODerefWrapper<BankedRegisterBlock>;
-
-// Public Definitions
-
 
 pub struct GICD {
     
@@ -77,32 +62,19 @@ pub struct GICD {
     banked_registers: InitStateLock<BankedRegisters>,
 }
 
-// Private Code
-
 impl SharedRegisters {
-    
     #[inline(always)]
     fn num_irqs(&mut self) -> usize {
         // Query number of implemented IRQs.
         ((self.TYPER.read(TYPER::ITLinesNumber) as usize) + 1) * 32
     }
-
     
     #[inline(always)]
     fn implemented_itargets_slice(&mut self) -> &[ReadWrite<u32, ITARGETSR::Register>] {
-        assert!(self.num_irqs() >= 36);
-
-        // Calculate the max index of the shared ITARGETSR array.
         let spi_itargetsr_max_index = ((self.num_irqs() - 32) >> 2) - 1;
-
-        // Rust automatically inserts slice range sanity check, i.e. max >= min.
         &self.ITARGETSR[0..spi_itargetsr_max_index]
     }
 }
-
-// Public Code
-use crate::synchronization::interface::ReadWriteEx;
-use synchronization::interface::Mutex;
 
 impl GICD {
     
@@ -119,21 +91,13 @@ impl GICD {
         self.banked_registers
             .write(|regs| *regs = BankedRegisters::new(new_mmio_start_addr));
     }
-
     
     fn local_gic_target_mask(&self) -> u32 {
         self.banked_registers
             .read(|regs| regs.ITARGETSR[0].read(ITARGETSR::Offset0))
     }
 
-    
     pub fn boot_core_init(&self) {
-        assert!(
-            state::state_manager().is_init(),
-            "Only allowed during kernel init phase"
-        );
-
-        // Target all SPIs to the boot core only.
         let mask = self.local_gic_target_mask();
 
         self.shared_registers.lock(|regs| {
@@ -153,12 +117,9 @@ impl GICD {
     
     pub fn enable(&self, irq_num: super::IRQNumber) {
         let irq_num = irq_num.get();
-
-        // Each bit in the u32 enable register corresponds to one IRQ number. Shift right by 5
         let enable_reg_index = irq_num >> 5;
         let enable_bit: u32 = 1u32 << (irq_num % 32);
 
-        // Check if we are handling a private or shared IRQ.
         match irq_num {
             // Private.
             0..=31 => self.banked_registers.read(|regs| {
