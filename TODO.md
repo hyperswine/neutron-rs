@@ -2,6 +2,7 @@
 
 ## Les Go
 
+- remove as much as possible. And put in one file if possible esp for multiarch stuff and circular deps
 - fix paging, src/memory/mmu
 - fix exceptions and CPU boot, like setting the right CSRs (CSSRW) on M mode
 - remove all the cfg(feature = "pi4") etc. Get the board name from the device tree id
