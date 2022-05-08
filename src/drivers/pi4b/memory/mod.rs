@@ -2,6 +2,91 @@
 // Export
 // ----------
 
+// Types
+
+impl<ATYPE: AddressType> Step for PageAddress<ATYPE> {
+    fn steps_between(start: &Self, end: &Self) -> Option<usize> {
+        if start > end {
+            return None;
+        }
+
+        // Since start <= end, do unchecked arithmetic.
+        Some((end.inner.as_usize() - start.inner.as_usize()) >> KernelGranule::SHIFT)
+    }
+
+    fn forward_checked(start: Self, count: usize) -> Option<Self> {
+        start.checked_offset(count as isize)
+    }
+
+    fn backward_checked(start: Self, count: usize) -> Option<Self> {
+        start.checked_offset(-(count as isize))
+    }
+}
+
+impl<ATYPE: AddressType> PageAddress<ATYPE> {
+    pub const MAX: Self = PageAddress {
+        inner: Address::new(usize::MAX).align_down_page(),
+    };
+
+    pub fn into_inner(self) -> Address<ATYPE> {
+        self.inner
+    }
+
+    pub fn checked_offset(self, count: isize) -> Option<Self> {
+        if count == 0 {
+            return Some(self);
+        }
+
+        let delta = count.unsigned_abs().checked_mul(KernelGranule::SIZE)?;
+        let result = if count.is_positive() {
+            self.inner.as_usize().checked_add(delta)?
+        } else {
+            self.inner.as_usize().checked_sub(delta)?
+        };
+
+        Some(Self {
+            inner: Address::new(result),
+        })
+    }
+}
+
+// Implementations
+
+impl<ATYPE: AddressType> Address<ATYPE> {
+    pub const fn new(value: usize) -> Self {
+        Self {
+            value,
+            _address_type: PhantomData,
+        }
+    }
+
+    pub const fn as_usize(self) -> usize {
+        self.value
+    }
+
+    #[must_use]
+    pub const fn align_down_page(self) -> Self {
+        let aligned = common::align_down(self.value, bsp::memory::mmu::KernelGranule::SIZE);
+
+        Self::new(aligned)
+    }
+
+    #[must_use]
+    pub const fn align_up_page(self) -> Self {
+        let aligned = common::align_up(self.value, bsp::memory::mmu::KernelGranule::SIZE);
+
+        Self::new(aligned)
+    }
+
+    pub const fn is_page_aligned(&self) -> bool {
+        common::is_aligned(self.value, KernelGranule::SIZE)
+    }
+
+    pub const fn offset_into_page(&self) -> usize {
+        self.value & KernelGranule::MASK
+    }
+}
+
 // Translation Tables
 
 pub type KernelTranslationTable =

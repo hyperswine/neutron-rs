@@ -2,6 +2,7 @@ pub mod bits;
 pub mod synchronisation;
 pub mod sort;
 pub mod time;
+pub mod paging;
 // expose time functions
 pub use time::*;
 

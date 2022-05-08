@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2021-2022 Andre Richter <andre.o.richter@gmail.com>
+// Page allocation.
 
-//! Page allocation.
-
-use super::MemoryRegion;
-use crate::{
-    memory::{AddressType, Virtual},
-    synchronization::IRQSafeNullLock,
-    warn,
-};
 use core::num::NonZeroUsize;
-
+use crate::types::synchronisation::IRQSafeNullLock;
 
 pub struct PageAllocator<ATYPE: AddressType> {
     pool: Option<MemoryRegion<ATYPE>>,
@@ -31,7 +21,6 @@ impl<ATYPE: AddressType> PageAllocator<ATYPE> {
 
     pub fn initialize(&mut self, pool: MemoryRegion<ATYPE>) {
         if self.pool.is_some() {
-            // warn!("Already initialized");
             return;
         }
 

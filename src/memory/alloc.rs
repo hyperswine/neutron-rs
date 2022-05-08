@@ -25,6 +25,7 @@ pub fn init_heap() {
 // Memory Mapped Files
 // -----------------
 
+// depends on the arch/vaddr space maybe
 pub const MMIO_START: usize = 0x7fff000000000000;
 
 // -----------------
@@ -43,5 +44,4 @@ pub const HEAP_START: usize = 0x8000_0000;
 // 4 * 4 KiB by default for the kernel. For programs, idk
 pub const HEAP_SIZE: usize = 4 * 0x1000;
 
-// TODO: Implement fixed allocator
 struct FixedAllocator;

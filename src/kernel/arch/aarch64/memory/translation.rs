@@ -7,14 +7,11 @@ use tock_registers::{
 
 register_bitfields! {u64,
     STAGE1_TABLE_DESCRIPTOR [
-
         NEXT_LEVEL_TABLE_ADDR_64KiB OFFSET(16) NUMBITS(32) [], // [47:16]
-
         TYPE  OFFSET(1) NUMBITS(1) [
             Block = 0,
             Table = 1
         ],
-
         VALID OFFSET(0) NUMBITS(1) [
             False = 0,
             True = 1
@@ -24,49 +21,34 @@ register_bitfields! {u64,
 
 register_bitfields! {u64,
     STAGE1_PAGE_DESCRIPTOR [
-
         UXN      OFFSET(54) NUMBITS(1) [
             False = 0,
             True = 1
         ],
-
-
         PXN      OFFSET(53) NUMBITS(1) [
             False = 0,
             True = 1
         ],
-
-
         OUTPUT_ADDR_64KiB OFFSET(16) NUMBITS(32) [], // [47:16]
-
-
         AF       OFFSET(10) NUMBITS(1) [
             False = 0,
             True = 1
         ],
-
-
         SH       OFFSET(8) NUMBITS(2) [
             OuterShareable = 0b10,
             InnerShareable = 0b11
         ],
-
-
         AP       OFFSET(6) NUMBITS(2) [
             RW_EL1 = 0b00,
             RW_EL1_EL0 = 0b01,
             RO_EL1 = 0b10,
             RO_EL1_EL0 = 0b11
         ],
-
-
         AttrIndx OFFSET(2) NUMBITS(3) [],
-
         TYPE     OFFSET(1) NUMBITS(1) [
             Reserved_Invalid = 0,
             Page = 1
         ],
-
         VALID    OFFSET(0) NUMBITS(1) [
             False = 0,
             True = 1
@@ -245,9 +227,6 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
         Address::new((usize::MAX - (Granule512MiB::SIZE * NUM_TABLES)) + 1);
 
     const fn _new(for_precompute: bool) -> Self {
-        // assert!(bsp::memory::mmu::KernelGranule::SIZE == Granule64KiB::SIZE);
-        // assert!(NUM_TABLES > 0);
-
         Self {
             lvl3: [[PageDescriptor::new_zeroed(); 8192]; NUM_TABLES],
             lvl2: [TableDescriptor::new_zeroed(); NUM_TABLES],
@@ -352,7 +331,7 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
             return Err("Tried to map memory regions with unequal sizes");
         }
 
-        if phys_region.end_exclusive_page_addr() > bsp::memory::phys_addr_space_end_exclusive_addr()
+        if phys_region.end_exclusive_page_addr() > memory::phys_addr_space_end_exclusive_addr()
         {
             return Err("Tried to map outside of physical address space");
         }

@@ -1,44 +1,24 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
+pub mod mapping_record;
+pub mod page_alloc;
+pub mod translation_table;
 
-// TODO: include kernel/arch/aarch64/memory
-
-#[cfg(target_arch = "aarch64")]
-use crate::kernel::arch::aarch64::memory::mmu;
-
-mod mapping_record;
-mod page_alloc;
-mod translation_table;
-mod types;
-
-use crate::{
-    bsp,
-    memory::{Address, Physical, Virtual},
-    synchronization::{self, interface::Mutex},
-    warn,
-};
 use core::{fmt, num::NonZeroUsize};
+use crate::types::paging::{MemoryRegion, AttributeFields, MMIODescriptor, MemAttributes, AccessPermissions, PageAddress};
+use super::{Address, Physical, Virtual};
 
-pub use types::*;
-
-#[allow(missing_docs)]
 #[derive(Debug)]
 pub enum MMUEnableError {
     AlreadyEnabled,
     Other(&'static str),
 }
 
-pub mod interface {
-    use super::*;
+pub trait MMU {
+    unsafe fn enable_mmu_and_caching(
+        &self,
+        phys_tables_base_addr: Address<Physical>,
+    ) -> Result<(), MMUEnableError>;
 
-    pub trait MMU {
-        unsafe fn enable_mmu_and_caching(
-            &self,
-            phys_tables_base_addr: Address<Physical>,
-        ) -> Result<(), MMUEnableError>;
-
-        fn is_enabled(&self) -> bool;
-    }
+    fn is_enabled(&self) -> bool;
 }
 
 pub struct TranslationGranule<const GRANULE_SIZE: usize>;
@@ -50,16 +30,13 @@ pub trait AssociatedTranslationTable {
     type TableStartFromBottom;
 }
 
-use interface::MMU;
-use synchronization::interface::ReadWriteEx;
-use translation_table::interface::TranslationTable;
+// TODO: I think some of these need pi 4b / coupled to it. Again if its on aarch64/pi/rockpi, use it here instead
 
 fn kernel_init_mmio_va_allocator() {
-    let region = bsp::memory::mmu::virt_mmio_remap_region();
+    let region = memory::mmu::virt_mmio_remap_region();
 
     page_alloc::kernel_mmio_va_allocator().lock(|allocator| allocator.initialize(region));
 }
-
 
 unsafe fn kernel_map_at_unchecked(
     name: &'static str,
@@ -67,7 +44,7 @@ unsafe fn kernel_map_at_unchecked(
     phys_region: &MemoryRegion<Physical>,
     attr: &AttributeFields,
 ) -> Result<(), &'static str> {
-    bsp::memory::mmu::kernel_translation_tables()
+    memory::mmu::kernel_translation_tables()
         .write(|tables| tables.map_at(virt_region, phys_region, attr))?;
 
     kernel_add_mapping_record(name, virt_region, phys_region, attr);
@@ -78,7 +55,7 @@ unsafe fn kernel_map_at_unchecked(
 fn try_kernel_virt_addr_to_phys_addr(
     virt_addr: Address<Virtual>,
 ) -> Result<Address<Physical>, &'static str> {
-    bsp::memory::mmu::kernel_translation_tables()
+    memory::mmu::kernel_translation_tables()
         .read(|tables| tables.try_virt_addr_to_phys_addr(virt_addr))
 }
 
@@ -123,7 +100,7 @@ pub fn kernel_add_mapping_record(
     attr: &AttributeFields,
 ) {
     if let Err(x) = mapping_record::kernel_add(name, virt_region, phys_region, attr) {
-        warn!("{}", x);
+        // warn!("{}", x);
     }
 }
 
@@ -169,14 +146,14 @@ pub unsafe fn kernel_map_mmio(
 pub fn try_kernel_virt_page_addr_to_phys_page_addr(
     virt_page_addr: PageAddress<Virtual>,
 ) -> Result<PageAddress<Physical>, &'static str> {
-    bsp::memory::mmu::kernel_translation_tables()
+    memory::mmu::kernel_translation_tables()
         .read(|tables| tables.try_virt_page_addr_to_phys_page_addr(virt_page_addr))
 }
 
 pub fn try_kernel_page_attributes(
     virt_page_addr: PageAddress<Virtual>,
 ) -> Result<AttributeFields, &'static str> {
-    bsp::memory::mmu::kernel_translation_tables()
+    memory::mmu::kernel_translation_tables()
         .read(|tables| tables.try_page_attributes(virt_page_addr))
 }
 
@@ -184,15 +161,9 @@ pub fn try_kernel_page_attributes(
 pub unsafe fn enable_mmu_and_caching(
     phys_tables_base_addr: Address<Physical>,
 ) -> Result<(), MMUEnableError> {
-    arch_mmu::mmu().enable_mmu_and_caching(phys_tables_base_addr)
+    mmu().enable_mmu_and_caching(phys_tables_base_addr)
 }
-
 
 pub fn post_enable_init() {
     kernel_init_mmio_va_allocator();
-}
-
-
-pub fn kernel_print_mappings() {
-    mapping_record::kernel_print()
 }

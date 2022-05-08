@@ -32,7 +32,7 @@ where
 
 //---------------
 // Public Code
-//----------------
+//---------------
 
 unsafe impl<T> Send for IRQSafeNullLock<T> where T: ?Sized + Send {}
 unsafe impl<T> Sync for IRQSafeNullLock<T> where T: ?Sized + Send {}
@@ -59,7 +59,7 @@ impl<T> InitStateLock<T> {
 //--------------------
 // OS Interface Code
 //--------------------
-use crate::{exception, state};
+use crate::{exception};
 
 impl<T> Mutex for IRQSafeNullLock<T> {
     type Data = T;

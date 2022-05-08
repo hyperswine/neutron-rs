@@ -22,9 +22,6 @@ static PL011_UART: PL011Uart = unsafe {
     )
 };
 
-
-
-#[cfg(feature = "bsp_rpi4")]
 static INTERRUPT_CONTROLLER: device_driver::GICv2 = unsafe {
     device_driver::GICv2::new(
         MMIODescriptor::new(mmio::GICD_START, mmio::GICD_SIZE),

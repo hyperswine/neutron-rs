@@ -1,16 +1,17 @@
 // SOME LOW LEVEL PAGING SHOULD BE HANDLED BY THE ARCH AND IMPORTED HERE AS AN API
 
-// ALLOC HANDLED BY THE KERNEL
 pub mod alloc;
-// Memory Management Unit
 pub mod mmu;
 
-use crate::{bsp, common};
 use core::{
     fmt,
     marker::PhantomData,
     ops::{Add, Sub},
 };
+
+// -----------------
+// General Address API
+// -----------------
 
 pub trait AddressType: Copy + Clone + PartialOrd + PartialEq {}
 
@@ -28,41 +29,6 @@ pub struct Address<ATYPE: AddressType> {
 
 impl AddressType for Physical {}
 impl AddressType for Virtual {}
-
-impl<ATYPE: AddressType> Address<ATYPE> {
-    pub const fn new(value: usize) -> Self {
-        Self {
-            value,
-            _address_type: PhantomData,
-        }
-    }
-
-    pub const fn as_usize(self) -> usize {
-        self.value
-    }
-
-    #[must_use]
-    pub const fn align_down_page(self) -> Self {
-        let aligned = common::align_down(self.value, bsp::memory::mmu::KernelGranule::SIZE);
-
-        Self::new(aligned)
-    }
-
-    #[must_use]
-    pub const fn align_up_page(self) -> Self {
-        let aligned = common::align_up(self.value, bsp::memory::mmu::KernelGranule::SIZE);
-
-        Self::new(aligned)
-    }
-
-    pub const fn is_page_aligned(&self) -> bool {
-        common::is_aligned(self.value, bsp::memory::mmu::KernelGranule::SIZE)
-    }
-
-    pub const fn offset_into_page(&self) -> usize {
-        self.value & bsp::memory::mmu::KernelGranule::MASK
-    }
-}
 
 impl<ATYPE: AddressType> Add<usize> for Address<ATYPE> {
     type Output = Self;
@@ -87,6 +53,10 @@ impl<ATYPE: AddressType> Sub<Address<ATYPE>> for Address<ATYPE> {
         }
     }
 }
+
+// -----------------
+// FORMATTED OUTPUT
+// -----------------
 
 impl fmt::Display for Address<Physical> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

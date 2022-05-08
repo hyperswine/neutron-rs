@@ -100,3 +100,20 @@ impl StateManager {
         }
     }
 }
+
+// --------------------
+// ARM MEMORY FUNCTIONS
+// --------------------
+
+impl<ATYPE: AddressType> From<usize> for PageAddress<ATYPE> {
+    fn from(addr: usize) -> Self {
+        assert!(
+            common::is_aligned(addr, KernelGranule::SIZE),
+            "Input usize not page aligned"
+        );
+
+        Self {
+            inner: Address::new(addr),
+        }
+    }
+}

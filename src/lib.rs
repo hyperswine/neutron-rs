@@ -7,6 +7,8 @@
 #![allow(named_asm_labels)]
 #![feature(global_asm)]
 #![feature(asm_const)]
+#![feature(step_trait)]
+#![feature(trait_alias)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE

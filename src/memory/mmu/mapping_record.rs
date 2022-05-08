@@ -1,11 +1,9 @@
 // A record of mapped pages.
 
-use super::{
-    AccessPermissions, Address, AttributeFields, MMIODescriptor, MemAttributes, MemoryRegion,
-    Physical, Virtual,
+use crate::{
+    memory::{Address, Physical, Virtual},
+    types::{paging::*, synchronisation::InitStateLock},
 };
-use crate::{info, synchronization, synchronization::InitStateLock, warn};
-// TODO: need driver::aarch64
 
 #[derive(Copy, Clone)]
 struct MappingRecordEntry {
@@ -116,9 +114,6 @@ impl MappingRecord {
 // Public Code
 // ----------------
 
-use synchronization::interface::ReadWriteEx;
-
-
 pub fn kernel_add(
     name: &'static str,
     virt_region: &MemoryRegion<Virtual>,
@@ -144,8 +139,3 @@ pub fn kernel_find_and_insert_mmio_duplicate(
         Some(dup.virt_start_addr)
     })
 }
-
-// Human-readable print of all recorded kernel mappings.
-// pub fn kernel_print() {
-//     KERNEL_MAPPING_RECORD.read(|mr| mr.print());
-// }
