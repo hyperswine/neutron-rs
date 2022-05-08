@@ -8,6 +8,7 @@ pub mod acpi;
 pub mod arch;
 #[cfg(feature = "posix")]
 pub mod posix;
+// pub mod console;
 
 // --------------------
 // NON-ARCH DEPENDENT STUFF
