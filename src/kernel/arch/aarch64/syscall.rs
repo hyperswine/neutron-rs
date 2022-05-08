@@ -82,13 +82,13 @@ __exception_vector_start:
 
 #[repr(C)]
 pub struct ExceptionContext {
-    /// General Purpose Registers.
+    
     gpr: [u64; 30],
 
-    /// The link register, aka x30.
+    
     lr: u64,
 
-    /// Exception link register. The program counter at the time the exception happened.
+    
     elr_el1: u64,
     // Saved program status.
     // spsr_el1: SpsrEL1,
@@ -97,7 +97,7 @@ pub struct ExceptionContext {
     // esr_el1: EsrEL1,
 }
 
-/// Prints verbose information about the exception and then panics.
+
 fn default_exception_handler(exc: &ExceptionContext) {
     panic!("CPU Exception!\n");
 }

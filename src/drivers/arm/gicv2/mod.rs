@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // GICv2 Driver - ARM Generic Interrupt Controller v2.
 
 mod gicc;
 mod gicd;
 
-use crate::{bsp, cpu, driver, exception, memory, synchronization, synchronization::InitStateLock};
+use crate::types::{synchronisation::InitStateLock};
 use core::sync::atomic::{AtomicBool, Ordering};
 
 // Private Definitions
@@ -15,24 +12,18 @@ type HandlerTable = [Option<exception::asynchronous::IRQDescriptor>; GICv2::NUM_
 
 // Public Definitions
 
-/// Used for the associated type of trait [`exception::asynchronous::interface::IRQManager`].
 pub type IRQNumber = exception::asynchronous::IRQNumber<{ GICv2::MAX_IRQ_NUMBER }>;
 
-/// Representation of the GIC.
 pub struct GICv2 {
     gicd_mmio_descriptor: memory::mmu::MMIODescriptor,
     gicc_mmio_descriptor: memory::mmu::MMIODescriptor,
 
-    /// The Distributor.
     gicd: gicd::GICD,
 
-    /// The CPU Interface.
     gicc: gicc::GICC,
 
-    /// Have the MMIO regions been remapped yet?
     is_mmio_remapped: AtomicBool,
 
-    /// Stores registered IRQ handlers. Writable only during kernel init. RO afterwards.
     handler_table: InitStateLock<HandlerTable>,
 }
 
@@ -43,7 +34,6 @@ impl GICv2 {
     const MAX_IRQ_NUMBER: usize = 300;
     const NUM_IRQS: usize = Self::MAX_IRQ_NUMBER + 1;
 
-    /// Create an instance.
     pub const unsafe fn new(
         gicd_mmio_descriptor: memory::mmu::MMIODescriptor,
         gicc_mmio_descriptor: memory::mmu::MMIODescriptor,
@@ -59,12 +49,13 @@ impl GICv2 {
     }
 }
 
-//------------------------------------------------------------------------------
+//------------------
 // OS Interface Code
-//------------------------------------------------------------------------------
-use synchronization::interface::ReadWriteEx;
+//------------------
 
-impl driver::interface::DeviceDriver for GICv2 {
+use synchronization::ReadWriteEx;
+
+impl driver::DeviceDriver for GICv2 {
     fn compatible(&self) -> &'static str {
         "GICv2 (ARM Generic Interrupt Controller v2)"
     }
@@ -72,15 +63,12 @@ impl driver::interface::DeviceDriver for GICv2 {
     unsafe fn init(&self) -> Result<(), &'static str> {
         let remapped = self.is_mmio_remapped.load(Ordering::Relaxed);
         if !remapped {
-            // GICD
             let mut virt_addr = memory::mmu::kernel_map_mmio("GICD", &self.gicd_mmio_descriptor)?;
             self.gicd.set_mmio(virt_addr.as_usize());
 
-            // GICC
             virt_addr = memory::mmu::kernel_map_mmio("GICC", &self.gicc_mmio_descriptor)?;
             self.gicc.set_mmio(virt_addr.as_usize());
 
-            // Conclude remapping.
             self.is_mmio_remapped.store(true, Ordering::Relaxed);
         }
 
@@ -146,18 +134,4 @@ impl exception::asynchronous::interface::IRQManager for GICv2 {
         // Signal completion of handling.
         self.gicc.mark_comleted(irq_number as u32, ic);
     }
-
-    // fn print_handler(&self) {
-    //     use crate::info;
-
-    //     info!("      Peripheral handler:");
-
-    //     self.handler_table.read(|table| {
-    //         for (i, opt) in table.iter().skip(32).enumerate() {
-    //             if let Some(handler) = opt {
-    //                 info!("            {: >3}. {}", i + 32, handler.name);
-    //             }
-    //         }
-    //     });
-    // }
 }

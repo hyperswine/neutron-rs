@@ -26,7 +26,7 @@ use tock_registers::{
 register_bitfields! {
     u32,
 
-    /// Flag Register.
+    
     FR [
         TXFE OFFSET(7) NUMBITS(1) [],
         TXFF OFFSET(5) NUMBITS(1) [],
@@ -34,17 +34,17 @@ register_bitfields! {
         BUSY OFFSET(3) NUMBITS(1) []
     ],
 
-    /// Integer Baud Rate Divisor.
+    
     IBRD [
         BAUD_DIVINT OFFSET(0) NUMBITS(16) []
     ],
 
-    /// Fractional Baud Rate Divisor.
+    
     FBRD [
         BAUD_DIVFRAC OFFSET(0) NUMBITS(6) []
     ],
 
-    /// Line Control Register.
+    
     LCR_H [
         #[allow(clippy::enum_variant_names)]
         WLEN OFFSET(5) NUMBITS(2) [
@@ -54,14 +54,14 @@ register_bitfields! {
             EightBit = 0b11
         ],
 
-        /// Enable FIFOs:
+        
         FEN  OFFSET(4) NUMBITS(1) [
             FifosDisabled = 0,
             FifosEnabled = 1
         ]
     ],
 
-    /// Control Register.
+    
     CR [
         RXE OFFSET(9) NUMBITS(1) [
             Disabled = 0,
@@ -79,7 +79,7 @@ register_bitfields! {
         ]
     ],
 
-    /// Interrupt FIFO Level Select Register.
+    
     IFLS [
         RXIFLSEL OFFSET(3) NUMBITS(5) [
             OneEigth = 0b000,
@@ -90,7 +90,7 @@ register_bitfields! {
         ]
     ],
 
-    /// Interrupt Mask Set/Clear Register.
+    
     IMSC [
         RTIM OFFSET(6) NUMBITS(1) [
             Disabled = 0,
@@ -102,13 +102,13 @@ register_bitfields! {
         ]
     ],
 
-    /// Masked Interrupt Status Register.
+    
     MIS [
         RTMIS OFFSET(6) NUMBITS(1) [],
         RXMIS OFFSET(4) NUMBITS(1) []
     ],
 
-    /// Interrupt Clear Register.
+    
     ICR [
         ALL OFFSET(0) NUMBITS(11) []
     ]
@@ -134,7 +134,7 @@ register_structs! {
     }
 }
 
-/// Abstraction for the associated MMIO registers.
+
 type Registers = MMIODerefWrapper<RegisterBlock>;
 
 #[derive(PartialEq)]
@@ -156,7 +156,7 @@ pub struct PL011UartInner {
 // Export the inner struct so that BSPs can use it for the panic handler.
 pub use PL011UartInner as PanicUart;
 
-/// Representation of the UART.
+
 pub struct PL011Uart {
     mmio_descriptor: memory::mmu::MMIODescriptor,
     virt_mmio_start_addr: AtomicUsize,
@@ -175,7 +175,7 @@ impl PL011UartInner {
         }
     }
 
-    /// Set up baud rate and characteristics.
+    
     pub unsafe fn init(&mut self, new_mmio_start_addr: Option<usize>) -> Result<(), &'static str> {
         if let Some(addr) = new_mmio_start_addr {
             self.registers = Registers::new(addr);
@@ -213,7 +213,7 @@ impl PL011UartInner {
         Ok(())
     }
 
-    /// Send a character.
+    
     fn write_char(&mut self, c: char) {
         // Spin while TX FIFO full is set, waiting for an empty slot.
         while self.registers.FR.matches_all(FR::TXFF::SET) {
@@ -226,7 +226,7 @@ impl PL011UartInner {
         self.chars_written += 1;
     }
 
-    /// Block execution until the last buffered character has been physically put on the TX wire.
+    
     fn flush(&self) {
         // Spin until the busy bit is cleared.
         while self.registers.FR.matches_all(FR::BUSY::SET) {
@@ -234,7 +234,7 @@ impl PL011UartInner {
         }
     }
 
-    /// Retrieve a character.
+    
     fn read_char_converting(&mut self, blocking_mode: BlockingMode) -> Option<char> {
         // If RX FIFO is empty,
         if self.registers.FR.matches_all(FR::RXFE::SET) {
@@ -264,7 +264,7 @@ impl PL011UartInner {
     }
 }
 
-/// Implementing `core::fmt::Write` enables usage of the `format_args!` macros, which in turn are used to implement the `kernel`'s `print!` and `println!` macros. By implementing `write_str()`,
+
 impl fmt::Write for PL011UartInner {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for c in s.chars() {

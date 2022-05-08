@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // General Interrupt Controller
 // GICC Driver - GIC CPU interface.
 
@@ -18,22 +15,22 @@ use tock_registers::{
 register_bitfields! {
     u32,
 
-    /// CPU Interface Control Register
+
     CTLR [
         Enable OFFSET(0) NUMBITS(1) []
     ],
 
-    /// Interrupt Priority Mask Register
+
     PMR [
         Priority OFFSET(0) NUMBITS(8) []
     ],
 
-    /// Interrupt Acknowledge Register
+
     IAR [
         InterruptID OFFSET(0) NUMBITS(10) []
     ],
 
-    /// End of Interrupt Register
+
     EOIR [
         EOIINTID OFFSET(0) NUMBITS(10) []
     ]
@@ -51,12 +48,10 @@ register_structs! {
     }
 }
 
-/// Abstraction for the associated MMIO registers.
 type Registers = MMIODerefWrapper<RegisterBlock>;
 
 // Public Definitions
 
-/// Representation of the GIC CPU interface.
 pub struct GICC {
     registers: InitStateLock<Registers>,
 }
@@ -66,7 +61,6 @@ pub struct GICC {
 use crate::synchronization::interface::ReadWriteEx;
 
 impl GICC {
-    /// - The user must ensure to provide a correct MMIO start address.
     pub const unsafe fn new(mmio_start_addr: usize) -> Self {
         Self {
             registers: InitStateLock::new(Registers::new(mmio_start_addr)),
@@ -78,21 +72,18 @@ impl GICC {
             .write(|regs| *regs = Registers::new(new_mmio_start_addr));
     }
 
-    /// Accept interrupts of any priority.
     pub fn priority_accept_all(&self) {
         self.registers.read(|regs| {
             regs.PMR.write(PMR::Priority.val(255)); // Comment in arch spec.
         });
     }
 
-    /// Enable the interface - start accepting IRQs.
     pub fn enable(&self) {
         self.registers.read(|regs| {
             regs.CTLR.write(CTLR::Enable::SET);
         });
     }
 
-    /// Extract the number of the highest-priority pending IRQ.
     pub fn pending_irq_number<'irq_context>(
         &self,
         _ic: &exception::asynchronous::IRQContext<'irq_context>,
@@ -101,7 +92,6 @@ impl GICC {
             .read(|regs| regs.IAR.read(IAR::InterruptID) as usize)
     }
 
-    /// Complete handling of the currently active IRQ.
     pub fn mark_completed<'irq_context>(
         &self,
         irq_number: u32,

@@ -18,17 +18,17 @@ use crate::memory::{Address, Physical, Virtual};
 
 // Public Definitions
 
-/// Translation table interfaces.
+
 pub mod interface {
     use crate::memory::mmu::PageAddress;
 
     use super::*;
 
-    /// Translation table operations.
+    
     pub trait TranslationTable {
         fn init(&mut self) -> Result<(), &'static str>;
 
-        /// Map the given virtual memory region to the given physical memory region.
+        
         unsafe fn map_at(
             &mut self,
             virt_region: &MemoryRegion<Virtual>,
@@ -36,19 +36,19 @@ pub mod interface {
             attr: &AttributeFields,
         ) -> Result<(), &'static str>;
 
-        /// Try to translate a virtual page address to a physical page address.
+        
         fn try_virt_page_addr_to_phys_page_addr(
             &self,
             virt_page_addr: PageAddress<Virtual>,
         ) -> Result<PageAddress<Physical>, &'static str>;
 
-        /// Try to get the attributes of a page.
+        
         fn try_page_attributes(
             &self,
             virt_page_addr: PageAddress<Virtual>,
         ) -> Result<AttributeFields, &'static str>;
 
-        /// Try to translate a virtual address to a physical address.
+        
         fn try_virt_addr_to_phys_addr(
             &self,
             virt_addr: Address<Virtual>,

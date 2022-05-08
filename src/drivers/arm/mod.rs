@@ -27,10 +27,8 @@ pub trait DriverManager {
 
     fn early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)];
 
-    /// Return all drivers minus early-print drivers.
     fn non_early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)];
 
-    /// Initialization code that runs after the early print driver init.
     fn post_early_print_device_driver_init(&self);
 }
 
@@ -46,7 +44,6 @@ use core::sync::atomic::{AtomicU8, Ordering};
 // Private Definitions
 // ----------------
 
-/// Different stages in the kernel execution.
 #[derive(Copy, Clone, Eq, PartialEq)]
 enum State {
     Init,
@@ -54,7 +51,6 @@ enum State {
     MultiCoreMain,
 }
 
-/// Maintains the kernel state and state transitions.
 pub struct StateManager(AtomicU8);
 
 // ----------------
@@ -63,7 +59,6 @@ pub struct StateManager(AtomicU8);
 
 static STATE_MANAGER: StateManager = StateManager::new();
 
-/// Return a reference to the global StateManager.
 pub fn state_manager() -> &'static StateManager {
     &STATE_MANAGER
 }
@@ -73,12 +68,10 @@ impl StateManager {
     const SINGLE_CORE_MAIN: u8 = 1;
     const MULTI_CORE_MAIN: u8 = 2;
 
-    /// Create a new instance.
     pub const fn new() -> Self {
         Self(AtomicU8::new(Self::INIT))
     }
 
-    /// Return the current state.
     fn state(&self) -> State {
         let state = self.0.load(Ordering::Acquire);
 
@@ -90,12 +83,10 @@ impl StateManager {
         }
     }
 
-    /// Return if the kernel is init state.
     pub fn is_init(&self) -> bool {
         self.state() == State::Init
     }
 
-    /// Transition from Init to SingleCoreMain.
     pub fn transition_to_single_core_main(&self) {
         if self
             .0

@@ -50,7 +50,7 @@ static INTERRUPT_CONTROLLER: device_driver::GICv2 = unsafe {
 
 // Public Code
 
-/// Board identification.
+
 pub fn board_name() -> &'static str {
     #[cfg(feature = "bsp_rpi3")]
     {

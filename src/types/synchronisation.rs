@@ -4,8 +4,6 @@ use core::cell::UnsafeCell;
 // Public Definitions
 //-------------------
 
-/// Synchronization interfaces.
-
 pub trait Mutex {
     type Data;
 
@@ -18,7 +16,6 @@ pub trait ReadWriteEx {
     fn read<R>(&self, f: impl FnOnce(&Self::Data) -> R) -> R;
 }
 
-/// A pseudo-lock for teaching purposes.
 pub struct IRQSafeNullLock<T>
 where
     T: ?Sized,
@@ -26,7 +23,6 @@ where
     data: UnsafeCell<T>,
 }
 
-/// A pseudo-lock that is RW during the single-core kernel init phase and RO afterwards.
 pub struct InitStateLock<T>
 where
     T: ?Sized,

@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // A record of mapped pages.
 
 use super::{
     AccessPermissions, Address, AttributeFields, MMIODescriptor, MemAttributes, MemoryRegion,
     Physical, Virtual,
 };
-use crate::{bsp, info, synchronization, synchronization::InitStateLock, warn};
+use crate::{info, synchronization, synchronization::InitStateLock, warn};
+// TODO: need driver::aarch64
 
-// Private Definitions
-
-/// Type describing a virtual memory mapping.
-#[allow(missing_docs)]
 #[derive(Copy, Clone)]
 struct MappingRecordEntry {
     pub users: [Option<&'static str>; 5],
@@ -26,12 +20,12 @@ struct MappingRecord {
     inner: [Option<MappingRecordEntry>; 12],
 }
 
+// ----------------
 // Global instances
+// ----------------
 
 static KERNEL_MAPPING_RECORD: InitStateLock<MappingRecord> =
     InitStateLock::new(MappingRecord::new());
-
-// Private Code
 
 impl MappingRecordEntry {
     pub fn new(
@@ -118,10 +112,13 @@ impl MappingRecord {
     }
 }
 
+// ----------------
 // Public Code
+// ----------------
+
 use synchronization::interface::ReadWriteEx;
 
-/// Add an entry to the mapping info record.
+
 pub fn kernel_add(
     name: &'static str,
     virt_region: &MemoryRegion<Virtual>,
@@ -141,14 +138,14 @@ pub fn kernel_find_and_insert_mmio_duplicate(
         let dup = mr.find_duplicate(&phys_region)?;
 
         if let Err(x) = dup.add_user(new_user) {
-            warn!("{}", x);
+            // warn!("{}", x);
         }
 
         Some(dup.virt_start_addr)
     })
 }
 
-/// Human-readable print of all recorded kernel mappings.
-pub fn kernel_print() {
-    KERNEL_MAPPING_RECORD.read(|mr| mr.print());
-}
+// Human-readable print of all recorded kernel mappings.
+// pub fn kernel_print() {
+//     KERNEL_MAPPING_RECORD.read(|mr| mr.print());
+// }

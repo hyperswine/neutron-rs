@@ -20,20 +20,20 @@ pub use exception::asynchronous::{
 // Definitions
 // ------------------------------
 
-/// Interrupt descriptor.
+
 #[derive(Copy, Clone)]
 pub struct IRQDescriptor {
     pub name: &'static str,
     pub handler: &'static (dyn interface::IRQHandler + Sync),
 }
 
-/// IRQContext token.
+
 #[derive(Clone, Copy)]
 pub struct IRQContext<'irq_context> {
     _0: PhantomData<&'irq_context ()>,
 }
 
-/// Asynchronous exception handling interfaces.
+
 pub mod interface {
 
     pub trait IRQHandler {
@@ -49,21 +49,21 @@ pub mod interface {
             descriptor: super::IRQDescriptor,
         ) -> Result<(), &'static str>;
 
-        /// Enable an interrupt in the controller.
+        
         fn enable(&self, irq_number: Self::IRQNumberType);
 
-        /// Handle pending interrupts.
+        
         fn handle_pending_irqs<'irq_context>(
             &'irq_context self,
             ic: &super::IRQContext<'irq_context>,
         );
 
-        /// Print list of registered handlers.
+        
         fn print_handler(&self);
     }
 }
 
-/// A wrapper type for IRQ numbers with integrated range sanity check.
+
 #[derive(Copy, Clone)]
 pub struct IRQNumber<const MAX_INCLUSIVE: usize>(usize);
 
@@ -79,14 +79,14 @@ impl<'irq_context> IRQContext<'irq_context> {
 }
 
 impl<const MAX_INCLUSIVE: usize> IRQNumber<{ MAX_INCLUSIVE }> {
-    /// Creates a new instance if number <= MAX_INCLUSIVE.
+    
     pub const fn new(number: usize) -> Self {
         assert!(number <= MAX_INCLUSIVE);
 
         Self(number)
     }
 
-    /// Return the wrapped number.
+    
     pub const fn get(self) -> usize {
         self.0
     }
@@ -98,7 +98,7 @@ impl<const MAX_INCLUSIVE: usize> fmt::Display for IRQNumber<{ MAX_INCLUSIVE }> {
     }
 }
 
-/// Executes the provided closure while IRQs are masked on the executing core.
+
 #[inline(always)]
 pub fn exec_with_irq_masked<T>(f: impl FnOnce() -> T) -> T {
     let ret: T;

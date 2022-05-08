@@ -17,17 +17,17 @@ use tock_registers::{
 register_bitfields! {
     u32,
 
-    /// Distributor Control Register
+    
     CTLR [
         Enable OFFSET(0) NUMBITS(1) []
     ],
 
-    /// Interrupt Controller Type Register
+    
     TYPER [
         ITLinesNumber OFFSET(0)  NUMBITS(5) []
     ],
 
-    /// Interrupt Processor Targets Registers
+    
     ITARGETSR [
         Offset3 OFFSET(24) NUMBITS(8) [],
         Offset2 OFFSET(16) NUMBITS(8) [],
@@ -60,34 +60,34 @@ register_structs! {
     }
 }
 
-/// Abstraction for the non-banked parts of the associated MMIO registers.
+
 type SharedRegisters = MMIODerefWrapper<SharedRegisterBlock>;
 
-/// Abstraction for the banked parts of the associated MMIO registers.
+
 type BankedRegisters = MMIODerefWrapper<BankedRegisterBlock>;
 
 // Public Definitions
 
-/// Representation of the GIC Distributor.
+
 pub struct GICD {
-    /// Access to shared registers is guarded with a lock.
+    
     shared_registers: IRQSafeNullLock<SharedRegisters>,
 
-    /// Access to banked registers is unguarded.
+    
     banked_registers: InitStateLock<BankedRegisters>,
 }
 
 // Private Code
 
 impl SharedRegisters {
-    /// Return the number of IRQs that this HW implements.
+    
     #[inline(always)]
     fn num_irqs(&mut self) -> usize {
         // Query number of implemented IRQs.
         ((self.TYPER.read(TYPER::ITLinesNumber) as usize) + 1) * 32
     }
 
-    /// Return a slice of the implemented ITARGETSR.
+    
     #[inline(always)]
     fn implemented_itargets_slice(&mut self) -> &[ReadWrite<u32, ITARGETSR::Register>] {
         assert!(self.num_irqs() >= 36);
@@ -105,7 +105,7 @@ use crate::synchronization::interface::ReadWriteEx;
 use synchronization::interface::Mutex;
 
 impl GICD {
-    /// Create an instance.
+    
     pub const unsafe fn new(mmio_start_addr: usize) -> Self {
         Self {
             shared_registers: IRQSafeNullLock::new(SharedRegisters::new(mmio_start_addr)),
@@ -120,13 +120,13 @@ impl GICD {
             .write(|regs| *regs = BankedRegisters::new(new_mmio_start_addr));
     }
 
-    /// Use a banked ITARGETSR to retrieve the executing core's GIC target mask.
+    
     fn local_gic_target_mask(&self) -> u32 {
         self.banked_registers
             .read(|regs| regs.ITARGETSR[0].read(ITARGETSR::Offset0))
     }
 
-    /// Route all SPIs to the boot core and enable the distributor.
+    
     pub fn boot_core_init(&self) {
         assert!(
             state::state_manager().is_init(),
@@ -150,7 +150,7 @@ impl GICD {
         });
     }
 
-    /// Enable an interrupt.
+    
     pub fn enable(&self, irq_num: super::IRQNumber) {
         let irq_num = irq_num.get();
 

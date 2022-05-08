@@ -13,3 +13,10 @@ A rust based kernel written with the minimalism in mind.
 - src/ -> for 99% of the kernel logic. src/* first level dirs contain the ABI/API layer for userspace programs like `ls`
 - tests/ -> cargo integration tests
 - tests/arctests/ -> arctest acceptance tests. #[feature = arctest] are technically system tests even though they are localised, at least for now
+
+## src/*
+
+stuff in kernel/arch/etc. shouldnt depend on stuff in src/.*
+stuff in drivers/.* shouldnt depend on stuff in src/.*
+
+maybe except for types/*. Gotta be strict about that

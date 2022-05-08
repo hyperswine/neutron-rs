@@ -58,22 +58,22 @@ where
 // Public Code
 //--------------------------------------------------------------------------------------------------
 
-/// Returns whether IRQs are masked on the executing core.
+
 pub fn is_local_irq_masked() -> bool {
     !is_masked::<IRQ>()
 }
 
-/// Unmask IRQs on the executing core.
-///
-/// It is not needed to place an explicit instruction synchronization barrier after the `msr`.
-/// Quoting the Architecture Reference Manual for ARMv8-A, section C5.1.3:
-///
-/// "Writes to PSTATE.{PAN, D, A, I, F} occur in program order without the need for additional
-/// synchronization."
-///
-/// # Safety
-///
-/// - Changes the HW state of the executing core.
+
+
+
+
+
+
+
+
+
+
+
 #[inline(always)]
 pub unsafe fn local_irq_unmask() {
     #[rustfmt::skip]
@@ -84,11 +84,11 @@ pub unsafe fn local_irq_unmask() {
     );
 }
 
-/// Mask IRQs on the executing core.
-///
-/// # Safety
-///
-/// - Changes the HW state of the executing core.
+
+
+
+
+
 #[inline(always)]
 pub unsafe fn local_irq_mask() {
     #[rustfmt::skip]
@@ -99,11 +99,11 @@ pub unsafe fn local_irq_mask() {
     );
 }
 
-/// Mask IRQs on the executing core and return the previously saved interrupt mask bits (DAIF).
-///
-/// # Safety
-///
-/// - Changes the HW state of the executing core.
+
+
+
+
+
 #[inline(always)]
 pub unsafe fn local_irq_mask_save() -> u64 {
     let saved = DAIF.get();
@@ -112,9 +112,9 @@ pub unsafe fn local_irq_mask_save() -> u64 {
     saved
 }
 
-/// Restore the interrupt mask bits (DAIF) using the callee's argument.
-/// - Changes the HW state of the executing core.
-/// - No sanity checks on the input.
+
+
+
 #[inline(always)]
 pub unsafe fn local_irq_restore(saved: u64) {
     DAIF.set(saved);

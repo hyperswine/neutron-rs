@@ -9,7 +9,7 @@ use crate::{driver, exception, memory};
 
 // Private Definitions
 
-/// Wrapper struct for a bitmask indicating pending IRQ numbers.
+
 struct PendingIRQs {
     bitmask: u64,
 }
@@ -21,14 +21,14 @@ pub type LocalIRQ =
 pub type PeripheralIRQ =
     exception::asynchronous::IRQNumber<{ InterruptController::MAX_PERIPHERAL_IRQ_NUMBER }>;
 
-/// Used for the associated type of trait [`exception::asynchronous::interface::IRQManager`].
+
 #[derive(Copy, Clone)]
 pub enum IRQNumber {
     Local(LocalIRQ),
     Peripheral(PeripheralIRQ),
 }
 
-/// Representation of the Interrupt Controller.
+
 pub struct InterruptController {
     periph: peripheral_ic::PeripheralIC,
 }
@@ -67,11 +67,11 @@ impl InterruptController {
     const MAX_PERIPHERAL_IRQ_NUMBER: usize = 63;
     const NUM_PERIPHERAL_IRQS: usize = Self::MAX_PERIPHERAL_IRQ_NUMBER + 1;
 
-    /// Create an instance.
-    ///
-    /// # Safety
-    ///
-    /// - The user must ensure to provide correct MMIO descriptors.
+    
+    
+    
+    
+    
     pub const unsafe fn new(
         _local_mmio_descriptor: memory::mmu::MMIODescriptor,
         periph_mmio_descriptor: memory::mmu::MMIODescriptor,

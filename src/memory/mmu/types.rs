@@ -1,32 +1,24 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
-// Memory Management Unit types.
-
-// FOR BSP, mostly just needs to link in a non bad way
+// Useful Types
+// TODO: FOR BSP, mostly just needs to link in a non bad way
+// [cfg(target_arch = "aarch64")]
+// use crate::drivers::arm::common
 
 use crate::{
-    bsp, common,
     memory::{Address, AddressType, Physical},
 };
 use core::{convert::From, iter::Step, num::NonZeroUsize, ops::Range};
 
-// Public Definitions
-
-/// A wrapper type around [Address] that ensures page alignment.
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
 pub struct PageAddress<ATYPE: AddressType> {
     inner: Address<ATYPE>,
 }
 
-/// A type that describes a region of memory in quantities of pages.
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
 pub struct MemoryRegion<ATYPE: AddressType> {
     start: PageAddress<ATYPE>,
     end_exclusive: PageAddress<ATYPE>,
 }
 
-/// Architecture agnostic memory attributes.
 #[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
 pub enum MemAttributes {
@@ -34,7 +26,6 @@ pub enum MemAttributes {
     Device,
 }
 
-/// Architecture agnostic access permissions.
 #[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
 pub enum AccessPermissions {
@@ -42,7 +33,6 @@ pub enum AccessPermissions {
     ReadWrite,
 }
 
-/// Collection of memory attributes.
 #[allow(missing_docs)]
 #[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
 pub struct AttributeFields {
@@ -51,30 +41,26 @@ pub struct AttributeFields {
     pub execute_never: bool,
 }
 
-/// An MMIO descriptor for use in device drivers.
 #[derive(Copy, Clone)]
 pub struct MMIODescriptor {
     start_addr: Address<Physical>,
     end_addr_exclusive: Address<Physical>,
 }
 
-// Public Code
 
-//------------------------------------------------------------------------------
+//---------------
 // PageAddress
-//------------------------------------------------------------------------------
+//---------------
+
 impl<ATYPE: AddressType> PageAddress<ATYPE> {
-    /// The largest value that can be represented by this type.
     pub const MAX: Self = PageAddress {
         inner: Address::new(usize::MAX).align_down_page(),
     };
 
-    /// Unwraps the value.
     pub fn into_inner(self) -> Address<ATYPE> {
         self.inner
     }
 
-    /// Calculates the offset from the page address.
     pub fn checked_offset(self, count: isize) -> Option<Self> {
         if count == 0 {
             return Some(self);
@@ -138,11 +124,11 @@ impl<ATYPE: AddressType> Step for PageAddress<ATYPE> {
     }
 }
 
-//------------------------------------------------------------------------------
-// MemoryRegion
-//------------------------------------------------------------------------------
+//----------------
+// Memory Region
+//----------------
+
 impl<ATYPE: AddressType> MemoryRegion<ATYPE> {
-    /// Create an instance.
     pub fn new(start: PageAddress<ATYPE>, end_exclusive: PageAddress<ATYPE>) -> Self {
         assert!(start <= end_exclusive);
 
@@ -156,33 +142,27 @@ impl<ATYPE: AddressType> MemoryRegion<ATYPE> {
         self.into_iter()
     }
 
-    /// Returns the start page address.
     pub fn start_page_addr(&self) -> PageAddress<ATYPE> {
         self.start
     }
 
-    /// Returns the start address.
     pub fn start_addr(&self) -> Address<ATYPE> {
         self.start.into_inner()
     }
 
-    /// Returns the exclusive end page address.
     pub fn end_exclusive_page_addr(&self) -> PageAddress<ATYPE> {
         self.end_exclusive
     }
 
-    /// Returns the exclusive end page address.
     pub fn end_inclusive_page_addr(&self) -> PageAddress<ATYPE> {
         self.end_exclusive.checked_offset(-1).unwrap()
     }
 
-    /// Checks if self contains an address.
     pub fn contains(&self, addr: Address<ATYPE>) -> bool {
         let page_addr = PageAddress::from(addr.align_down_page());
         self.as_range().contains(&page_addr)
     }
 
-    /// Checks if there is an overlap with another memory region.
     pub fn overlaps(&self, other_region: &Self) -> bool {
         let self_range = self.as_range();
 
@@ -190,14 +170,11 @@ impl<ATYPE: AddressType> MemoryRegion<ATYPE> {
             || self_range.contains(&other_region.end_inclusive_page_addr())
     }
 
-    /// Returns the number of pages contained in this region.
     pub fn num_pages(&self) -> usize {
         PageAddress::steps_between(&self.start, &self.end_exclusive).unwrap()
     }
 
-    /// Returns the size in bytes of this region.
     pub fn size(&self) -> usize {
-        // Invariant: start <= end_exclusive, so do unchecked arithmetic.
         let end_exclusive = self.end_exclusive.into_inner().as_usize();
         let start = self.start.into_inner().as_usize();
 
@@ -251,12 +228,11 @@ impl From<MMIODescriptor> for MemoryRegion<Physical> {
     }
 }
 
-//------------------------------------------------------------------------------
+//------------------
 // MMIODescriptor
-//------------------------------------------------------------------------------
+//------------------
 
 impl MMIODescriptor {
-    /// Create an instance.
     pub const fn new(start_addr: Address<Physical>, size: usize) -> Self {
         assert!(size > 0);
         let end_addr_exclusive = Address::new(start_addr.as_usize() + size);
@@ -267,12 +243,10 @@ impl MMIODescriptor {
         }
     }
 
-    /// Return the start address.
     pub const fn start_addr(&self) -> Address<Physical> {
         self.start_addr
     }
 
-    /// Return the exclusive end address.
     pub fn end_addr_exclusive(&self) -> Address<Physical> {
         self.end_addr_exclusive
     }

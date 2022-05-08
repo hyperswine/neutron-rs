@@ -21,9 +21,9 @@ use tock_registers::{
 register_bitfields! {
     u32,
 
-    /// GPIO Function Select 1
+    
     GPFSEL1 [
-        /// Pin 15
+        
         FSEL15 OFFSET(15) NUMBITS(3) [
             Input = 0b000,
             Output = 0b001,
@@ -31,7 +31,7 @@ register_bitfields! {
 
         ],
 
-        /// Pin 14
+        
         FSEL14 OFFSET(12) NUMBITS(3) [
             Input = 0b000,
             Output = 0b001,
@@ -39,7 +39,7 @@ register_bitfields! {
         ]
     ],
 
-    /// GPIO Pull-up/down Register
+    
     GPPUD [
         PUD OFFSET(0) NUMBITS(2) [
             Off = 0b00,
@@ -48,32 +48,32 @@ register_bitfields! {
         ]
     ],
 
-    /// GPIO Pull-up/down Clock Register 0
-    /// BCM2837 only.
+    
+    
     GPPUDCLK0 [
-        /// Pin 15
+        
         PUDCLK15 OFFSET(15) NUMBITS(1) [
             NoEffect = 0,
             AssertClock = 1
         ],
 
-        /// Pin 14
+        
         PUDCLK14 OFFSET(14) NUMBITS(1) [
             NoEffect = 0,
             AssertClock = 1
         ]
     ],
 
-    /// GPIO Pull-up / Pull-down Register 0
-    /// BCM2711 only.
+    
+    
     GPIO_PUP_PDN_CNTRL_REG0 [
-        /// Pin 15
+        
         GPIO_PUP_PDN_CNTRL15 OFFSET(30) NUMBITS(2) [
             NoResistor = 0b00,
             PullUp = 0b01
         ],
 
-        /// Pin 14
+        
         GPIO_PUP_PDN_CNTRL14 OFFSET(28) NUMBITS(2) [
             NoResistor = 0b00,
             PullUp = 0b01
@@ -95,7 +95,7 @@ register_structs! {
     }
 }
 
-/// Abstraction for the associated MMIO registers.
+
 type Registers = MMIODerefWrapper<RegisterBlock>;
 
 // Public Definitions
@@ -107,7 +107,7 @@ pub struct GPIOInner {
 // Export the inner struct so that BSPs can use it for the panic handler.
 pub use GPIOInner as PanicGPIO;
 
-/// Representation of the GPIO HW.
+
 pub struct GPIO {
     mmio_descriptor: memory::mmu::MMIODescriptor,
     virt_mmio_start_addr: AtomicUsize,
@@ -117,14 +117,14 @@ pub struct GPIO {
 // Public Code
 
 impl GPIOInner {
-    /// Create an instance.
+    
     pub const unsafe fn new(mmio_start_addr: usize) -> Self {
         Self {
             registers: Registers::new(mmio_start_addr),
         }
     }
 
-    /// Init code.
+    
     pub unsafe fn init(&mut self, new_mmio_start_addr: Option<usize>) -> Result<(), &'static str> {
         if let Some(addr) = new_mmio_start_addr {
             self.registers = Registers::new(addr);
@@ -133,7 +133,7 @@ impl GPIOInner {
         Ok(())
     }
 
-    /// Disable pull-up/down on pins 14 and 15.
+    
     // * For PI3
     fn disable_pud_14_15_bcm2837(&mut self) {
         use crate::{time, time::interface::TimeManager};
@@ -154,7 +154,7 @@ impl GPIOInner {
         self.registers.GPPUDCLK0.set(0);
     }
 
-    /// Disable pull-up/down on pins 14 and 15.
+    
     // * For PI4
     #[cfg(feature = "bsp_rpi4")]
     fn disable_pud_14_15_bcm2711(&mut self) {
@@ -164,9 +164,9 @@ impl GPIOInner {
         );
     }
 
-    /// Map PL011 UART as standard output.
-    /// TX to pin 14
-    /// RX to pin 15
+    
+    
+    
     pub fn map_pl011_uart(&mut self) {
         // Select the UART on pins 14 and 15.
         self.registers
@@ -192,7 +192,7 @@ impl GPIOInner {
 }
 
 impl GPIO {
-    /// Create an instance.
+    
     pub const unsafe fn new(mmio_descriptor: memory::mmu::MMIODescriptor) -> Self {
         Self {
             mmio_descriptor,
@@ -201,7 +201,7 @@ impl GPIO {
         }
     }
 
-    /// Concurrency safe version of `GPIOInner.map_pl011_uart()`
+    
     pub fn map_pl011_uart(&self) {
         self.inner.lock(|inner| inner.map_pl011_uart())
     }

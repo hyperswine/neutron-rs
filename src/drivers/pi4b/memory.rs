@@ -26,11 +26,11 @@ extern "Rust" {
 
 // Public Definitions
 
-/// The board's physical memory map.
+
 pub(super) mod map {
     use super::*;
 
-    /// Physical devices.
+    
     #[cfg(feature = "bsp_rpi3")]
     pub mod mmio {
         use super::*;
@@ -50,7 +50,7 @@ pub(super) mod map {
         pub const END: Address<Physical> = Address::new(0x4001_0000);
     }
 
-    /// Physical devices.
+    
     #[cfg(feature = "bsp_rpi4")]
     pub mod mmio {
         use super::*;
@@ -75,49 +75,49 @@ pub(super) mod map {
 
 // Private Code
 
-/// Start page address of the code segment.
+
 #[inline(always)]
 fn virt_code_start() -> PageAddress<Virtual> {
     PageAddress::from(unsafe { __code_start.get() as usize })
 }
 
-/// Size of the code segment.
+
 #[inline(always)]
 fn code_size() -> usize {
     unsafe { (__code_end_exclusive.get() as usize) - (__code_start.get() as usize) }
 }
 
-/// Start page address of the data segment.
+
 #[inline(always)]
 fn virt_data_start() -> PageAddress<Virtual> {
     PageAddress::from(unsafe { __data_start.get() as usize })
 }
 
-/// Size of the data segment.
+
 #[inline(always)]
 fn data_size() -> usize {
     unsafe { (__data_end_exclusive.get() as usize) - (__data_start.get() as usize) }
 }
 
-/// Start page address of the MMIO remap reservation.
+
 #[inline(always)]
 fn virt_mmio_remap_start() -> PageAddress<Virtual> {
     PageAddress::from(unsafe { __mmio_remap_start.get() as usize })
 }
 
-/// Size of the MMIO remap reservation.
+
 #[inline(always)]
 fn mmio_remap_size() -> usize {
     unsafe { (__mmio_remap_end_exclusive.get() as usize) - (__mmio_remap_start.get() as usize) }
 }
 
-/// Start page address of the boot core's stack.
+
 #[inline(always)]
 fn virt_boot_core_stack_start() -> PageAddress<Virtual> {
     PageAddress::from(unsafe { __boot_core_stack_start.get() as usize })
 }
 
-/// Size of the boot core's stack.
+
 #[inline(always)]
 fn boot_core_stack_size() -> usize {
     unsafe {
@@ -127,7 +127,7 @@ fn boot_core_stack_size() -> usize {
 
 // Public Code
 
-/// Exclusive end address of the physical address space.
+
 #[inline(always)]
 pub fn phys_addr_space_end_exclusive_addr() -> PageAddress<Physical> {
     PageAddress::from(map::END)

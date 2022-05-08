@@ -23,7 +23,7 @@ pub(in crate::bsp) mod irq_map {
 
 // Public Code
 
-/// Return a reference to the IRQ manager.
+
 pub fn irq_manager() -> &'static impl exception::asynchronous::interface::IRQManager<
     IRQNumberType = bsp::device_driver::IRQNumber,
 > {

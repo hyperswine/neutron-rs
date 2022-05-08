@@ -9,7 +9,7 @@ use core::fmt;
 
 // Public Code
 
-/// In case of a panic, the panic handler uses this function to take a last shot at printing
+
 #[cfg(not(feature = "test_build"))]
 pub unsafe fn panic_console_out() -> impl fmt::Write {
     use driver::interface::DeviceDriver;
@@ -40,7 +40,7 @@ pub unsafe fn panic_console_out() -> impl fmt::Write {
     panic_uart
 }
 
-/// Reduced version for test builds.
+
 #[cfg(feature = "test_build")]
 pub unsafe fn panic_console_out() -> impl fmt::Write {
     use driver::interface::DeviceDriver;
@@ -58,14 +58,14 @@ pub unsafe fn panic_console_out() -> impl fmt::Write {
     panic_uart
 }
 
-/// Return a reference to the console.
+
 pub fn console() -> &'static impl console::interface::All {
     &super::PL011_UART
 }
 
 // Testing
 
-/// Minimal code needed to bring up the console in QEMU (for testing only). 
+
 #[cfg(feature = "test_build")]
 pub fn qemu_bring_up_console() {
     use driver::interface::DeviceDriver;

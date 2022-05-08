@@ -46,7 +46,7 @@ type HandlerTable =
 
 // Public Definitions
 
-/// Representation of the peripheral interrupt controller.
+
 pub struct PeripheralIC {
     mmio_descriptor: memory::mmu::MMIODescriptor,
 
@@ -71,7 +71,7 @@ impl PeripheralIC {
         }
     }
 
-    /// Query the list of pending IRQs.
+    
     fn pending_irqs(&self) -> PendingIRQs {
         self.ro_registers.read(|regs| {
             let pending_mask: u64 =

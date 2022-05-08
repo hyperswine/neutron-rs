@@ -4,7 +4,7 @@
 // TODO: include kernel/arch/aarch64/memory
 
 #[cfg(target_arch = "aarch64")]
-mod crate::kernel::arch::aarch64::mmu;
+use crate::kernel::arch::aarch64::memory::mmu;
 
 mod mapping_record;
 mod page_alloc;
@@ -60,7 +60,7 @@ fn kernel_init_mmio_va_allocator() {
     page_alloc::kernel_mmio_va_allocator().lock(|allocator| allocator.initialize(region));
 }
 
-/// Map a region in the kernel's translation tables.
+
 unsafe fn kernel_map_at_unchecked(
     name: &'static str,
     virt_region: &MemoryRegion<Virtual>,
@@ -187,12 +187,12 @@ pub unsafe fn enable_mmu_and_caching(
     arch_mmu::mmu().enable_mmu_and_caching(phys_tables_base_addr)
 }
 
-/// Finish initialization of the MMU subsystem.
+
 pub fn post_enable_init() {
     kernel_init_mmio_va_allocator();
 }
 
-/// Human-readable print of all recorded kernel mappings.
+
 pub fn kernel_print_mappings() {
     mapping_record::kernel_print()
 }

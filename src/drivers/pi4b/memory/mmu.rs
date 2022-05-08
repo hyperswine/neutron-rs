@@ -21,29 +21,29 @@ type KernelTranslationTable =
 
 // Public Definitions
 
-/// The translation granule chosen by this BSP
+
 pub type KernelGranule = TranslationGranule<{ 64 * 1024 }>;
 
-/// The kernel's virtual address space defined by this BSP.
+
 pub type KernelVirtAddrSpace = AddressSpace<{ kernel_virt_addr_space_size() }>;
 
 // Global instances
 
-/// The kernel translation tables.
+
 #[link_section = ".data"]
 #[no_mangle]
 static KERNEL_TABLES: InitStateLock<KernelTranslationTable> =
     InitStateLock::new(KernelTranslationTable::new_for_precompute());
 
-/// This value is needed during early boot for MMU setup.
+
 #[link_section = ".text._start_arguments"]
 #[no_mangle]
 static PHYS_KERNEL_TABLES_BASE_ADDR: u64 = 0xCCCCAAAAFFFFEEEE;
 
 // Private Code
 
-/// This is a hack for retrieving the value for the kernel's virtual address space size as a
-/// constant from a common place, since it is needed as a compile-time/link-time constant
+
+
 const fn kernel_virt_addr_space_size() -> usize {
     let __kernel_virt_addr_space_size;
 
@@ -52,7 +52,7 @@ const fn kernel_virt_addr_space_size() -> usize {
     __kernel_virt_addr_space_size
 }
 
-/// Helper function for calculating the number of pages the given parameter spans.
+
 const fn size_to_num_pages(size: usize) -> usize {
     assert!(size > 0);
     assert!(size % KernelGranule::SIZE == 0);
@@ -60,7 +60,7 @@ const fn size_to_num_pages(size: usize) -> usize {
     size >> KernelGranule::SHIFT
 }
 
-/// The code pages of the kernel binary.
+
 fn virt_code_region() -> MemoryRegion<Virtual> {
     let num_pages = size_to_num_pages(super::code_size());
 
@@ -70,7 +70,7 @@ fn virt_code_region() -> MemoryRegion<Virtual> {
     MemoryRegion::new(start_page_addr, end_exclusive_page_addr)
 }
 
-/// The data pages of the kernel binary.
+
 fn virt_data_region() -> MemoryRegion<Virtual> {
     let num_pages = size_to_num_pages(super::data_size());
 
@@ -80,7 +80,7 @@ fn virt_data_region() -> MemoryRegion<Virtual> {
     MemoryRegion::new(start_page_addr, end_exclusive_page_addr)
 }
 
-/// The boot core stack pages.
+
 fn virt_boot_core_stack_region() -> MemoryRegion<Virtual> {
     let num_pages = size_to_num_pages(super::boot_core_stack_size());
 
@@ -112,12 +112,12 @@ fn kernel_page_attributes(virt_page_addr: PageAddress<Virtual>) -> AttributeFiel
 // Public Code
 //--------------------------------------------------------------------------------------------------
 
-/// Return a reference to the kernel's translation tables.
+
 pub fn kernel_translation_tables() -> &'static InitStateLock<KernelTranslationTable> {
     &KERNEL_TABLES
 }
 
-/// The MMIO remap pages.
+
 pub fn virt_mmio_remap_region() -> MemoryRegion<Virtual> {
     let num_pages = size_to_num_pages(super::mmio_remap_size());
 
@@ -127,11 +127,11 @@ pub fn virt_mmio_remap_region() -> MemoryRegion<Virtual> {
     MemoryRegion::new(start_page_addr, end_exclusive_page_addr)
 }
 
-/// Add mapping records for the kernel binary.
-///
-/// The actual translation table entries for the kernel binary are generated using the offline
-/// `translation table tool` and patched into the kernel binary. This function just adds the mapping
-/// record entries.
+
+
+
+
+
 pub fn kernel_add_mapping_records_for_precomputed() {
     let virt_code_region = virt_code_region();
     generic_mmu::kernel_add_mapping_record(

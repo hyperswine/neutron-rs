@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // Common device driver code.
 
 use core::{marker::PhantomData, ops};
@@ -11,7 +8,6 @@ pub struct MMIODerefWrapper<T> {
 }
 
 impl<T> MMIODerefWrapper<T> {
-    /// Create an instance.
     pub const unsafe fn new(start_addr: usize) -> Self {
         Self {
             start_addr,

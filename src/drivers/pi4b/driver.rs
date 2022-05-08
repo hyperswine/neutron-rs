@@ -7,7 +7,7 @@ use crate::driver;
 
 // Private Definitions
 
-/// Device Driver Manager type.
+
 struct BSPDriverManager {
     device_drivers: [&'static (dyn DeviceDriver + Sync); 3],
 }
@@ -24,7 +24,7 @@ static BSP_DRIVER_MANAGER: BSPDriverManager = BSPDriverManager {
 
 // Public Code
 
-/// Return a reference to the driver manager.
+
 pub fn driver_manager() -> &'static impl driver::interface::DriverManager {
     &BSP_DRIVER_MANAGER
 }
