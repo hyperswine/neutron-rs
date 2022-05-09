@@ -1,7 +1,6 @@
 pub mod entry;
 pub mod exception;
-pub mod memory;
-pub mod syscall;
+pub mod translation;
 
 // -----------------
 // BASIC UART OUTPUT
@@ -55,7 +54,7 @@ macro_rules! println {
     ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
 }
 
-// ! I think this panicked, prob bad stack
+// I think this panicked, prob bad stack
 pub fn _print(args: core::fmt::Arguments) {
     let a = args.as_str().unwrap();
     write_uart!(a.as_bytes());

@@ -2,28 +2,31 @@ use core::fmt;
 
 // ACTUAL CONSOLE
 
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    #[cfg(target_arch = "aarch64")]
-    use console::interface::Write;
+// #[doc(hidden)]
+// pub fn _print(args: fmt::Arguments) {
+//     #[cfg(target_arch = "aarch64")]
+//     use console::interface::Write;
 
-    // FOR RISCV Here (UART)
+//     // FOR RISCV Here (UART)
 
-    console::console().write_fmt(args).unwrap();
-}
+//     console::console().write_fmt(args).unwrap();
+// }
 
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::print::_print(format_args!($($arg)*)));
-}
+// #[macro_export]
+// macro_rules! print {
+//     ($($arg:tt)*) => ($crate::print::_print(format_args!($($arg)*)));
+// }
 
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ({
-        $crate::print::_print(format_args_nl!($($arg)*));
-    })
-}
+// #[macro_export]
+// macro_rules! println {
+//     () => ($crate::print!("\n"));
+//     ($($arg:tt)*) => ({
+//         $crate::print::_print(format_args_nl!($($arg)*));
+//     })
+// }
+
+// println! just prints to stdout in userspace
+// in kernelspace, just print to the default buffer, aka the arch's preferred default stream like UART0
 
 #[macro_export]
 macro_rules! info {

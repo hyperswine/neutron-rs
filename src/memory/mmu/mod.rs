@@ -3,7 +3,7 @@ pub mod page_alloc;
 pub mod translation_table;
 
 use core::{fmt, num::NonZeroUsize};
-use crate::types::paging::{MemoryRegion, AttributeFields, MMIODescriptor, MemAttributes, AccessPermissions, PageAddress};
+use crate::{types::paging::{MemoryRegion, AttributeFields, MMIODescriptor, MemAttributes, AccessPermissions, PageAddress}, drivers::pi4b::memory};
 use super::{Address, Physical, Virtual};
 
 #[derive(Debug)]
@@ -33,7 +33,7 @@ pub trait AssociatedTranslationTable {
 // TODO: I think some of these need pi 4b / coupled to it. Again if its on aarch64/pi/rockpi, use it here instead
 
 fn kernel_init_mmio_va_allocator() {
-    let region = memory::mmu::virt_mmio_remap_region();
+    let region = memory::virt_mmio_remap_region();
 
     page_alloc::kernel_mmio_va_allocator().lock(|allocator| allocator.initialize(region));
 }
@@ -44,7 +44,7 @@ unsafe fn kernel_map_at_unchecked(
     phys_region: &MemoryRegion<Physical>,
     attr: &AttributeFields,
 ) -> Result<(), &'static str> {
-    memory::mmu::kernel_translation_tables()
+    memory::kernel_translation_tables()
         .write(|tables| tables.map_at(virt_region, phys_region, attr))?;
 
     kernel_add_mapping_record(name, virt_region, phys_region, attr);
@@ -55,7 +55,7 @@ unsafe fn kernel_map_at_unchecked(
 fn try_kernel_virt_addr_to_phys_addr(
     virt_addr: Address<Virtual>,
 ) -> Result<Address<Physical>, &'static str> {
-    memory::mmu::kernel_translation_tables()
+    memory::kernel_translation_tables()
         .read(|tables| tables.try_virt_addr_to_phys_addr(virt_addr))
 }
 
@@ -146,14 +146,14 @@ pub unsafe fn kernel_map_mmio(
 pub fn try_kernel_virt_page_addr_to_phys_page_addr(
     virt_page_addr: PageAddress<Virtual>,
 ) -> Result<PageAddress<Physical>, &'static str> {
-    memory::mmu::kernel_translation_tables()
+    memory::kernel_translation_tables()
         .read(|tables| tables.try_virt_page_addr_to_phys_page_addr(virt_page_addr))
 }
 
 pub fn try_kernel_page_attributes(
     virt_page_addr: PageAddress<Virtual>,
 ) -> Result<AttributeFields, &'static str> {
-    memory::mmu::kernel_translation_tables()
+    memory::kernel_translation_tables()
         .read(|tables| tables.try_page_attributes(virt_page_addr))
 }
 
@@ -161,6 +161,7 @@ pub fn try_kernel_page_attributes(
 pub unsafe fn enable_mmu_and_caching(
     phys_tables_base_addr: Address<Physical>,
 ) -> Result<(), MMUEnableError> {
+    // returns a temp object (static mmu)
     mmu().enable_mmu_and_caching(phys_tables_base_addr)
 }
 

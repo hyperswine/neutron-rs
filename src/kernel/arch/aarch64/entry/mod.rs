@@ -9,7 +9,11 @@ use tock_registers::{
     registers::InMemoryRegister,
 };
 
-use crate::{kernel::{final_setup, PrivilegeLevel}, exception::IRQContext};
+use crate::{
+    exception::IRQContext,
+    kernel::{final_setup, PrivilegeLevel},
+    write_uart, println, drivers::pi4b::board_name,
+};
 
 // ---------------
 // PRIVILEGE LEVEL
@@ -56,52 +60,37 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
 // -------------
 
 unsafe fn kernel_init() -> ! {
-    // use driver::interface::DriverManager;
+    for i in all_device_drivers().iter() {
+        if let Err(x) = i.init() {
+            panic!("Error loading driver: {}: {}", i.compatible(), x);
+        }
+    }
+    post_device_driver_init();
 
-    // for i in bsp::driver::driver_manager().all_device_drivers().iter() {
-    //     if let Err(x) = i.init() {
-    //         panic!("Error loading driver: {}: {}", i.compatible(), x);
-    //     }
-    // }
-    // bsp::driver::driver_manager().post_device_driver_init();
-    // println! is usable from here on.
+    use core::time::Duration;
 
-    // Transition from unsafe to safe.
-    // use bsp::console::console;
-    // use console::interface::All;
-    // use core::time::Duration;
-    // use driver::interface::DriverManager;
-    // use time::interface::TimeManager;
+    println!(
+        "{} version {}",
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION")
+    );
+    // for now, assume pi 4b
+    println!("Booting on: {}", board_name());
 
-    // info!(
-    //     "{} version {}",
-    //     env!("CARGO_PKG_NAME"),
-    //     env!("CARGO_PKG_VERSION")
-    // );
-    // info!("Booting on: {}", bsp::board_name());
+    let (_, privilege_level) = exception::current_privilege_level();
+    println!("Current privilege level: {}", privilege_level);
 
-    // let (_, privilege_level) = exception::current_privilege_level();
-    // info!("Current privilege level: {}", privilege_level);
+    write_uart!("Exception handling state:");
+    exception::asynchronous::print_state();
 
-    // info!("Exception handling state:");
-    // exception::asynchronous::print_state();
+    println!(
+        "Architectural timer resolution: {} ns",
+        time::time_manager().resolution().as_nanos()
+    );
 
-    // info!(
-    //     "Architectural timer resolution: {} ns",
-    //     time::time_manager().resolution().as_nanos()
-    // );
-
-    // info!("Drivers loaded:");
-    // for (i, driver) in bsp::driver::driver_manager()
-    //     .all_device_drivers()
-    //     .iter()
-    //     .enumerate()
-    // {
-    //     info!("      {}. {}", i + 1, driver.compatible());
-    // }
-
-    // info!("Timer test, spinning for 1 second");
-    // time::time_manager().spin_for(Duration::from_secs(1));
+    write_uart!("Drivers loaded");
+    write_uart!("Timer test, spinning for 1 second");
+    time_manager().spin_for(Duration::from_secs(1));
 
     // Transition to common code in kernel
     final_setup()
@@ -135,7 +124,7 @@ struct ExceptionContext {
     esr_el1: EsrEL1,
 }
 
-/// Prints verbose information about the exception and then panics.
+/// Prints verbose write_uartrmation about the exception and then panics.
 fn default_exception_handler(exc: &ExceptionContext) {
     panic!(
         "CPU Exception!\n\n\
@@ -194,9 +183,9 @@ unsafe extern "C" fn current_elx_serror(e: &mut ExceptionContext) {
     default_exception_handler(e);
 }
 
-//------------------------------------------------------------------------------
+//-----------------
 // Lower, AArch64
-//------------------------------------------------------------------------------
+//-----------------
 
 #[no_mangle]
 unsafe extern "C" fn lower_aarch64_synchronous(e: &mut ExceptionContext) {

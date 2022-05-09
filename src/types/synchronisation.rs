@@ -59,14 +59,14 @@ impl<T> InitStateLock<T> {
 //--------------------
 // OS Interface Code
 //--------------------
-use crate::{exception};
+use crate::exception;
 
 impl<T> Mutex for IRQSafeNullLock<T> {
     type Data = T;
 
     fn lock<R>(&self, f: impl FnOnce(&mut Self::Data) -> R) -> R {
         let data = unsafe { &mut *self.data.get() };
-        exception::asynchronous::exec_with_irq_masked(|| f(data))
+        exception::exec_with_irq_masked(|| f(data))
     }
 }
 
