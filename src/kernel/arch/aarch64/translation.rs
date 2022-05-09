@@ -5,7 +5,10 @@ use tock_registers::{
     registers::InMemoryRegister,
 };
 
-use crate::{memory::{mmu::translation_table::TranslationTable, Virtual, Physical}, types::paging::{MemoryRegion, AttributeFields}};
+use crate::{
+    memory::{mmu::{translation_table::TranslationTable, AssociatedTranslationTable, AddressSpace}, Physical, Virtual, Address},
+    types::paging::{AttributeFields, MemoryRegion, PageAddress, MemAttributes, AccessPermissions},
+};
 
 register_bitfields! {u64,
     STAGE1_TABLE_DESCRIPTOR [
@@ -117,11 +120,11 @@ impl convert::From<AttributeFields>
         let mut desc = match attribute_fields.mem_attributes {
             MemAttributes::CacheableDRAM => {
                 STAGE1_PAGE_DESCRIPTOR::SH::InnerShareable
-                    + STAGE1_PAGE_DESCRIPTOR::AttrIndx.val(memory::mmu::arch_mmu::mair::NORMAL)
+                    + STAGE1_PAGE_DESCRIPTOR::AttrIndx.val(NORMAL)
             }
             MemAttributes::Device => {
                 STAGE1_PAGE_DESCRIPTOR::SH::OuterShareable
-                    + STAGE1_PAGE_DESCRIPTOR::AttrIndx.val(memory::mmu::arch_mmu::mair::DEVICE)
+                    + STAGE1_PAGE_DESCRIPTOR::AttrIndx.val(DEVICE)
             }
         };
 
@@ -149,8 +152,8 @@ impl convert::TryFrom<InMemoryRegister<u64, STAGE1_PAGE_DESCRIPTOR::Register>> f
         desc: InMemoryRegister<u64, STAGE1_PAGE_DESCRIPTOR::Register>,
     ) -> Result<AttributeFields, Self::Error> {
         let mem_attributes = match desc.read(STAGE1_PAGE_DESCRIPTOR::AttrIndx) {
-            memory::mmu::arch_mmu::mair::NORMAL => MemAttributes::CacheableDRAM,
-            memory::mmu::arch_mmu::mair::DEVICE => MemAttributes::Device,
+            NORMAL => MemAttributes::CacheableDRAM,
+            DEVICE => MemAttributes::Device,
             _ => return Err("Unexpected memory attribute"),
         };
 
@@ -210,8 +213,8 @@ impl PageDescriptor {
     }
 }
 
-impl<const AS_SIZE: usize> memory::mmu::AssociatedTranslationTable
-    for memory::mmu::AddressSpace<AS_SIZE>
+impl<const AS_SIZE: usize> AssociatedTranslationTable
+    for AddressSpace<AS_SIZE>
 where
     [u8; Self::SIZE >> Granule512MiB::SHIFT]: Sized,
 {

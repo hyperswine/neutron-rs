@@ -1,7 +1,9 @@
 // Pi 4B Driver Support
+// For UART, GIC, GPIO
+
 // TODO: GET these working for neutron drivers instead
 
-use crate::drivers::DriverManager;
+use crate::drivers::{DriverManager, NeutronDriver};
 
 struct BSPDriverManager {
     device_drivers: [&'static NeutronDriver; 3],

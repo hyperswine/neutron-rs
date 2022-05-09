@@ -6,6 +6,7 @@ PAGE_MASK = PAGE_SIZE - 1;
 __kernel_virt_start_addr = ((0xffffffffffffffff - __kernel_virt_addr_space_size) + 1);
 
 __rpi_phys_dram_start_addr = 0;
+/* Identity mapped */
 __rpi_phys_binary_load_addr = 0x80000;
 
 ENTRY(__rpi_phys_binary_load_addr)
@@ -31,6 +32,7 @@ SECTIONS
         *(.text._start_arguments)
         *(.text._start_rust)
         *(.text*)
+        /* ADD MULTIBOOT HEADER HERE .multiboot_header */
     } :segment_code
 
     .rodata : ALIGN(8) { *(.rodata*) } :segment_code

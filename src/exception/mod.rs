@@ -11,7 +11,7 @@ use core::{fmt, marker::PhantomData};
 // Reexports
 // -----------
 
-pub use exception::asynchronous::{
+pub use exception::{
     is_local_irq_masked, local_irq_mask, local_irq_mask_save, local_irq_restore, local_irq_unmask,
 };
 

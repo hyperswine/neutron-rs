@@ -1,7 +1,7 @@
 // Page allocation.
 
 use core::num::NonZeroUsize;
-use crate::types::synchronisation::IRQSafeNullLock;
+use crate::{types::{synchronisation::IRQSafeNullLock, paging::MemoryRegion}, memory::{AddressType, Virtual}};
 
 pub struct PageAllocator<ATYPE: AddressType> {
     pool: Option<MemoryRegion<ATYPE>>,

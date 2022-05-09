@@ -24,3 +24,13 @@ Lifetime categories:
 <'os> => entire duration of the kernel from boot to shutdown
 <'service> => duration of a service
 ```
+
+## Wanna Develop for RISCV or X86 instead?
+
+The default vscode highlight is aarch64, but you can set it to riscv or x86 for good language service.
+
+```json
+{
+    "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
+}
+```

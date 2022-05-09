@@ -10,36 +10,29 @@ use tock_registers::{
 };
 
 use crate::{
+    drivers::pi4b::board_name,
     exception::IRQContext,
     kernel::{final_setup, PrivilegeLevel},
-    write_uart, println, drivers::pi4b::board_name,
+    println, write_uart,
 };
 
 // ---------------
 // PRIVILEGE LEVEL
 // ---------------
 
-// Use ERET to go to a lower execution level. Requires extra code
 #[no_mangle]
 pub unsafe extern "C" fn _start_rust(phys_boot_core_stack_end_exclusive_addr: u64) -> ! {
     prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr);
-
-    // Use `eret` to "return" to EL1. This results in execution of kernel_init() in EL1.
     cortex_a::asm::eret()
 }
 
 #[inline(always)]
 unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr: u64) {
-    // Enable timer counter registers for EL1.
     CNTHCTL_EL2.write(CNTHCTL_EL2::EL1PCEN::SET + CNTHCTL_EL2::EL1PCTEN::SET);
 
-    // No offset for reading the counters.
     CNTVOFF_EL2.set(0);
-
-    // Set EL1 execution state to AArch64.
     HCR_EL2.write(HCR_EL2::RW::EL1IsAarch64);
 
-    // Set up a simulated exception return to go back to EL1
     SPSR_EL2.write(
         SPSR_EL2::D::Masked
             + SPSR_EL2::A::Masked
@@ -48,10 +41,7 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
             + SPSR_EL2::M::EL1h,
     );
 
-    // Second, let the link register point to kernel_init().
     ELR_EL2.set(kernel_init as *const () as u64);
-
-    // Set up SP_EL1 (stack pointer), which will be used by EL1 once we "return" to it. Since there are no plans to ever return to EL2, just re-use the same stack.
     SP_EL1.set(phys_boot_core_stack_end_exclusive_addr);
 }
 
@@ -60,6 +50,7 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
 // -------------
 
 unsafe fn kernel_init() -> ! {
+    // INITIALISE DEVICE DRIVERS
     for i in all_device_drivers().iter() {
         if let Err(x) = i.init() {
             panic!("Error loading driver: {}: {}", i.compatible(), x);
@@ -77,15 +68,14 @@ unsafe fn kernel_init() -> ! {
     // for now, assume pi 4b
     println!("Booting on: {}", board_name());
 
-    let (_, privilege_level) = exception::current_privilege_level();
+    let (_, privilege_level) = current_privilege_level();
     println!("Current privilege level: {}", privilege_level);
 
     write_uart!("Exception handling state:");
-    exception::asynchronous::print_state();
 
     println!(
         "Architectural timer resolution: {} ns",
-        time::time_manager().resolution().as_nanos()
+        time_manager().resolution().as_nanos()
     );
 
     write_uart!("Drivers loaded");
@@ -125,6 +115,7 @@ struct ExceptionContext {
 }
 
 /// Prints verbose write_uartrmation about the exception and then panics.
+/// RN, does nothing basically. Otherwise check CSR of exception numbers and etc. And call the specified handler for that exception
 fn default_exception_handler(exc: &ExceptionContext) {
     panic!(
         "CPU Exception!\n\n\
@@ -175,7 +166,8 @@ unsafe extern "C" fn current_elx_synchronous(e: &mut ExceptionContext) {
 #[no_mangle]
 unsafe extern "C" fn current_elx_irq(_e: &mut ExceptionContext) {
     let token = &IRQContext::new();
-    irq_manager().handle_pending_irqs(token);
+    // USING PI 4 drivers for this??
+    crate::drivers::pi4b::exception::irq_manager().handle_pending_irqs(token);
 }
 
 #[no_mangle]

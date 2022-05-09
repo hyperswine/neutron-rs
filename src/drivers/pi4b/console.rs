@@ -24,6 +24,9 @@ pub unsafe fn panic_console_out() -> impl fmt::Write {
         Some(x) => x,
     };
 
+    use crate::drivers::arm::bcm::PanicGPIO;
+    use crate::drivers::arm::bcm::PanicUart;
+
     let mut panic_gpio = PanicGPIO::new(gpio_mmio_start_addr);
     let mut panic_uart = PanicUart::new(uart_mmio_start_addr);
 
