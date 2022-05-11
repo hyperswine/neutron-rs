@@ -299,5 +299,5 @@ fn boot_core_stack_size() -> usize {
 
 #[inline(always)]
 pub fn phys_addr_space_end_exclusive_addr() -> PageAddress<Physical> {
-    PageAddress::from(map::END)
+    PageAddress::from(END)
 }

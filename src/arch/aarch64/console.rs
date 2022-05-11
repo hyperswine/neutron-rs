@@ -30,7 +30,7 @@ macro_rules! write_uart {
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => (crate::arch::aarch64::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => (crate::arch::aarch64::console::_print(format_args!($($arg)*)));
 }
 
 #[macro_export]

@@ -12,9 +12,8 @@ brv = "build --target riscv64gc-unknown-none-elf"
 bx86 = "build --target x86_64-unknown-none"
 # RUN
 rarm = "run --target aarch64-unknown-none --features multiboot"
-# TESTS
+# TESTS (NO RUN)
 trv = "test --target riscv64gc-unknown-none-elf --no-run"
-# TODO: make a profile to run the tests in runner. Also account for integration tests
 tarm = "test --target aarch64-unknown-none --no-run"
 tx86 = "test --target x86_64-unknown-none --no-run"
 # Run with arcutils test build/neutron_kernel
@@ -24,8 +23,7 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 out-dir = "build"
 
 [target.aarch64-unknown-none]
-# default is multiboot
-rustflags = ["-C", "link-arg=-Tbuild/kernel.ld"]
+rustflags = ["-C", "link-arg=-Tbuild/arcboot.ld"]
 runner = "qemu-system-aarch64 -M virt -cpu cortex-a57 -nographic -kernel build/neutron_kernel -serial mon:stdio"
 
 # STUFF FOR EACH ARCH
