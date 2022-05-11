@@ -1,3 +1,5 @@
+pub mod acpi;
+
 struct GenericMouse;
 
 struct GenericKB;

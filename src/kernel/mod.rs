@@ -1,11 +1,10 @@
-// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
+// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETH
 
 // --------------------
 // ARCH DEPENDENT STUFF
 // --------------------
 
 pub mod acpi;
-pub mod arch;
 #[cfg(feature = "posix")]
 pub mod posix;
 pub mod console;

@@ -3,6 +3,8 @@
 // And https://sceweb.sce.uhcl.edu/helm/WEBPAGE-Python/documentation/python_tutorial/lib/module-posix.html
 // Only implements most common ones for rust-std
 
+// REQUIRES IMPORTING FROM EACH ARCH
+
 #[no_mangle]
 extern "C" fn open(file: &str, flags: u64, mode: u64) -> u64 {}
 

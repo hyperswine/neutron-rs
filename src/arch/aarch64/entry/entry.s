@@ -1,4 +1,5 @@
 ; the actual entry for neutron_kernel. As specified by entry/multiboot_entry.x
+; should be in arcboot
 .global _setup
 _setup:
     // Only proceed if the core executes in EL2. Loop otherwise.

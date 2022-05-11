@@ -1,3 +1,8 @@
+# Archived Code
+
+Just a bunch of code that I cut out to use later.
+
+```rust
 use core::fmt;
 
 // ACTUAL CONSOLE
@@ -81,3 +86,4 @@ macro_rules! warn {
         ));
     })
 }
+```
