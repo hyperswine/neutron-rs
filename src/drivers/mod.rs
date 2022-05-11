@@ -2,16 +2,27 @@
 // ARCH DEPENDENT
 // -------------------
 
-// Allow space for optimisation for a more optimal user xp
+// How to use drivers:
+// compile neutron kernel with all drivers enabled
+// load a bsp on the fly when you confirm what device you are using
 
-#[cfg(target_arch = "riscv64")]
-pub mod spectro;
+// IDK if its better to store stuff like spectro under riscv/ and pi under aarch64/
+// Maybe just leave it for now since it works and kinda makes sense
+
+// GENERIC ARM DRIVERS
+pub mod arm;
 
 #[cfg(target_arch = "aarch64")]
 pub mod pi4b;
 
 #[cfg(target_arch = "aarch64")]
 pub mod rk3399;
+
+// GENERIC RISCV DRIVERS
+pub mod riscv;
+
+#[cfg(target_arch = "riscv64")]
+pub mod spectro;
 
 // -------------------
 // NON ARCH DEPENDENT
@@ -138,6 +149,21 @@ struct NeutronPCIeDevice {
 // for char devices like KB and MICE
 // generic, spectro and rk3399 drivers should implement traits like this
 pub trait CharDeviceFunctions<Data> {
+    // TODO: implement CharDeviceFunctions
+    fn compatible(&self) -> &'static str;
+
+    unsafe fn init(&self) -> Result<(), &'static str> {
+        Ok(())
+    }
+
+    fn register_and_enable_irq_handler(&'static self) -> Result<(), &'static str> {
+        Ok(())
+    }
+
+    fn virt_mmio_start_addr(&self) -> Option<usize> {
+        None
+    }
+
     // BASIC INIT
     fn dev_open(&self);
     // used mainly for shutdown and sleep (S0x, S3)
@@ -375,6 +401,14 @@ impl DriverManager {
             }
         }
     }
+
+    fn all_device_drivers(&self) -> &[&'static NeutronDriver] {}
+
+    // fn early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {}
+
+    // fn non_early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {}
+
+    // fn post_early_print_device_driver_init(&self) {}
 }
 
 // most should be non arch dependent, e.g., Generic Mouse, Generic KB, Generic Headphones, Generic Mic

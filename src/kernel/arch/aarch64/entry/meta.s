@@ -1,4 +1,6 @@
 ; store any metadata here, like multiboot headers
+; TODO: can make this a packed struct in rust
+; with #[link_section = ".text"] and ALIGN(8) 8 Bytes for .text in linker
 .section .multiboot_header
 header_start:
     .quad 0xe85250d6

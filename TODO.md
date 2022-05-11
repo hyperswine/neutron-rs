@@ -2,7 +2,10 @@
 
 ## Les Go
 
-- fix paging, EL not defined
+- remove as much as possible. And put in one file if possible esp for multiarch stuff and circular deps
+- fix paging, src/memory/mmu
+- fix exceptions and CPU boot, like setting the right CSRs (CSSRW) on M mode
+- remove all the cfg(feature = "pi4") etc. Get the board name from the device tree id
 
 ## Big Stuff
 
@@ -20,4 +23,14 @@ Lifetime categories:
 ```rust
 <'os> => entire duration of the kernel from boot to shutdown
 <'service> => duration of a service
+```
+
+## Wanna Develop for RISCV or X86 instead?
+
+The default vscode highlight is aarch64, but you can set it to riscv or x86 for good language service.
+
+```json
+{
+    "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
+}
 ```

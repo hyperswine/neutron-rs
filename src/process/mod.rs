@@ -74,16 +74,7 @@ fn test_process() {
     // println!("process succesfully created!");
 }
 
-// -------------
-// ARCTEST
-// -------------
-
-// WHEN TRYING TO TEST DRIVER AND OUTPUT, USE THE HIGHER LEVEL FUNCTIONS AND CHECK OUTPUT DIRECTLY
-// DO NOT TEST THE FOLLOWING IN CARGO-BASED UNIT TESTS (SINCE THEY RUN ON THE HOST INSTEAD OF THE VM)
-
-// IF TRYING TO TEST ON THE VM, Use arcboot test instead
-// Cargo is supposed to only test functions and function interfaces
-#[cfg(feature = "arctest")]
+#[test_case]
 fn test_serial_out_basics() {
     use core::ptr;
     const UART0: *mut u8 = 0x10000000 as *mut u8;

@@ -1,6 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
 // Taken from https://github.com/rust-embedded/rust-raspberrypi-OS-tutorials/blob/master/11_exceptions_part1_groundwork/src/_arch/aarch64/exception.s
 
 //--------------

@@ -1,4 +1,10 @@
 pub mod bits;
+pub mod synchronisation;
+pub mod sort;
+pub mod time;
+pub mod paging;
+// expose time functions
+pub use time::*;
 
 use alloc::{
     borrow::ToOwned,
@@ -73,92 +79,30 @@ struct Bucket;
 
 struct SkipList;
 
-// -------------------
-// TIME
-// -------------------
+// ----------------
+// ALIGNMENT
+// ----------------
 
-pub struct KTimestamp {
-    day: u8,
-    month: u8,
-    year: u64,
+/// Check if a value is aligned to a given size.
+#[inline(always)]
+pub const fn is_aligned(value: usize, alignment: usize) -> bool {
+    assert!(alignment.is_power_of_two());
 
-    hour: f32,
-    min: f32,
-    sec: f32,
+    (value & (alignment - 1)) == 0
 }
 
-impl KTimestamp {
-    // yyyy-mm-dd
-    pub fn from_yyyy_mm_dd(str: &str) -> Option<Self> {
-        // check if in right format
-        if str.len() != 12 {
-            return None;
-        }
+/// Align down.
+#[inline(always)]
+pub const fn align_down(value: usize, alignment: usize) -> usize {
+    assert!(alignment.is_power_of_two());
 
-        let s = str.to_owned();
-        let s = s.replace("-", "");
-        // check first four are numbers 0-9
-        let year = &s[0..3];
-        let month = &s[4..5];
-        let day = &s[6..7];
+    value & !(alignment - 1)
+}
 
-        let year = year.parse::<u64>();
-        let year: u64 = match year {
-            Ok(_) => year.unwrap(),
-            Err(_) => return None,
-        };
+/// Align up.
+#[inline(always)]
+pub const fn align_up(value: usize, alignment: usize) -> usize {
+    assert!(alignment.is_power_of_two());
 
-        let month = month.parse::<u8>();
-        let month = match month {
-            Ok(m) => {
-                // check if m is between 1 and 12
-                if m >= 1 && m <= 12 {
-                    m
-                } else {
-                    return None;
-                }
-            }
-            Err(_) => return None,
-        };
-
-        let month_31days = [1, 3, 5, 7, 8, 10, 12];
-
-        let day = day.parse::<u8>();
-        // depending on the month and year (leap year), get the max date
-        let day_max = match day {
-            Ok(d) => {
-                // if january, march, etc. always 31 days
-                if month_31days.contains(&month) {
-                    31 as u8
-                }
-                // if feb, check if leap year
-                else if month == 2 {
-                    if (year % 400 == 0 && year % 100 == 0) || (year % 4 == 0 && year % 100 != 0) {
-                        29
-                    } else {
-                        28
-                    }
-                }
-                // if june, nov, etc
-                else {
-                    30
-                }
-            }
-            Err(_) => return None,
-        };
-
-        let day = day.unwrap();
-        if day > day_max {
-            return None;
-        }
-
-        Some(Self {
-            day,
-            month,
-            year,
-            hour: 0.0,
-            min: 0.0,
-            sec: 0.0,
-        })
-    }
+    (value + alignment - 1) & !(alignment - 1)
 }

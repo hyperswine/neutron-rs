@@ -7,6 +7,8 @@
 #![allow(named_asm_labels)]
 #![feature(global_asm)]
 #![feature(asm_const)]
+#![feature(step_trait)]
+#![feature(trait_alias)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
@@ -19,6 +21,7 @@ pub mod process;
 pub mod services;
 pub mod types;
 pub mod memory;
+pub mod exception;
 
 // -----------------------
 // ARCH DEPENDENT CODE

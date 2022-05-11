@@ -8,10 +8,20 @@ pub mod acpi;
 pub mod arch;
 #[cfg(feature = "posix")]
 pub mod posix;
+pub mod console;
 
 // --------------------
 // NON-ARCH DEPENDENT STUFF
 // --------------------
+
+// Kernel Privilege Level, kind of like CPU but system wide/non arch dependent
+#[derive(PartialEq)]
+pub enum PrivilegeLevel {
+    User,
+    Kernel,
+    Hypervisor,
+    Unknown,
+}
 
 use crate::filesystem::VFS;
 
@@ -19,13 +29,11 @@ pub struct KernelManager {
     vfs: VFS::RootFS,
 }
 
-/// Setup the rest of the non arch dependent stuff like filesystems
 impl KernelManager {
     pub fn kernel_manager_entry(&self) -> ! {
         loop {}
     }
 
-    /// Assumes that everything else like execution levels, paging/heap and device dependent drivers have already been setup by arch code
     pub fn init(&self) -> ! {
         // CHECK VFS IS IN THE RIGHT FORMAT
         // AND ALL FILES THAT NEED TO BE THERE ARE THERE
@@ -49,8 +57,7 @@ impl KernelManager {
     }
 }
 
-/// Creates a kernel manager and calls init
-pub fn final_setup() -> !{
+pub fn final_setup() -> ! {
     let kernel_manager = KernelManager::new();
     kernel_manager.init();
 }
