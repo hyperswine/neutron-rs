@@ -6,18 +6,12 @@ use tock_registers::{
 
 register_bitfields! {
     u32,
-
-    
     CTLR [
         Enable OFFSET(0) NUMBITS(1) []
     ],
-
-    
     TYPER [
         ITLinesNumber OFFSET(0)  NUMBITS(5) []
     ],
-
-    
     ITARGETSR [
         Offset3 OFFSET(24) NUMBITS(8) [],
         Offset2 OFFSET(16) NUMBITS(8) [],
@@ -51,14 +45,10 @@ register_structs! {
 }
 
 type SharedRegisters = MMIODerefWrapper<SharedRegisterBlock>;
-
 type BankedRegisters = MMIODerefWrapper<BankedRegisterBlock>;
 
 pub struct GICD {
-    
     shared_registers: IRQSafeNullLock<SharedRegisters>,
-
-    
     banked_registers: InitStateLock<BankedRegisters>,
 }
 

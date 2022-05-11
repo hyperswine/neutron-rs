@@ -30,8 +30,6 @@ pub trait AssociatedTranslationTable {
     type TableStartFromBottom;
 }
 
-// TODO: I think some of these need pi 4b / coupled to it. Again if its on aarch64/pi/rockpi, use it here instead
-
 fn kernel_init_mmio_va_allocator() {
     let region = memory::virt_mmio_remap_region();
 

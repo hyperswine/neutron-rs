@@ -4,11 +4,6 @@
 // Peripheral Interrupt Controller Driver.
 
 use super::{InterruptController, PendingIRQs, PeripheralIRQ};
-use crate::{
-    bsp::device_driver::common::MMIODerefWrapper,
-    driver, exception, memory, synchronization,
-    synchronization::{IRQSafeNullLock, InitStateLock},
-};
 use tock_registers::{
     interfaces::{Readable, Writeable},
     register_structs,
@@ -48,7 +43,7 @@ type HandlerTable =
 
 
 pub struct PeripheralIC {
-    mmio_descriptor: memory::mmu::MMIODescriptor,
+    mmio_descriptor: MMIODescriptor,
 
     wo_registers: IRQSafeNullLock<WriteOnlyRegisters>,
 
@@ -60,7 +55,7 @@ pub struct PeripheralIC {
 // Public Code
 
 impl PeripheralIC {
-    pub const unsafe fn new(mmio_descriptor: memory::mmu::MMIODescriptor) -> Self {
+    pub const unsafe fn new(mmio_descriptor: MMIODescriptor) -> Self {
         let addr = mmio_descriptor.start_addr().as_usize();
 
         Self {
@@ -143,7 +138,7 @@ impl exception::asynchronous::interface::IRQManager for PeripheralIC {
 
     fn handle_pending_irqs<'irq_context>(
         &'irq_context self,
-        _ic: &exception::asynchronous::IRQContext<'irq_context>,
+        _ic: &IRQContext<'irq_context>,
     ) {
         self.handler_table.read(|table| {
             for irq_number in self.pending_irqs() {

@@ -40,7 +40,7 @@ type OptimalAllocator = FixedAllocator;
 // -----------------
 
 // Arbitary starting address (vaddr)
-pub const HEAP_START: usize = 0x8000_0000;
+pub const HEAP_START: usize = 0xff00_0000_0000_0000;
 // 4 * 4 KiB by default for the kernel. For programs, idk
 pub const HEAP_SIZE: usize = 4 * 0x1000;
 

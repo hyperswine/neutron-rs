@@ -298,10 +298,6 @@ impl<const NUM_TABLES: usize, const START_FROM_TOP: bool>
     }
 }
 
-//-------------------
-// OS Interface Code
-//-------------------
-
 impl<const NUM_TABLES: usize, const START_FROM_TOP: bool> TranslationTable
     for FixedSizeTranslationTable<NUM_TABLES, START_FROM_TOP>
 {

@@ -9,6 +9,7 @@
 #![feature(asm_const)]
 #![feature(step_trait)]
 #![feature(trait_alias)]
+#![feature(core_intrinsics)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE

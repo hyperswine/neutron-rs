@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
+// GPIO Driver.
 
-//! GPIO Driver.
-
-use crate::{
-    bsp::device_driver::common::MMIODerefWrapper, driver, memory, synchronization,
-    synchronization::IRQSafeNullLock,
-};
 use core::sync::atomic::{AtomicUsize, Ordering};
 use tock_registers::{
     interfaces::{ReadWriteable, Writeable},
@@ -15,31 +7,22 @@ use tock_registers::{
     registers::ReadWrite,
 };
 
-// Private Definitions
-
 // GPIO registers.
 register_bitfields! {
     u32,
-
-    
     GPFSEL1 [
-        
         FSEL15 OFFSET(15) NUMBITS(3) [
             Input = 0b000,
             Output = 0b001,
             AltFunc0 = 0b100  // PL011 UART RX
 
         ],
-
-        
         FSEL14 OFFSET(12) NUMBITS(3) [
             Input = 0b000,
             Output = 0b001,
             AltFunc0 = 0b100  // PL011 UART TX
         ]
     ],
-
-    
     GPPUD [
         PUD OFFSET(0) NUMBITS(2) [
             Off = 0b00,
@@ -47,33 +30,21 @@ register_bitfields! {
             PullUp = 0b10
         ]
     ],
-
-    
-    
     GPPUDCLK0 [
-        
         PUDCLK15 OFFSET(15) NUMBITS(1) [
             NoEffect = 0,
             AssertClock = 1
         ],
-
-        
         PUDCLK14 OFFSET(14) NUMBITS(1) [
             NoEffect = 0,
             AssertClock = 1
         ]
     ],
-
-    
-    
     GPIO_PUP_PDN_CNTRL_REG0 [
-        
         GPIO_PUP_PDN_CNTRL15 OFFSET(30) NUMBITS(2) [
             NoResistor = 0b00,
             PullUp = 0b01
         ],
-
-        
         GPIO_PUP_PDN_CNTRL14 OFFSET(28) NUMBITS(2) [
             NoResistor = 0b00,
             PullUp = 0b01
@@ -95,10 +66,7 @@ register_structs! {
     }
 }
 
-
 type Registers = MMIODerefWrapper<RegisterBlock>;
-
-// Public Definitions
 
 pub struct GPIOInner {
     registers: Registers,
@@ -107,24 +75,19 @@ pub struct GPIOInner {
 // Export the inner struct so that BSPs can use it for the panic handler.
 pub use GPIOInner as PanicGPIO;
 
-
 pub struct GPIO {
-    mmio_descriptor: memory::mmu::MMIODescriptor,
+    mmio_descriptor: MMIODescriptor,
     virt_mmio_start_addr: AtomicUsize,
     inner: IRQSafeNullLock<GPIOInner>,
 }
 
-// Public Code
-
 impl GPIOInner {
-    
     pub const unsafe fn new(mmio_start_addr: usize) -> Self {
         Self {
             registers: Registers::new(mmio_start_addr),
         }
     }
 
-    
     pub unsafe fn init(&mut self, new_mmio_start_addr: Option<usize>) -> Result<(), &'static str> {
         if let Some(addr) = new_mmio_start_addr {
             self.registers = Registers::new(addr);
@@ -133,10 +96,8 @@ impl GPIOInner {
         Ok(())
     }
 
-    
     // * For PI3
     fn disable_pud_14_15_bcm2837(&mut self) {
-        use crate::{time, time::interface::TimeManager};
         use core::time::Duration;
 
         // The Linux 2837 GPIO driver waits 1 µs between the steps.
@@ -154,9 +115,7 @@ impl GPIOInner {
         self.registers.GPPUDCLK0.set(0);
     }
 
-    
     // * For PI4
-    #[cfg(feature = "bsp_rpi4")]
     fn disable_pud_14_15_bcm2711(&mut self) {
         self.registers.GPIO_PUP_PDN_CNTRL_REG0.write(
             GPIO_PUP_PDN_CNTRL_REG0::GPIO_PUP_PDN_CNTRL15::PullUp
@@ -164,9 +123,6 @@ impl GPIOInner {
         );
     }
 
-    
-    
-    
     pub fn map_pl011_uart(&mut self) {
         // Select the UART on pins 14 and 15.
         self.registers
@@ -192,7 +148,6 @@ impl GPIOInner {
 }
 
 impl GPIO {
-    
     pub const unsafe fn new(mmio_descriptor: memory::mmu::MMIODescriptor) -> Self {
         Self {
             mmio_descriptor,
@@ -201,16 +156,10 @@ impl GPIO {
         }
     }
 
-    
     pub fn map_pl011_uart(&self) {
         self.inner.lock(|inner| inner.map_pl011_uart())
     }
 }
-
-//------------------------------------------------------------------------------
-// OS Interface Code
-//------------------------------------------------------------------------------
-use synchronization::interface::Mutex;
 
 impl driver::interface::DeviceDriver for GPIO {
     fn compatible(&self) -> &'static str {
@@ -218,7 +167,7 @@ impl driver::interface::DeviceDriver for GPIO {
     }
 
     unsafe fn init(&self) -> Result<(), &'static str> {
-        let virt_addr = memory::mmu::kernel_map_mmio(self.compatible(), &self.mmio_descriptor)?;
+        let virt_addr = kernel_map_mmio(self.compatible(), &self.mmio_descriptor)?;
 
         self.inner
             .lock(|inner| inner.init(Some(virt_addr.as_usize())))?;

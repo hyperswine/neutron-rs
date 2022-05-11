@@ -87,7 +87,6 @@ unsafe fn kernel_init() -> ! {
 }
 
 // * Ensure this is included
-core::arch::global_asm!(include_str!("meta.s"));
 core::arch::global_asm!(
 include_str!("entry.s"),
 CONST_CURRENTEL_EL2 = const 0x8,

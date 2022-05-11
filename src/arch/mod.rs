@@ -1,6 +1,4 @@
 // ARCH DEPENDENT CODE
-// TODO: should be placed in src/
-// and its stuff imported in src/memory, src/drivers, src/kernel, etc.
 
 #[cfg(target_arch = "riscv64")]
 pub mod riscv64gc;
