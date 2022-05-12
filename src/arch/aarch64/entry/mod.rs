@@ -86,12 +86,6 @@ unsafe fn kernel_init() -> ! {
     final_setup()
 }
 
-// * Ensure this is included
-core::arch::global_asm!(
-include_str!("entry.s"),
-CONST_CURRENTEL_EL2 = const 0x8,
-CONST_CORE_ID_MASK = const 0b11);
-
 // -------------
 // EXCEPTIONS
 // -------------
@@ -214,42 +208,9 @@ unsafe extern "C" fn lower_aarch32_serror(e: &mut ExceptionContext) {
     default_exception_handler(e);
 }
 
-//------------
-// Misc
-//------------
-
-/// Human readable SPSR_EL1.
-#[rustfmt::skip]
-impl fmt::Display for SpsrEL1 {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Raw value.
-        writeln!(f, "SPSR_EL1: {:#010x}", self.0.get())?;
-
-        let to_flag_str = |x| -> _ {
-            if x { "Set" } else { "Not set" }
-         };
-
-        writeln!(f, "      Flags:")?;
-        writeln!(f, "            Negative (N): {}", to_flag_str(self.0.is_set(SPSR_EL1::N)))?;
-        writeln!(f, "            Zero     (Z): {}", to_flag_str(self.0.is_set(SPSR_EL1::Z)))?;
-        writeln!(f, "            Carry    (C): {}", to_flag_str(self.0.is_set(SPSR_EL1::C)))?;
-        writeln!(f, "            Overflow (V): {}", to_flag_str(self.0.is_set(SPSR_EL1::V)))?;
-
-        let to_mask_str = |x| -> _ {
-            if x { "Masked" } else { "Unmasked" }
-        };
-
-        writeln!(f, "      Exception handling state:")?;
-        writeln!(f, "            Debug  (D): {}", to_mask_str(self.0.is_set(SPSR_EL1::D)))?;
-        writeln!(f, "            SError (A): {}", to_mask_str(self.0.is_set(SPSR_EL1::A)))?;
-        writeln!(f, "            IRQ    (I): {}", to_mask_str(self.0.is_set(SPSR_EL1::I)))?;
-        writeln!(f, "            FIQ    (F): {}", to_mask_str(self.0.is_set(SPSR_EL1::F)))?;
-
-        write!(f, "      Illegal Execution State (IL): {}",
-            to_flag_str(self.0.is_set(SPSR_EL1::IL))
-        )
-    }
-}
+//------------------
+// MORE EXCEPTIONS
+//------------------
 
 impl EsrEL1 {
     #[inline(always)]
@@ -304,33 +265,6 @@ impl ExceptionContext {
                     | WatchpointCurrentEL
             ),
         }
-    }
-}
-
-/// Human readable print of the exception context.
-impl fmt::Display for ExceptionContext {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}", self.esr_el1)?;
-
-        if self.fault_address_valid() {
-            writeln!(f, "FAR_EL1: {:#018x}", FAR_EL1.get() as usize)?;
-        }
-
-        writeln!(f, "{}", self.spsr_el1)?;
-        writeln!(f, "ELR_EL1: {:#018x}", self.elr_el1)?;
-        writeln!(f)?;
-        writeln!(f, "General purpose register:")?;
-
-        #[rustfmt::skip]
-        let alternating = |x| -> _ {
-            if x % 2 == 0 { "   " } else { "\n" }
-        };
-
-        // Print two registers per line.
-        for (i, reg) in self.gpr.iter().enumerate() {
-            write!(f, "      x{: <2}: {: >#018x}{}", i, reg, alternating(i))?;
-        }
-        write!(f, "      lr : {:#018x}", self.lr)
     }
 }
 
