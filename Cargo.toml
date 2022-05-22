@@ -43,7 +43,7 @@ uart_16550 = "0.2.18"
 [target.'cfg(target_arch = "riscv64")'.dependencies]
 riscv-rt = "0.8.1"
 
-# * STACK UNWINDING not yet supported
+# Stack unwinding: Arcboot supports stack unwinding but if something goes wrong in the kernel, just reset
 # [profile.dev]
 # panic = "abort"
 
