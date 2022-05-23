@@ -2,6 +2,8 @@
 // NEUTRON FILESYSTEM
 // ------------------
 
+// Should just link from NeutronFS crate
+
 // like btrfs but pretty cool (not unstable)
 // you can also just use guest containers with a simpler semantic fs for a multi user setup or vm
 

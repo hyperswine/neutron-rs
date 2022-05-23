@@ -13,6 +13,16 @@ lldb
 (lldb) gdb-remote localhost:1234
 ```
 
+Or
+
+```bash
+lldb -- build/neutron_kernel gdb-remote localhost:1234
+```
+
+```bash
+lldb --source debug.cmd
+```
+
 ## GDB
 
 Just replace `gdb-remote localhost:1234` with `target remote localhost:1234`.
