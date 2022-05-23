@@ -9,6 +9,7 @@
 #![feature(asm_const)]
 #![feature(step_trait)]
 #![feature(trait_alias)]
+#![feature(core_intrinsics)]
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
@@ -20,8 +21,10 @@ pub mod kmod;
 pub mod process;
 pub mod services;
 pub mod types;
-pub mod memory;
 pub mod exception;
+pub mod arch;
+// ALLOC AND THE REST
+pub mod memory;
 
 // -----------------------
 // ARCH DEPENDENT CODE

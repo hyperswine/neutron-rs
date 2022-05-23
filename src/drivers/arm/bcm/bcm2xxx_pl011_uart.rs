@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-//
-// Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // PL011 UART driver.
-// - <https://github.com/raspberrypi/documentation/files/1888662/BCM2837-ARM-Peripherals.-.Revised.-.V2-1.pdf>
-// - <https://developer.arm.com/documentation/ddi0183/latest>
 
-use crate::{
-    bsp, bsp::device_driver::common::MMIODerefWrapper, console, cpu, driver, exception, memory,
-    synchronization, synchronization::IRQSafeNullLock,
-};
 use core::{
     fmt,
     sync::atomic::{AtomicUsize, Ordering},
@@ -20,31 +10,21 @@ use tock_registers::{
     registers::{ReadOnly, ReadWrite, WriteOnly},
 };
 
-// Private Definitions
-
 // PL011 UART registers.
 register_bitfields! {
     u32,
-
-    
     FR [
         TXFE OFFSET(7) NUMBITS(1) [],
         TXFF OFFSET(5) NUMBITS(1) [],
         RXFE OFFSET(4) NUMBITS(1) [],
         BUSY OFFSET(3) NUMBITS(1) []
     ],
-
-    
     IBRD [
         BAUD_DIVINT OFFSET(0) NUMBITS(16) []
     ],
-
-    
     FBRD [
         BAUD_DIVFRAC OFFSET(0) NUMBITS(6) []
     ],
-
-    
     LCR_H [
         #[allow(clippy::enum_variant_names)]
         WLEN OFFSET(5) NUMBITS(2) [
@@ -53,15 +33,11 @@ register_bitfields! {
             SevenBit = 0b10,
             EightBit = 0b11
         ],
-
-        
         FEN  OFFSET(4) NUMBITS(1) [
             FifosDisabled = 0,
             FifosEnabled = 1
         ]
     ],
-
-    
     CR [
         RXE OFFSET(9) NUMBITS(1) [
             Disabled = 0,
@@ -78,8 +54,6 @@ register_bitfields! {
             Enabled = 1
         ]
     ],
-
-    
     IFLS [
         RXIFLSEL OFFSET(3) NUMBITS(5) [
             OneEigth = 0b000,
@@ -89,8 +63,6 @@ register_bitfields! {
             SevenEights = 0b100
         ]
     ],
-
-    
     IMSC [
         RTIM OFFSET(6) NUMBITS(1) [
             Disabled = 0,
@@ -101,14 +73,10 @@ register_bitfields! {
             Enabled = 1
         ]
     ],
-
-    
     MIS [
         RTMIS OFFSET(6) NUMBITS(1) [],
         RXMIS OFFSET(4) NUMBITS(1) []
     ],
-
-    
     ICR [
         ALL OFFSET(0) NUMBITS(11) []
     ]
@@ -134,7 +102,6 @@ register_structs! {
     }
 }
 
-
 type Registers = MMIODerefWrapper<RegisterBlock>;
 
 #[derive(PartialEq)]
@@ -142,10 +109,6 @@ enum BlockingMode {
     Blocking,
     NonBlocking,
 }
-
-//--------------------------------------------------------------------------------------------------
-// Public Definitions
-//--------------------------------------------------------------------------------------------------
 
 pub struct PL011UartInner {
     registers: Registers,
@@ -156,12 +119,11 @@ pub struct PL011UartInner {
 // Export the inner struct so that BSPs can use it for the panic handler.
 pub use PL011UartInner as PanicUart;
 
-
 pub struct PL011Uart {
-    mmio_descriptor: memory::mmu::MMIODescriptor,
+    mmio_descriptor: MMIODescriptor,
     virt_mmio_start_addr: AtomicUsize,
     inner: IRQSafeNullLock<PL011UartInner>,
-    irq_number: bsp::device_driver::IRQNumber,
+    irq_number: IRQNumber,
 }
 
 // Public Code
@@ -175,7 +137,6 @@ impl PL011UartInner {
         }
     }
 
-    
     pub unsafe fn init(&mut self, new_mmio_start_addr: Option<usize>) -> Result<(), &'static str> {
         if let Some(addr) = new_mmio_start_addr {
             self.registers = Registers::new(addr);
@@ -213,20 +174,16 @@ impl PL011UartInner {
         Ok(())
     }
 
-    
     fn write_char(&mut self, c: char) {
         // Spin while TX FIFO full is set, waiting for an empty slot.
         while self.registers.FR.matches_all(FR::TXFF::SET) {
             cpu::nop();
         }
 
-        // Write the character to the buffer.
         self.registers.DR.set(c as u32);
-
         self.chars_written += 1;
     }
 
-    
     fn flush(&self) {
         // Spin until the busy bit is cleared.
         while self.registers.FR.matches_all(FR::BUSY::SET) {
@@ -234,7 +191,6 @@ impl PL011UartInner {
         }
     }
 
-    
     fn read_char_converting(&mut self, blocking_mode: BlockingMode) -> Option<char> {
         // If RX FIFO is empty,
         if self.registers.FR.matches_all(FR::RXFE::SET) {
@@ -264,7 +220,6 @@ impl PL011UartInner {
     }
 }
 
-
 impl fmt::Write for PL011UartInner {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         for c in s.chars() {
@@ -276,10 +231,7 @@ impl fmt::Write for PL011UartInner {
 }
 
 impl PL011Uart {
-    pub const unsafe fn new(
-        mmio_descriptor: memory::mmu::MMIODescriptor,
-        irq_number: bsp::device_driver::IRQNumber,
-    ) -> Self {
+    pub const unsafe fn new(mmio_descriptor: MMIODescriptor, irq_number: IRQNumber) -> Self {
         Self {
             mmio_descriptor,
             virt_mmio_start_addr: AtomicUsize::new(0),
@@ -291,9 +243,6 @@ impl PL011Uart {
     }
 }
 
-//------------------------------------------------------------------------------
-// OS Interface Code
-//------------------------------------------------------------------------------
 use synchronization::interface::Mutex;
 
 impl driver::interface::DeviceDriver for PL011Uart {
@@ -314,9 +263,6 @@ impl driver::interface::DeviceDriver for PL011Uart {
     }
 
     fn register_and_enable_irq_handler(&'static self) -> Result<(), &'static str> {
-        use bsp::exception::asynchronous::irq_manager;
-        use exception::asynchronous::{interface::IRQManager, IRQDescriptor};
-
         let descriptor = IRQDescriptor {
             name: "BCM PL011 UART",
             handler: self,
@@ -378,7 +324,7 @@ impl console::interface::Statistics for PL011Uart {
     }
 }
 
-impl exception::asynchronous::interface::IRQHandler for PL011Uart {
+impl IRQHandler for PL011Uart {
     fn handle(&self) -> Result<(), &'static str> {
         self.inner.lock(|inner| {
             let pending = inner.registers.MIS.extract();

@@ -1,18 +1,4 @@
-// INTERFACE TO HANDLE DEPENDENT + INDEPENDENT CODE TOGETHER
-
-// --------------------
-// ARCH DEPENDENT STUFF
-// --------------------
-
-pub mod acpi;
-pub mod arch;
-#[cfg(feature = "posix")]
-pub mod posix;
-pub mod console;
-
-// --------------------
-// NON-ARCH DEPENDENT STUFF
-// --------------------
+// INTERFACE FOR CONTROLLING ALL KERNEL MODULES TOGETHER AND LAUNCHING USERSPACE
 
 // Kernel Privilege Level, kind of like CPU but system wide/non arch dependent
 #[derive(PartialEq)]

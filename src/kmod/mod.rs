@@ -12,3 +12,10 @@ pub mod hypervisor;
 
 // #[cfg(feature = "container")]
 pub mod container;
+
+// --------------------
+// ARCH DEPENDENT STUFF
+// --------------------
+
+#[cfg(feature = "posix")]
+pub mod posix;

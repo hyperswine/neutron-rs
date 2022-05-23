@@ -2,3 +2,4 @@ neutron*
 lib*
 disasm
 dump*
+out

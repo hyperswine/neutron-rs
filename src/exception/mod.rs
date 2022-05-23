@@ -1,9 +1,11 @@
 #[cfg(target_arch = "aarch64")]
-use crate::kernel::arch::aarch64::exception;
+use crate::arch::aarch64::exception;
 
-// RISCV exception import here
-// #[cfg(target_arch = "riscv")]
-// use crate::kernel::arch::riscv64gc::exception;
+#[cfg(target_arch = "riscv")]
+use crate::kernel::arch::riscv64gc::exception;
+
+#[cfg(target_arch = "x86_64")]
+use crate::kernel::arch::x86::exception;
 
 use core::{fmt, marker::PhantomData};
 

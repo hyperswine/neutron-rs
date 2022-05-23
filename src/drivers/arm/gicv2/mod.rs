@@ -39,10 +39,6 @@ impl GICv2 {
     }
 }
 
-//------------------
-// OS Interface Code
-//------------------
-
 use synchronization::ReadWriteEx;
 
 impl driver::DeviceDriver for GICv2 {

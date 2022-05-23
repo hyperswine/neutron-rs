@@ -10,7 +10,6 @@ use tock_registers::{
 };
 
 use crate::{
-    drivers::pi4b::board_name,
     exception::IRQContext,
     kernel::{final_setup, PrivilegeLevel},
     println, write_uart,
@@ -51,13 +50,6 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
 
 unsafe fn kernel_init() -> ! {
     // INITIALISE DEVICE DRIVERS
-    for i in all_device_drivers().iter() {
-        if let Err(x) = i.init() {
-            panic!("Error loading driver: {}: {}", i.compatible(), x);
-        }
-    }
-    post_device_driver_init();
-
     use core::time::Duration;
 
     println!(
@@ -65,39 +57,19 @@ unsafe fn kernel_init() -> ! {
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION")
     );
-    // for now, assume pi 4b
-    println!("Booting on: {}", board_name());
 
     let (_, privilege_level) = current_privilege_level();
     println!("Current privilege level: {}", privilege_level);
 
-    write_uart!("Exception handling state:");
-
-    println!(
-        "Architectural timer resolution: {} ns",
-        time_manager().resolution().as_nanos()
-    );
-
-    write_uart!("Drivers loaded");
-    write_uart!("Timer test, spinning for 1 second");
-    time_manager().spin_for(Duration::from_secs(1));
+    write_uart!(b"Exception handling state:");
 
     // Transition to common code in kernel
     final_setup()
 }
 
-// * Ensure this is included
-core::arch::global_asm!(include_str!("meta.s"));
-core::arch::global_asm!(
-include_str!("entry.s"),
-CONST_CURRENTEL_EL2 = const 0x8,
-CONST_CORE_ID_MASK = const 0b11);
-
 // -------------
 // EXCEPTIONS
 // -------------
-
-global_asm!(include_str!("exception.s"));
 
 /// Wrapper structs for memory copies of registers.
 #[repr(transparent)]
@@ -117,11 +89,7 @@ struct ExceptionContext {
 /// Prints verbose write_uartrmation about the exception and then panics.
 /// RN, does nothing basically. Otherwise check CSR of exception numbers and etc. And call the specified handler for that exception
 fn default_exception_handler(exc: &ExceptionContext) {
-    panic!(
-        "CPU Exception!\n\n\
-        {}",
-        exc
-    );
+    panic!("CPU Exception!\n");
 }
 
 //------------------
@@ -167,7 +135,7 @@ unsafe extern "C" fn current_elx_synchronous(e: &mut ExceptionContext) {
 unsafe extern "C" fn current_elx_irq(_e: &mut ExceptionContext) {
     let token = &IRQContext::new();
     // USING PI 4 drivers for this??
-    crate::drivers::pi4b::exception::irq_manager().handle_pending_irqs(token);
+    // crate::drivers::pi4b::exception::irq_manager().handle_pending_irqs(token);
 }
 
 #[no_mangle]
@@ -215,42 +183,9 @@ unsafe extern "C" fn lower_aarch32_serror(e: &mut ExceptionContext) {
     default_exception_handler(e);
 }
 
-//------------
-// Misc
-//------------
-
-/// Human readable SPSR_EL1.
-#[rustfmt::skip]
-impl fmt::Display for SpsrEL1 {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        // Raw value.
-        writeln!(f, "SPSR_EL1: {:#010x}", self.0.get())?;
-
-        let to_flag_str = |x| -> _ {
-            if x { "Set" } else { "Not set" }
-         };
-
-        writeln!(f, "      Flags:")?;
-        writeln!(f, "            Negative (N): {}", to_flag_str(self.0.is_set(SPSR_EL1::N)))?;
-        writeln!(f, "            Zero     (Z): {}", to_flag_str(self.0.is_set(SPSR_EL1::Z)))?;
-        writeln!(f, "            Carry    (C): {}", to_flag_str(self.0.is_set(SPSR_EL1::C)))?;
-        writeln!(f, "            Overflow (V): {}", to_flag_str(self.0.is_set(SPSR_EL1::V)))?;
-
-        let to_mask_str = |x| -> _ {
-            if x { "Masked" } else { "Unmasked" }
-        };
-
-        writeln!(f, "      Exception handling state:")?;
-        writeln!(f, "            Debug  (D): {}", to_mask_str(self.0.is_set(SPSR_EL1::D)))?;
-        writeln!(f, "            SError (A): {}", to_mask_str(self.0.is_set(SPSR_EL1::A)))?;
-        writeln!(f, "            IRQ    (I): {}", to_mask_str(self.0.is_set(SPSR_EL1::I)))?;
-        writeln!(f, "            FIQ    (F): {}", to_mask_str(self.0.is_set(SPSR_EL1::F)))?;
-
-        write!(f, "      Illegal Execution State (IL): {}",
-            to_flag_str(self.0.is_set(SPSR_EL1::IL))
-        )
-    }
-}
+//------------------
+// MORE EXCEPTIONS
+//------------------
 
 impl EsrEL1 {
     #[inline(always)]
@@ -305,33 +240,6 @@ impl ExceptionContext {
                     | WatchpointCurrentEL
             ),
         }
-    }
-}
-
-/// Human readable print of the exception context.
-impl fmt::Display for ExceptionContext {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        writeln!(f, "{}", self.esr_el1)?;
-
-        if self.fault_address_valid() {
-            writeln!(f, "FAR_EL1: {:#018x}", FAR_EL1.get() as usize)?;
-        }
-
-        writeln!(f, "{}", self.spsr_el1)?;
-        writeln!(f, "ELR_EL1: {:#018x}", self.elr_el1)?;
-        writeln!(f)?;
-        writeln!(f, "General purpose register:")?;
-
-        #[rustfmt::skip]
-        let alternating = |x| -> _ {
-            if x % 2 == 0 { "   " } else { "\n" }
-        };
-
-        // Print two registers per line.
-        for (i, reg) in self.gpr.iter().enumerate() {
-            write!(f, "      x{: <2}: {: >#018x}{}", i, reg, alternating(i))?;
-        }
-        write!(f, "      lr : {:#018x}", self.lr)
     }
 }
 

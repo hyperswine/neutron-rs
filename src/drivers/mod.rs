@@ -12,8 +12,8 @@
 // GENERIC ARM DRIVERS
 pub mod arm;
 
-#[cfg(target_arch = "aarch64")]
-pub mod pi4b;
+// #[cfg(target_arch = "aarch64")]
+// pub mod pi4b;
 
 #[cfg(target_arch = "aarch64")]
 pub mod rk3399;
@@ -383,7 +383,8 @@ impl DriverManager {
             }
         };
 
-        self.load_driver(__d.to_owned());
+        // ! CANNOT DO THIS, FIND ANOTHER WAY!
+        // self.load_driver(__d.to_owned());
     }
 
     // register a driver if it isnt registered already
@@ -402,7 +403,7 @@ impl DriverManager {
         }
     }
 
-    fn all_device_drivers(&self) -> &[&'static NeutronDriver] {}
+    // fn all_device_drivers(&self) -> &[&'static NeutronDriver] {}
 
     // fn early_print_device_drivers(&self) -> &[&'static (dyn DeviceDriver + Sync)] {}
 

@@ -1,6 +1,9 @@
-pub mod entry;
-pub mod exception;
-pub mod translation;
+// ---------------
+// BASIC CONSOLE
+// ---------------
+
+// ON DEBUG MODE, PRINTLN! prints to UART0
+// ON RELEASE MODE, PRINTLN! prints to tty0/arcboot terminal
 
 // -----------------
 // BASIC UART OUTPUT
@@ -21,31 +24,13 @@ macro_rules! write_uart {
     };
 }
 
-// -----------------
-// EXECUTING CORE
-// -----------------
-
-use aarch64::regs::MPIDR_EL1;
-use tock_registers::interfaces::Readable;
-
-/// Return the executing core's id.
-#[inline(always)]
-pub fn core_id<T>() -> T
-where
-    T: From<u8>,
-{
-    const CORE_MASK: u64 = 0b11;
-
-    T::from((MPIDR_EL1.get() & CORE_MASK) as u8)
-}
-
 // -------------
 // FORMATTED OUTPUT
 // -------------
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => (crate::kernel::arch::aarch64::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => (crate::arch::aarch64::console::_print(format_args!($($arg)*)));
 }
 
 #[macro_export]

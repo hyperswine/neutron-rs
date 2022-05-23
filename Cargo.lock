@@ -182,6 +182,7 @@ dependencies = [
  "linked_list_allocator",
  "riscv-rt",
  "spin 0.9.3",
+ "stivale-boot",
  "tock-registers",
  "uart_16550",
  "volatile",
@@ -385,6 +386,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75adad84ee84b521fb2cca2d4fd0f1dab1d8d026bda3c5bea4ca63b5f9f9293c"
 dependencies = [
  "lock_api",
+]
+
+[[package]]
+name = "stivale-boot"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3984cf9eb06b3115126ca13dffce8e45bc0f9a444391467c814b086acf50836d"
+dependencies = [
+ "bitflags",
 ]
 
 [[package]]

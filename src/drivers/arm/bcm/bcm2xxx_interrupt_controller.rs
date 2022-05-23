@@ -1,26 +1,15 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-// Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // Interrupt Controller Driver.
 
 mod peripheral_ic;
-
-use crate::{driver, exception, memory};
-
-// Private Definitions
-
 
 struct PendingIRQs {
     bitmask: u64,
 }
 
-// Public Definitions
-
 pub type LocalIRQ =
     exception::asynchronous::IRQNumber<{ InterruptController::MAX_LOCAL_IRQ_NUMBER }>;
 pub type PeripheralIRQ =
     exception::asynchronous::IRQNumber<{ InterruptController::MAX_PERIPHERAL_IRQ_NUMBER }>;
-
 
 #[derive(Copy, Clone)]
 pub enum IRQNumber {
@@ -28,12 +17,9 @@ pub enum IRQNumber {
     Peripheral(PeripheralIRQ),
 }
 
-
 pub struct InterruptController {
     periph: peripheral_ic::PeripheralIC,
 }
-
-// Private Code
 
 impl PendingIRQs {
     pub fn new(bitmask: u64) -> Self {
@@ -58,20 +44,11 @@ impl Iterator for PendingIRQs {
     }
 }
 
-//--------------------------------------------------------------------------------------------------
-// Public Code
-//--------------------------------------------------------------------------------------------------
-
 impl InterruptController {
     const MAX_LOCAL_IRQ_NUMBER: usize = 11;
     const MAX_PERIPHERAL_IRQ_NUMBER: usize = 63;
     const NUM_PERIPHERAL_IRQS: usize = Self::MAX_PERIPHERAL_IRQ_NUMBER + 1;
 
-    
-    
-    
-    
-    
     pub const unsafe fn new(
         _local_mmio_descriptor: memory::mmu::MMIODescriptor,
         periph_mmio_descriptor: memory::mmu::MMIODescriptor,
@@ -81,10 +58,6 @@ impl InterruptController {
         }
     }
 }
-
-//------------------------------------------------------------------------------
-// OS Interface Code
-//------------------------------------------------------------------------------
 
 impl driver::interface::DeviceDriver for InterruptController {
     fn compatible(&self) -> &'static str {
@@ -96,13 +69,13 @@ impl driver::interface::DeviceDriver for InterruptController {
     }
 }
 
-impl exception::asynchronous::interface::IRQManager for InterruptController {
+impl IRQManager for InterruptController {
     type IRQNumberType = IRQNumber;
 
     fn register_handler(
         &self,
         irq: Self::IRQNumberType,
-        descriptor: exception::asynchronous::IRQDescriptor,
+        descriptor: IRQDescriptor,
     ) -> Result<(), &'static str> {
         match irq {
             IRQNumber::Local(_) => unimplemented!("Local IRQ controller not implemented."),
@@ -117,10 +90,7 @@ impl exception::asynchronous::interface::IRQManager for InterruptController {
         }
     }
 
-    fn handle_pending_irqs<'irq_context>(
-        &'irq_context self,
-        ic: &exception::asynchronous::IRQContext<'irq_context>,
-    ) {
+    fn handle_pending_irqs<'irq_context>(&'irq_context self, ic: &IRQContext<'irq_context>) {
         // It can only be a peripheral IRQ pending because enable() does not support local IRQs yet.
         self.periph.handle_pending_irqs(ic)
     }
