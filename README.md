@@ -9,6 +9,14 @@ A rust based kernel written with the minimalism in mind.
 
 Neutron is a stablising force. When too many apps are active all competing for the same resources (bonding to a proton), you have an unstable mess that eventually distingerates.
 
+## Boot
+
+Neutron can be built with additive feature support for BIOS, UEFI (stub), Stivale2, Arcboot. YOu just have to enable each with `--features <feature>` on `cargo b`.
+
+## Arcutils
+
+Arcutils has high integration. Just do `arc --ghidra` to analyze it on ghidra.
+
 ## Layout
 
 - build/ -> for any temporary build files

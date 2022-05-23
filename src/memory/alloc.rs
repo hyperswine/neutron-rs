@@ -1,47 +1,22 @@
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
-
-// -----------------
-// LINKED LIST ALLOCATOR
-// -----------------
-
+use core::alloc::Layout;
 use linked_list_allocator::LockedHeap;
 
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-#[alloc_error_handler]
-fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
-    panic!("allocation error: {:?}", layout)
-}
-
+// FOR NOW!
 pub fn init_heap() {
+    // heap grows up
+    let heap_start = 0xFFFF_FFFF_0000_0000;
+    let heap_end = 0xFFFF_FFFF_FFFF_0000;
+    let heap_size = heap_end - heap_start;
     unsafe {
-        ALLOCATOR.lock().init(HEAP_START, HEAP_SIZE);
+        ALLOCATOR.lock().init(heap_start, heap_size);
     }
 }
 
-// -----------------
-// Memory Mapped Files
-// -----------------
-
-// depends on the arch/vaddr space maybe
-pub const MMIO_START: usize = 0x7fff000000000000;
-
-// -----------------
-// OPTIMAL ALLOCATOR
-// -----------------
-
-// Change this to suit kernel needs
-type OptimalAllocator = FixedAllocator;
-
-// -----------------
-// FIXED ALLOCATOR
-// -----------------
-
-// Arbitary starting address (vaddr)
-pub const HEAP_START: usize = 0xff00_0000_0000_0000;
-// 4 * 4 KiB by default for the kernel. For programs, idk
-pub const HEAP_SIZE: usize = 4 * 0x1000;
-
-struct FixedAllocator;
+// ALLOC HANDLER
+#[alloc_error_handler]
+pub fn handle_alloc_error(layout: Layout) -> ! {
+    loop {}
+}

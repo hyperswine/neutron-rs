@@ -10,7 +10,6 @@ use tock_registers::{
 };
 
 use crate::{
-    drivers::pi4b::board_name,
     exception::IRQContext,
     kernel::{final_setup, PrivilegeLevel},
     println, write_uart,
@@ -51,13 +50,6 @@ unsafe fn prepare_el2_to_el1_transition(phys_boot_core_stack_end_exclusive_addr:
 
 unsafe fn kernel_init() -> ! {
     // INITIALISE DEVICE DRIVERS
-    for i in all_device_drivers().iter() {
-        if let Err(x) = i.init() {
-            panic!("Error loading driver: {}: {}", i.compatible(), x);
-        }
-    }
-    post_device_driver_init();
-
     use core::time::Duration;
 
     println!(
@@ -65,22 +57,11 @@ unsafe fn kernel_init() -> ! {
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION")
     );
-    // for now, assume pi 4b
-    println!("Booting on: {}", board_name());
 
     let (_, privilege_level) = current_privilege_level();
     println!("Current privilege level: {}", privilege_level);
 
-    write_uart!("Exception handling state:");
-
-    println!(
-        "Architectural timer resolution: {} ns",
-        time_manager().resolution().as_nanos()
-    );
-
-    write_uart!("Drivers loaded");
-    write_uart!("Timer test, spinning for 1 second");
-    time_manager().spin_for(Duration::from_secs(1));
+    write_uart!(b"Exception handling state:");
 
     // Transition to common code in kernel
     final_setup()
@@ -89,8 +70,6 @@ unsafe fn kernel_init() -> ! {
 // -------------
 // EXCEPTIONS
 // -------------
-
-global_asm!(include_str!("exception.s"));
 
 /// Wrapper structs for memory copies of registers.
 #[repr(transparent)]
@@ -110,11 +89,7 @@ struct ExceptionContext {
 /// Prints verbose write_uartrmation about the exception and then panics.
 /// RN, does nothing basically. Otherwise check CSR of exception numbers and etc. And call the specified handler for that exception
 fn default_exception_handler(exc: &ExceptionContext) {
-    panic!(
-        "CPU Exception!\n\n\
-        {}",
-        exc
-    );
+    panic!("CPU Exception!\n");
 }
 
 //------------------
@@ -160,7 +135,7 @@ unsafe extern "C" fn current_elx_synchronous(e: &mut ExceptionContext) {
 unsafe extern "C" fn current_elx_irq(_e: &mut ExceptionContext) {
     let token = &IRQContext::new();
     // USING PI 4 drivers for this??
-    crate::drivers::pi4b::exception::irq_manager().handle_pending_irqs(token);
+    // crate::drivers::pi4b::exception::irq_manager().handle_pending_irqs(token);
 }
 
 #[no_mangle]

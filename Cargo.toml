@@ -13,10 +13,10 @@ license = "GPL-3.0-only"
 [dependencies]
 volatile = "0.4.5"
 spin = "0.9.3"
-linked_list_allocator = "0.9.1"
+linked_list_allocator = { version = "0.9.1", optional = true }
 tock-registers = "0.7.0"
 # CPU graphics on framebuffer
-embedded-graphics = "0.7.1"
+embedded-graphics = { version = "0.7.1", optional = true }
 goblin = { version = "0.5.1", default-features = false, features = [
     "elf64",
     "elf32",
@@ -24,6 +24,7 @@ goblin = { version = "0.5.1", default-features = false, features = [
     "endian_fd",
     "alloc",
 ] }
+stivale-boot = { version = "0.2.6", optional = true }
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -54,7 +55,16 @@ riscv-rt = "0.8.1"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
+# DEFAULT
+default = ["ll_alloc", "limine"]
+# KERNEL EXTS
 arctest = []
 graphics = []
 driver_ext = []
+# BOOT PROTOCOLS
+arcboot = []
+limine = ["stivale-boot"]
+efi_stub = []
 multiboot = []
+# CORE
+ll_alloc = ["linked_list_allocator"]

@@ -3,6 +3,7 @@
 //----------------
 
 use core::time::Duration;
+use alloc::borrow::ToOwned;
 
 pub trait TimeManager {
     fn resolution(&self) -> Duration;
