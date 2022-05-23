@@ -2,7 +2,7 @@
 
 A rust based kernel written with the minimalism in mind.
 
-- multiboot compliant. Should be able to use GRUB, U-boot, oreboot to boot kernel ELF img in S-Mode/Ring-1
+- supports multiboot and stivale2. Should be able to use Limine, GRUB, U-boot, oreboot to boot kernel ELF img in S-Mode/Ring-1
 - neutron filesystem used by default
 - rei shell is the default shell for interacting with the kernel on neutron arc. qiish is also a great shell for quantii-neutron
 - more to come
