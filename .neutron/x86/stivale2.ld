@@ -1,4 +1,4 @@
-ENTRY(entry_point)
+ENTRY(limine_entry_point)
 
 SECTIONS {
     kernel_phys_offset = 0xffffffff80000000;

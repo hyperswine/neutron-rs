@@ -23,22 +23,48 @@ tx86 = "test --target x86_64-unknown-none --no-run"
 # Run with arc test --neutron after cargo arctestb
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 
+# -----------------
+# GENERIC OPTIONS
+# -----------------
+
+# SEEMS LIKE rustflags is mutually exclusive
 [build]
 out-dir = "build"
-
-[target.aarch64-unknown-none]
 runner = "arc run --neutron"
+# ! for now. Might just have to use arc build to specify the RUSTFLAGS on cli
+# and just keep out-dir and runner
+rustflags = [
+    "-Clink-arg=-T.neutron/aarch64/arcboot.ld",
+    "-Cforce-frame-pointers=yes",
+]
 
-[target.features.limine]
-# The basic cargo build links with stivale2
-rustflags = ["-C", "link-arg=-T.neutron/aarch64/stivale2.ld"]
+# [target.features.arcboot]
 
-[target.features.arcboot]
+# [target.features.multiboot]
 
-[target.features.multiboot]
-
-# STUFF FOR EACH ARCH
+# [target.aarch64-unknown-none]
 
 # [target.riscv64gc-unknown-none-elf]
 
 # [target.x86_64-unknown-none]
+
+# -----------------
+# AARCH64
+# -----------------
+
+# x86 AND LIMINE
+[target.'cfg(all(target_arch = "x86_64-unknown-none", feature = "limine"))']
+# cargo searches for the first matching rustflags and uses that
+# here = https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags
+rustflags = [
+    "-Clink-arg=-T.neutron/aarch64/stivale2.ld",
+    "-Cforce-frame-pointers=yes",
+]
+
+# -----------------
+# RISCV
+# -----------------
+
+# -----------------
+# x86_64
+# -----------------

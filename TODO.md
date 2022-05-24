@@ -38,15 +38,18 @@ The default vscode highlight is aarch64, but you can set it to riscv or x86 for 
 For limine:
 
 ```bash
+rm -rf build/*.iso build/iso_root/neutron_kernel
+cp build/neutron_kernel build/iso_root
+
 xorriso -as mkisofs -b limine-cd.bin \
     -no-emul-boot -boot-load-size 4 -boot-info-table \
     --efi-boot limine-cd-efi.bin \
     -efi-boot-part --efi-boot-image --protective-msdos-label \
-    iso_root -o neutron_kernel.iso
+    build/iso_root -o build/neutron_kernel.iso
 
-limine/limine-deploy neutron_kernel.iso
+build/limine/limine-deploy build/neutron_kernel.iso
 
-qemu-system-aarch64 -M virt -cpu cortex-a72 -cdrom build/neutron_kernel.iso --no-reboot -d int -D qemulog.log -serial mon:stdio
+qemu-system-aarch64 -M virt -cpu cortex-a72 -cdrom build/neutron_kernel.iso --no-reboot -d int -D build/qemu-aarch64.log
 ```
 
 To print a target triple:

@@ -11,7 +11,11 @@ Neutron is a stablising force. When too many apps are active all competing for t
 
 ## Boot
 
-Neutron can be built with additive feature support for BIOS, UEFI (stub), Stivale2, Arcboot. YOu just have to enable each with `--features <feature>` on `cargo b`.
+Neutron can be built with additive feature support for BIOS, UEFI (stub), Stivale2, Arcboot. You just have to enable each with `--features <feature>` on `cargo b`.
+
+### Limine
+
+Limine is a pretty cool bootloader for x86_64 BIOS/EFI. Support for other arches (aarch64) is [still under development](https://github.com/limine-bootloader/limine/pull/172).
 
 ## Arcutils
 
