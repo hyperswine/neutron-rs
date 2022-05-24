@@ -2,11 +2,16 @@ ENTRY(entry_point)
 
 SECTIONS {
     kernel_phys_offset = 0xffffffff80000000;
+
+    __kernel_start = .;
+
     . = kernel_phys_offset + 0x100000;
 
     .stivale2hdr ALIGN(4K) : {
         KEEP(*(.stivale2hdr))
     }
+
+    /* Can also align end of sections to 4096 */
     
     .text ALIGN(4K) : {
         KEEP(*(.text*))

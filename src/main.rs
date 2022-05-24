@@ -30,7 +30,6 @@ extern "C" fn _common() {
     test_main();
 
     // CREATE KERNEL_MANAGER AND LOAD _START
-
 }
 
 // -----------------------
@@ -38,29 +37,26 @@ extern "C" fn _common() {
 // -----------------------
 
 #[cfg(feature = "limine")]
-use stivale_boot::v2::{StivaleFramebufferHeaderTag, StivaleHeader};
+use stivale_boot::{stivale2hdr, v2::*};
 
-static STACK: [u8; 4096] = [0; 4096];
+const STACK_SIZE: usize = 4096 * 16;
 
-static FRAMEBUFFER_TAG: StivaleFramebufferHeaderTag =
-    StivaleFramebufferHeaderTag::new().framebuffer_bpp(24);
+#[repr(C, align(4096))]
+struct P2Align12<T>(T);
+static STACK: P2Align12<[u8; STACK_SIZE]> = P2Align12([0; STACK_SIZE]);
 
-#[link_section = ".stivale2hdr"]
-#[no_mangle]
-#[used]
+static STIVALE_TERM: StivaleTerminalHeaderTag = StivaleTerminalHeaderTag::new();
+static STIVALE_FB: StivaleFramebufferHeaderTag = StivaleFramebufferHeaderTag::new()
+    .next((&STIVALE_TERM as *const StivaleTerminalHeaderTag).cast());
+
+#[stivale2hdr]
 static STIVALE_HDR: StivaleHeader = StivaleHeader::new()
-    .stack(&STACK[4095] as *const u8)
-    .tags((&FRAMEBUFFER_TAG as *const StivaleFramebufferHeaderTag).cast());
+    .stack(STACK.0.as_ptr_range().end)
+    .tags((&STIVALE_FB as *const StivaleFramebufferHeaderTag).cast());
 
 #[no_mangle]
-extern "C" fn entry_point(_header_addr: usize) -> ! {
-    for mut char in b"Hello, World !".iter() {
-        unsafe {
-            let mut port = 0x3F8;
-            // IDK if out() or in()
-            // asm!("outb {}, {}", out(reg) port, out(reg) char);
-        }
-    }
+extern "C" fn entry_point(boot_info: &'static StivaleStruct) -> ! {
+    boot_info.terminal().unwrap().term_write()("Hello, world!");
 
     _common();
 
@@ -72,7 +68,7 @@ extern "C" fn entry_point(_header_addr: usize) -> ! {
 // -----------------------
 
 // required for main.rs
-use core::{panic::PanicInfo, arch::asm};
+use core::{arch::asm, panic::PanicInfo};
 
 // If running the test config directly, use test_panic_handler
 #[cfg(test)]

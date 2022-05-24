@@ -34,3 +34,23 @@ The default vscode highlight is aarch64, but you can set it to riscv or x86 for 
     "rust-analyzer.cargo.target": "riscv64gc-unknown-none-elf"
 }
 ```
+
+For limine:
+
+```bash
+xorriso -as mkisofs -b limine-cd.bin \
+    -no-emul-boot -boot-load-size 4 -boot-info-table \
+    --efi-boot limine-cd-efi.bin \
+    -efi-boot-part --efi-boot-image --protective-msdos-label \
+    iso_root -o neutron_kernel.iso
+
+limine/limine-deploy neutron_kernel.iso
+
+qemu-system-aarch64 -M virt -cpu cortex-a72 -cdrom build/neutron_kernel.iso --no-reboot -d int -D qemulog.log -serial mon:stdio
+```
+
+To print a target triple:
+
+```bash
+rustc +nightly -Z unstable-options --print target-spec-json --target aarch64-unknown-none
+```

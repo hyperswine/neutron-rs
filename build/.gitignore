@@ -3,3 +3,6 @@ lib*
 disasm
 dump*
 out
+limine
+iso_root
+*.log
