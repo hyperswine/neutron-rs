@@ -180,6 +180,7 @@ dependencies = [
  "goblin",
  "lazy_static",
  "linked_list_allocator",
+ "neutronapi",
  "riscv-rt",
  "spin 0.9.3",
  "stivale-boot",
@@ -188,6 +189,11 @@ dependencies = [
  "volatile",
  "x86_64",
 ]
+
+[[package]]
+name = "neutronapi"
+version = "0.1.0"
+source = "git+https://github.com/hyperswine/neutronapi#af6015931f18da613437738838a2e5c0bcef776f"
 
 [[package]]
 name = "num-traits"

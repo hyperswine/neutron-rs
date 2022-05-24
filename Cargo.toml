@@ -22,6 +22,10 @@ goblin = { version = "0.5.1", default-features = false, features = [
 stivale-boot = { version = "0.3.1", optional = true, features = [
     "helper-macros",
 ] }
+# REQUIRED FOR INTERFACING
+neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true, features = [
+    "types",
+] }
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -53,7 +57,7 @@ panic = "abort"
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
 # DEFAULT
-default = ["ll_alloc", "limine"]
+default = ["ll_alloc", "limine", "types"]
 # KERNEL EXTS
 arctest = []
 graphics = []
@@ -65,7 +69,8 @@ efi_stub = []
 multiboot = []
 # CORE
 ll_alloc = ["linked_list_allocator"]
-# requires neutronfs
+types = ["neutronapi"]
+# requires neutronfs crate
 neutronfs = []
 qfs = []
 fatfs = []

@@ -39,10 +39,10 @@ extern "C" fn _common() {
 // An arcboot app is able to return
 // arcboot_entry -> no mangles it. Basically main() but without rust doing weird things
 
-#[arcboot_entry]
-extern "C" fn arc_entry(arcservices: ArcServices) {
-    _common();
-}
+// #[arcboot_entry]
+// extern "C" fn arc_entry(arcservices: ArcServices) {
+//     _common();
+// }
 
 // -----------------------
 // LIMINE BOOT CONFIG
