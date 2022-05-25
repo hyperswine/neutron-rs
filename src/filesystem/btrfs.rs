@@ -93,7 +93,7 @@ impl FileOperations for Dir {
     fn write_to_disk(disk_num: u64, block_address: u64, buffer: &str) {}
 }
 
-#[test_case]
+#[test]
 fn test_files() {
     let _file = File::create_new("path");
     write_uart!(b"Successfully created a btrfs file!\n");

@@ -68,14 +68,14 @@ impl Process {
 // TEST
 // -------------
 
-#[test_case]
+#[test]
 fn test_process() {
     let process = Process::new(0);
     assert_eq!(1, 1);
     // println!("process succesfully created!");
 }
 
-#[test_case]
+#[test]
 fn test_serial_out_basics() {
     use core::ptr;
     const UART0: *mut u8 = 0x10000000 as *mut u8;

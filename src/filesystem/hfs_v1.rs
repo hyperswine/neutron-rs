@@ -92,7 +92,7 @@ impl File {
 // ------------------------
 // Unit Tests
 // ------------------------
-#[test_case]
+#[test]
 fn test_file() {
     let file = File::new("file");
     let name = file.get_name();
