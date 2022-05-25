@@ -1,76 +1,12 @@
 [package]
-name = "neutron_kernel"
+name = "neutron_main"
 version = "0.1.1"
 edition = "2021"
 description = "A full minimal kernel for risc systems"
 license = "GPL-3.0-only"
 
+[workspace]
+members = ["neutron_kernel"]
+
 [dependencies]
-volatile = "0.4.5"
-spin = "0.9.3"
-linked_list_allocator = { version = "0.9.1", optional = true }
-tock-registers = "0.7.0"
-# CPU graphics on framebuffer
-embedded-graphics = { version = "0.7.1", optional = true }
-goblin = { version = "0.5.1", default-features = false, features = [
-    "elf64",
-    "elf32",
-    "archive",
-    "endian_fd",
-    "alloc",
-] }
-stivale-boot = { version = "0.3.1", optional = true, features = [
-    "helper-macros",
-] }
-# REQUIRED FOR INTERFACING
-neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true, features = [
-    "types",
-] }
-
-[dependencies.lazy_static]
-version = "1.4.0"
-features = ["spin_no_std"]
-
-[target.'cfg(target_arch = "aarch64")'.dependencies]
-cortex-a = "7.2.0"
-aarch64 = "0.0.7"
-
-# arcboot should already have those libraries in its runtime
-# but keep for now in case of testing with qemu
-[target.'cfg(target_arch = "x86_64")'.dependencies]
-x86_64 = "0.14.9"
-bootloader = "0.10.12"
-uart_16550 = "0.2.18"
-
-[target.'cfg(target_arch = "riscv64")'.dependencies]
-riscv-rt = "0.8.1"
-
-# Stack unwinding: Arcboot supports stack unwinding but if something goes wrong in the kernel, just reset
-[profile.dev]
-panic = "abort"
-
-[profile.release]
-panic = "abort"
-
-[profile.test]
-
-# Used by arcutils `arcutils test --neutron` for higher level testing
-[features]
-# DEFAULT
-default = ["ll_alloc", "limine", "types"]
-# KERNEL EXTS
-arctest = []
-graphics = []
-driver_ext = []
-# BOOT PROTOCOLS
-arcboot = []
-limine = ["stivale-boot"]
-efi_stub = []
-multiboot = []
-# CORE
-ll_alloc = ["linked_list_allocator"]
-types = ["neutronapi"]
-# requires neutronfs crate
-neutronfs = []
-qfs = []
-fatfs = []
+neutron_kernel = { path = "neutron_kernel" }

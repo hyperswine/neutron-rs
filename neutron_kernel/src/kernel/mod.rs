@@ -52,7 +52,7 @@ pub fn final_setup() -> ! {
 // TESTS
 // --------------------
 
-#[test_case]
+#[test]
 fn test_kern_basics() {
     let _kern = KernelManager::new();
 }

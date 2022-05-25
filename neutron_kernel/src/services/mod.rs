@@ -28,7 +28,7 @@ struct ServiceStatus {
 
 use crate::write_uart;
 
-#[test_case]
+#[test]
 fn test_basic_mounting() {
     // TODO: represent a device in drivers. A driver should correspond to a device type
     // A device type can be either generic (GenericDevice) or specific (DeviceSpec)

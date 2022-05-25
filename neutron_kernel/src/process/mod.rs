@@ -68,21 +68,8 @@ impl Process {
 // TEST
 // -------------
 
-#[test_case]
+#[test]
 fn test_process() {
-    let process = Process::new(0);
-    assert_eq!(1, 1);
-    // println!("process succesfully created!");
-}
-
-#[test_case]
-fn test_serial_out_basics() {
-    use core::ptr;
-    const UART0: *mut u8 = 0x10000000 as *mut u8;
-    let out_str = b"In test_process(), successfully created a process\n";
-    for byte in out_str {
-        unsafe {
-            ptr::write_volatile(UART0, *byte);
-        }
-    }
+    Process::new(0);
+    std::println!("Process succesfully created!");
 }

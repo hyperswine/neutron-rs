@@ -1,35 +1,24 @@
 #![no_main]
 #![no_std]
-#![feature(alloc_error_handler)]
 // SUPPRESS WARNINGS
 #![allow(dead_code)]
-#![feature(custom_test_frameworks)]
-#![reexport_test_harness_main = "test_main"]
-#![test_runner(neutron_kernel::test_runner)]
 #![allow(named_asm_labels)]
 
 // -----------------------
 // RENDEVOUS POINT
 // -----------------------
 
-// After arch specific entry mechanisms, they should always end up calling _common
+// After arch specific entry mechanisms, they should always end up calling common(), which creates a kernel manger
+// and a bunch of other things
 
-use neutron_kernel::memory::alloc::init_heap;
+fn common() {}
+
+// technically dont have to use _start, just need a linker script to specify a custom entry point
+// just the entry point of choice if no feature flag for arcboot or other bootloaders are done
 
 #[no_mangle]
-extern "C" fn _common() {
-    #[cfg(target_arch = "aarch64")]
-    {
-        neutron_kernel::arch::aarch64::console::basic_greet();
-    }
-
-    // INITIALISE KERNEL HEAP
-    init_heap();
-
-    #[cfg(test)]
-    test_main();
-
-    // CREATE KERNEL_MANAGER AND LOAD _START
+extern "C" fn _start() -> ! {
+    loop {}
 }
 
 // -----------------------
@@ -45,25 +34,11 @@ extern "C" fn _common() {
 // }
 
 // -----------------------
-// LIMINE BOOT CONFIG
-// -----------------------
-
-#[cfg(feature = "limine")]
-pub mod limine;
-
-// -----------------------
 // NON ARCH DEPENDENT CODE
 // -----------------------
 
 // required for main.rs
 use core::{arch::asm, panic::PanicInfo};
-
-// If running the test config directly, use test_panic_handler
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    neutron_kernel::test_panic_handler(info)
-}
 
 #[cfg(not(test))]
 #[panic_handler]

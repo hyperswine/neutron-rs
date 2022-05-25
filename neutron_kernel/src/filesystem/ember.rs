@@ -83,7 +83,7 @@ impl EmberTag {
     }
 }
 
-#[test_case]
+#[test]
 fn create_ember_file() {
     let mut _file = EmberFile::new("/root", "root");
     let mut r = _file.name();
@@ -102,7 +102,7 @@ fn create_ember_file() {
     assert_eq!(_file.name(), "/boot");
 }
 
-#[test_case]
+#[test]
 fn create_tag() {
     let secret_tag = EmberTag::new("secrets");
     let study_tag = EmberTag::new("study");
