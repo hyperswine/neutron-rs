@@ -5,5 +5,8 @@ edition = "2021"
 description = "A full minimal kernel for risc systems"
 license = "GPL-3.0-only"
 
+[workspace]
+members = ["neutron_kernel"]
+
 [dependencies]
 neutron_kernel = { path = "neutron_kernel" }

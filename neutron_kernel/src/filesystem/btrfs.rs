@@ -96,5 +96,5 @@ impl FileOperations for Dir {
 #[test]
 fn test_files() {
     let _file = File::create_new("path");
-    write_uart!(b"Successfully created a btrfs file!\n");
+    std::println!("Successfully created a btrfs file!\n");
 }

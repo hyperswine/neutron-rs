@@ -31,7 +31,7 @@ arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 # SEEMS LIKE rustflags is mutually exclusive
 [build]
 out-dir = "build"
-runner = "arc run --neutron"
+# runner = "arc run --neutron"
 # ! for now. Might just have to use arc build to specify the RUSTFLAGS on cli
 # and just keep out-dir and runner
 # rustflags = [
@@ -54,13 +54,13 @@ runner = "arc run --neutron"
 # -----------------
 
 # x86 AND LIMINE
-[target.'cfg(all(target_arch = "x86_64-unknown-none", feature = "limine"))']
-# cargo searches for the first matching rustflags and uses that
-# here = https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags
-rustflags = [
-    "-Clink-arg=-T.neutron/aarch64/stivale2.ld",
-    "-Cforce-frame-pointers=yes",
-]
+# [target.'cfg(all(target_arch = "x86_64-unknown-none", feature = "limine"))']
+# # cargo searches for the first matching rustflags and uses that
+# # here = https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags
+# rustflags = [
+#     "-Clink-arg=-T.neutron/aarch64/stivale2.ld",
+#     "-Cforce-frame-pointers=yes",
+# ]
 
 # -----------------
 # RISCV

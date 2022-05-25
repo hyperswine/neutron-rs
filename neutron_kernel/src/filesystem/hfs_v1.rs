@@ -92,9 +92,10 @@ impl File {
 // ------------------------
 // Unit Tests
 // ------------------------
-#[test]
-fn test_file() {
-    let file = File::new("file");
-    let name = file.get_name();
-    assert_eq!(name, "file");
-}
+
+// #[test]
+// fn test_file() {
+//     let file = File::new("file");
+//     let name = file.get_name();
+//     assert_eq!(name, "file");
+// }
