@@ -1,7 +1,8 @@
 # This project should have minimal config here. Rely on Arcboot
 [unstable]
-build-std = ["core", "compiler_builtins", "alloc"]
-build-std-features = ["compiler-builtins-mem"]
+# just use arc
+# build-std = ["core", "compiler_builtins", "alloc"]
+# build-std-features = ["compiler-builtins-mem"]
 unstable-options = true
 
 [alias]
@@ -33,10 +34,10 @@ out-dir = "build"
 runner = "arc run --neutron"
 # ! for now. Might just have to use arc build to specify the RUSTFLAGS on cli
 # and just keep out-dir and runner
-rustflags = [
-    "-Clink-arg=-T.neutron/aarch64/arcboot.ld",
-    "-Cforce-frame-pointers=yes",
-]
+# rustflags = [
+#     "-Clink-arg=-T.neutron/aarch64/arcboot.ld",
+#     "-Cforce-frame-pointers=yes",
+# ]
 
 # [target.features.arcboot]
 
