@@ -2,8 +2,6 @@
 
 use alloc::{boxed::Box, rc::Rc, string::String, string::ToString, vec, vec::Vec};
 
-use crate::write_uart;
-
 // ---------------
 // BTRFS B-TREE
 // ---------------

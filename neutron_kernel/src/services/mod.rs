@@ -26,8 +26,6 @@ struct ServiceStatus {
 // TEST
 // ---------
 
-use crate::write_uart;
-
 #[test]
 fn test_basic_mounting() {
     // TODO: represent a device in drivers. A driver should correspond to a device type
@@ -36,5 +34,4 @@ fn test_basic_mounting() {
     // create a device
     let device = Device;
     // mount(0, "/dev/default");
-    // write_uart!(b"Mounted succesfully!\n");
 }

@@ -20,7 +20,8 @@ extern crate goblin;
 // -----------------------
 
 pub mod drivers;
-pub mod exception;
+// * for now, dont bother
+// pub mod exception;
 pub mod filesystem;
 pub mod kmod;
 pub mod process;

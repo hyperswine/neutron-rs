@@ -2,10 +2,10 @@
 use crate::arch::aarch64::exception;
 
 #[cfg(target_arch = "riscv")]
-use crate::kernel::arch::riscv64gc::exception;
+use crate::arch::riscv64gc::exception;
 
 #[cfg(target_arch = "x86_64")]
-use crate::kernel::arch::x86::exception;
+use crate::arch::x86::exception;
 
 use core::{fmt, marker::PhantomData};
 
@@ -24,7 +24,7 @@ pub use exception::{
 #[derive(Copy, Clone)]
 pub struct IRQDescriptor {
     pub name: &'static str,
-    pub handler: &'static (dyn interface::IRQHandler + Sync),
+    pub handler: &'static (dyn IRQHandler + Sync),
 }
 
 #[derive(Clone, Copy)]
@@ -32,30 +32,24 @@ pub struct IRQContext<'irq_context> {
     _0: PhantomData<&'irq_context ()>,
 }
 
-pub mod interface {
+pub trait IRQHandler {
+    fn handle(&self) -> Result<(), &'static str>;
+}
 
-    pub trait IRQHandler {
-        fn handle(&self) -> Result<(), &'static str>;
-    }
+pub trait IRQManager {
+    type IRQNumberType;
 
-    pub trait IRQManager {
-        type IRQNumberType;
+    fn register_handler(
+        &self,
+        irq_number: Self::IRQNumberType,
+        descriptor: IRQDescriptor,
+    ) -> Result<(), &'static str>;
 
-        fn register_handler(
-            &self,
-            irq_number: Self::IRQNumberType,
-            descriptor: super::IRQDescriptor,
-        ) -> Result<(), &'static str>;
+    fn enable(&self, irq_number: Self::IRQNumberType);
 
-        fn enable(&self, irq_number: Self::IRQNumberType);
+    fn handle_pending_irqs<'irq_context>(&'irq_context self, ic: &IRQContext<'irq_context>);
 
-        fn handle_pending_irqs<'irq_context>(
-            &'irq_context self,
-            ic: &super::IRQContext<'irq_context>,
-        );
-
-        fn print_handler(&self);
-    }
+    fn print_handler(&self);
 }
 
 #[derive(Copy, Clone)]

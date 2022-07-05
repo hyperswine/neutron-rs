@@ -6,7 +6,7 @@
 unstable-options = true
 
 [alias]
-# BUILD
+# BUILD. Maybe pass -Zstd for core/alloc/builtins & mem
 # Pass --release or --debug. Default is --debug with limine
 # Defaults
 barm = "build --target aarch64-unknown-none"
