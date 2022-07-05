@@ -1,5 +1,6 @@
 {
-    // change to x86 if targeting x86
+    // change to x86 if targeting x86 (+ limine if using it)
     "rust-analyzer.cargo.target": "x86_64-unknown-none",
+    // "rust-analyzer.cargo.features": ["limine"]
     // "rust-analyzer.cargo.target": "aarch64-unknown-none",
 }

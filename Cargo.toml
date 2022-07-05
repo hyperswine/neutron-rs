@@ -10,3 +10,11 @@ members = ["neutron_kernel"]
 
 [dependencies]
 neutron_kernel = { path = "neutron_kernel" }
+stivale-boot = { version = "0.3.1", features = ["helper-macros"] }
+
+[features]
+# BOOT PROTOCOLS
+arcboot = []
+limine = []
+efi_stub = []
+multiboot = []

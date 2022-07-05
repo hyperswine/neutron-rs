@@ -50,11 +50,6 @@ default = ["types"]
 arctest = []
 graphics = []
 driver_ext = []
-# BOOT PROTOCOLS
-arcboot = []
-limine = ["stivale-boot"]
-efi_stub = []
-multiboot = []
 # CORE
 ll_alloc = ["linked_list_allocator"]
 types = ["neutronapi"]

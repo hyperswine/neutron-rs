@@ -15,7 +15,7 @@ barma = "build --target aarch64-unknown-none --features arcboot"
 # Limine
 barml = "build --target aarch64-unknown-none --features limine"
 brvl = "build --target riscv64gc-unknown-none-elf --features limine"
-bx86l = "build --target x86_64-unknown-none --features limine"
+bx86l = "build --target .neutron/x86/x86_64.json --features limine -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 # BUILD TESTS (NO RUN)
 trv = "test --target riscv64gc-unknown-none-elf --no-run"
 tarm = "test --target aarch64-unknown-none --no-run"

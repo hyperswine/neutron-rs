@@ -8,3 +8,7 @@ target/
 # IDE
 .idea
 .DS_Store
+
+# TEMPORARY
+out
+qemu.log
