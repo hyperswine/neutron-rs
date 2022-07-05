@@ -10,7 +10,11 @@
 
 // After arch specific entry mechanisms, they should always end up calling common(), which starts up the real initialisation of drivers and modules and subsystems
 
-fn common() {}
+fn common() -> ! {
+    // init_heap();
+
+    loop {}
+}
 
 // technically dont have to use _start, just need a linker script to specify a custom entry point just the entry point of choice if no feature flag for arcboot or other bootloaders are done
 // _start always exists, but might not be the actual entry point
@@ -29,7 +33,7 @@ extern "C" fn _start() -> ! {
 
 // #[arcboot_entry]
 // extern "C" fn arc_entry(arcservices: ArcServices) {
-//     _common();
+//     common();
 // }
 
 // -----------------------
@@ -60,13 +64,15 @@ static STIVALE_HDR: StivaleHeader = StivaleHeader::new()
     .stack(STACK.0.as_ptr_range().end)
     .tags((&STIVALE_FB as *const StivaleFramebufferHeaderTag).cast());
 
-// is this limine?
 #[no_mangle]
 extern "C" fn limine_main(boot_info: &'static StivaleStruct) -> ! {
     boot_info.terminal().unwrap().term_write()("Hello, rusty world!");
 
     loop {}
 }
+
+// ? setup higher half kernel with #define if linking to C
+// for rust, maybe specify it in the linker script
 
 // -----------------------
 // AUXILIARY CODE

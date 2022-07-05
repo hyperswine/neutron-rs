@@ -4,6 +4,8 @@ use linked_list_allocator::LockedHeap;
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
+// TO USE: in common(), call init_heap()
+
 // FOR NOW!
 pub fn init_heap() {
     // heap grows up
