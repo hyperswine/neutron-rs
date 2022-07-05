@@ -11,11 +11,12 @@ cargo bx86l
 
 cp build/neutron_main build/iso_root
 
+cd build && \
 xorriso -as mkisofs -b limine-cd.bin \
     -no-emul-boot -boot-load-size 4 -boot-info-table \
     --efi-boot limine-cd-efi.bin \
     -efi-boot-part --efi-boot-image --protective-msdos-label \
-    iso_root -o neutron-x86_64-limine.iso
+    iso_root -o neutron-x86_64-limine.iso && \
 limine/limine-deploy neutron-x86_64-limine.iso
 
-qemu-system-x86_64 -cdrom barebones.iso --no-reboot -d int -D qemu.log
+qemu-system-x86_64 -cdrom build/neutron-x86_64-limine.iso --no-reboot -d int -D qemu.log
