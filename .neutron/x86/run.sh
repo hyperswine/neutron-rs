@@ -17,6 +17,5 @@ xorriso -as mkisofs -b limine-cd.bin \
     --efi-boot limine-cd-efi.bin \
     -efi-boot-part --efi-boot-image --protective-msdos-label \
     iso_root -o neutron-x86_64-limine.iso && \
-limine/limine-deploy neutron-x86_64-limine.iso
-
-qemu-system-x86_64 -cdrom build/neutron-x86_64-limine.iso --no-reboot -d int -D qemu.log
+limine/limine-deploy neutron-x86_64-limine.iso && \
+qemu-system-x86_64 -cdrom neutron-x86_64-limine.iso --no-reboot -d int -D qemu.log
