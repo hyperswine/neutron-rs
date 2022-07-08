@@ -1,4 +1,8 @@
-# Building
+---
+layout: default
+title: Building
+parent: Updates
+---
 
 Neutron is built as an ELF64 image using `cargo build`. Note I haven't tried out x86 but Im pretty sure its ELF as well or maybe just a blob.
 

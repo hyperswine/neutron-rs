@@ -4,35 +4,15 @@ title: Services
 parent: Neutron
 ---
 
-## List of Services
+## Neutron Services
 
-Although there is no need to think of everything as a file, the concept of a file being openable, closable, readable, writable is quite good for many things
-
-- For most devices, we can mount(dev_id) as a file and then open(filename) to initialise it
-- Then we can `read` and `write` like usual, e.g. to a wifi card (socket), disk, speaker, mic, display, gpu
-
-For the most part, syscalls are there to control access for processes, not users. The user is assumed to be the root. And some level of protection against hacking / remote or physical hijacking as well. But those can be done with system wide locks like `sleep`. Remote scripts and hacks can change their dirs and stuff, which might not be a great thing so we should make some parts of the fs restricted to root (needs password prompt) and or privileged process / super privileged boot.
-
-## Questions
-
-On single user mode, what syscalls are good to have? But, wait, isnt syscalls only good with multi users? Or maybe just in case for programs that you dont fully trust. Esp browsers that may do some funny things. I guess they can just run on wasmer. But I do also want a full OS without quantii. Just that quantii is optional when used with ArcHypervisor.
-
-So rn im assuming literally just one person will be using it natively. When they start neutron vanilla, they have access to a simplified but pretty complete view of the system. Then some startup scripts will run with root permissions. But a poorly worded program or a virus could easily take over and do things you dont want it to do. So the first `init` will set up a shell and DE. The user interacts with the shell or DE. And if a malicious program wants to run and take over, the user should be able to check it first, as it is a non-trusted program.
-
-When using guest containers/software, what needs to be done to ensure safety and noone does something stupid or problematic?
-
-If they use quantii, then they can run a WASM VM on Neutron-WASI hypervisor. Then they have access to multiuser mode. Neutron-WASI uses the core syscalls to implement other features. And wasm software implements things like multiple different users, workspaces, dirs, permissions, ownership of files, groups, etc.
-
-So I think:
-
-- provides structured access so you dont have to do it yourself. Although you could also just implement a version of rust std or libc
-- has some level of protection over stupid code. Code that tries to allocate a lot of memory with `brk` could be rejected by kernel analysis routines
+I took inspiration from Zircon's design, where you have kernel objects that have a specific lifetime. A kernel object manages device io memory, processor timeslots, interrupts, IPC, and main memory.
 
 ## Rust API
 
-Syscalls in rust are wrappers around asm `syscall/svc #0/scall` commands in x86/arm64/riscv. Syscalls are grouped into [6 major categories](https://en.wikipedia.org/wiki/System_call). But in Neutron, the syscall categories are simplified to not include protection. And muddy the lines between file management, device management and communication in an intuitive, interoperative way for higher level abstractions (languages) to wrap around.
+Neutron syscalls are wrappers around asm `syscall/svc #0/scall` commands in x86/arm64/riscv. Syscalls are usually grouped into [6 major categories](https://en.wikipedia.org/wiki/System_call). But in Neutron, the syscall categories are simplified. And define a generic capability model for file management, device management and communication for higher level abstractions (languages) to develop policies for.
 
-To use syscalls directly, link with `neutronapi`. Just using `std` is also fine. The syscall API should be copied over to `neutronapi` which then calls the asm! rather than the syscall handlers. Internally and externally, the API is actually the same.
+To use syscalls directly, link with `neutronapi`. Just using `std` is also fine and recommended for most use, unless your making a passthrough driver.
 
 ```rust
 // no need to repr(C) since we arent using C at all, could still be useful for FFIs on other langs
@@ -85,7 +65,7 @@ struct QuickTimeStamp {
 
 | Service | Rust API | Notes |
 | --- | --- | --- |
-| **File Management** |
+| **Object Management** |
 | open | `fn open(filepath: &str, flags: OpenFlags) -> ServiceResult<FileDescriptor>` | Status = -1 on fail, e.g. no permissions. -2 on nonexistent filepath. flags -> RDONLY, RD_WRITE, APPEND, etc. |
 | close | `fn close(fd: u64) -> ServiceResult<()>` | Status = -1 on fail if fd doesnt exist. -2 if trying to close a fd not owned by the user or an untrustworthy process |
 | read | `fn read(fd: u64, nbytes: u64, buf: &str) -> ServiceResult` | Status = -1 if no more space. String can grow dynamically. -2 if trying to overread or do something fishy |

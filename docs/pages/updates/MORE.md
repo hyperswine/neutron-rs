@@ -1,5 +1,8 @@
-# Updates
-
+---
+layout: default
+title: More Updates
+parent: Updates
+---
 ## Neutron v0 Update Notes
 
 TO CHANGE:

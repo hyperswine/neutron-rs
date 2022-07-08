@@ -1,4 +1,8 @@
-# Archived Code
+---
+layout: default
+title: Archived Code
+parent: Updates
+---
 
 Just a bunch of code that I cut out to use later.
 

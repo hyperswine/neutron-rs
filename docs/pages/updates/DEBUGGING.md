@@ -1,4 +1,8 @@
-# Debugging
+---
+layout: default
+title: Debugging
+parent: Updates
+---
 
 ## Clang
 

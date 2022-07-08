@@ -6,6 +6,8 @@ parent: Neutron
 
 ## Overview
 
+IN UNIX:
+
 File => stored on disk. Or synthesised on demand by a file server.
 
 Memory Mapped File => file mapped to RAM. Modified by writing to the memory addresses directly instead of outputting to a stream. Basically like a file of a certain size but can be increased / decreased with writes() and lseeks() of larger addresses
@@ -37,3 +39,7 @@ A network interface is a point of interconnection between a computer and a priva
 Network interfaces are usually ip addresses. Ipv4:port is the most common. A process can expose an ipv4:port by creating a socket (endpoint) and binding its address / pid to it. The kernel handles the rest, or maybe just hands out ip addresses when socket::new() is called. If you are creating a client socket, that means you want to send data first so you should `connect()` to another socket's ipv4:port then `write()` and `read()` as you go along. With EOF semantics.
 
 Locally, its prob `127.0.0.1`. You then bind a the client/server process to a port. If using multiple sockets, use multiple different and unique ports.
+
+## Neutron
+
+I think I will just support channels and sockets.

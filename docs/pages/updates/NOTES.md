@@ -1,4 +1,8 @@
-# Notes
+---
+layout: default
+title: Notes
+parent: Updates
+---
 
 ## Minimal Config
 

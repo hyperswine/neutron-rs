@@ -1,4 +1,8 @@
-# Design
+---
+layout: default
+title: Design
+parent: Updates
+---
 
 Neutron in its default config is a multiboot kernel that can be booted by Arcboot and many other bootloaders.
 

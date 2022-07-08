@@ -1,4 +1,8 @@
-# Arctest
+---
+layout: default
+title: Arctest
+parent: Updates
+---
 
 Like integration tests but with the ability to test systems instead of components.
 

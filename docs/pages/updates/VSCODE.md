@@ -1,4 +1,8 @@
-# VSCode
+---
+layout: default
+title: VSCode Settings
+parent: Updates
+---
 
 ## Settings
 

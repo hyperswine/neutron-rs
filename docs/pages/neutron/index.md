@@ -6,88 +6,40 @@ has_children: true
 
 ## Key Things
 
-- [Memory Management](memory.md)
-- [Filesystems](vfs.md)
+Neutron is a minimalist data driven kernel. As a program, its main purpose is to arbitrate the needs of processes that wish to do certain things and the user/environment, who want to make the system do certain things.
+
 - [Services](services.md)
 - [Rust Std](rust-std.md)
 
-The main filesystem is [NeutronFS](neutronfs/index.md). The VFS tries to stay close to it as much as possible while being generic enough to support multiple different filesystems seamlessly (via mount).
+### Movement of Data
+
+The flow of data is the key thing of interest in Neutron. How do we make everything flow seamlessly and efficiently. I bring you the highway analogy. The highway has many entry points and exit points, but is essentially a long strip of road (a "bus") where traffic flows. Some traffic wants to enter at specific points and some want to exit at other points. Some need to stay on the highway longer to get to its destination, some take the exit almost immediately as they enter. Each entry/exit point is basically a switch or interchange where traffic tends to build up.
+
+Data needs to be queued if the bus is already being used to and from the destination. This is one of the primary causes of traffic. So gotta make the best use of the hardware and have hueristics to move data around. Theres priority lanes for certain types of data. 3 Levels, high, standard, low. If a packet is of high prio, it should be moved into the prio queue with a high prio. Low prio traffic can simply be appended to the back of the queue. Normal prio can overtake low prio data but can also be overtaken by high prio data.
+
+## Apps
 
 A `no-std` app can run on Neutron as long as it is compiled to the right format. Neutron does not have any hosted tools to compile for itself so one must cross compile for now. To do more useful things, [`neutronapi`](neutronapi.md) can be used, though existing apps that make use of `std` benefit from compiling to `riscv64gc-neutron-elf` or `aarch64-neutron-elf`.
 
-## Questions
+## Kernelspace - Everything is an Object
 
-Should more things be in the userspace, or the kernel space? I think generally userspace. Or even the firmware if possible.
+I quite like the generic idea of Fuchsia (Zircon kernel). Where a lot of your syscalls are quite generic and have more to do with the movement of data rather than any specific concept like devices, file management, etc.
 
-A filesystem does not have to reside in kernel space. But from the principle of least responsibility and abstraction building. I think it kinda makes sense.
-
-As long as everything is in one language and is easy to build. Which is doable with rust modules and cargo. That means it doesnt really matter where you write a specific component. Just that it does exist. And isnt in the way of other things.
-
-Basically a case by case basis? Maybe not all filesystem drivers have to be in the kernel or userspace. Some can be in the kernel. Some in userspace. If the code is generally lean and clean. As well as generic enough to support extensions. And easy enough to refactor to be more generic or better. I dont see a big problem.
-
-## Everything is a Concept
-
-A concept is an idea. Which can encompass other sub ideas. A concept exists in logical space and must be implemented in physical space. Together, we have a hierarchy of ideas from the most general to the least.
-
-In Neutron, everything is a concept. Physical layers are built ontop of logical layers. Logical layers which are built ontop of logical layers.
-
-This way we can easily modularise each part of the kernel's implementation and allow abstractions to flow naturally.
-
-### Concept: Filesystem
-
-A filesystem is a place where "files" are stored. Files are generic enough to be implemented however fit.
-
-The VFS implements all supported filesystems in its physical space.
-
-### Concept: Genericism
-
-I quite like the generic idea of Fuchsia (Zircon kernel). Where a lot of your syscalls are quite generic and have more to do with the transport of data rather than any specific concept like process management, file management, etc.
-
-Though I guess with Zircon you can basically replace the concept of Files with the concept of Objects. Objects sound more generic than files. But in a way, it still quite similar anyway.
+In Zircon you basically replace the concept of Files with the concept of Objects. Objects are more generic than files and both have handles to faciliate their lifecycle and management. Its mostly the naming and formalisation that has changed.
 
 ## Userspace - Everything exists in the Filesystem
 
-In userspace, it is actually not a bad idea to think of most things as just files. They are easy to manage, create and destroy and expose the same interface.
+In userspace, it is actually not a bad idea to think of most things as just files. They are easy to manage, create and destroy and expose the same interface. The file browser or terminal `ls` can give a very fast and simple view of the system resources, both hard and soft.
 
-Your apps and most background tasks (sparx) run in usermode. HTTP servers and stuff will utilise user kernel networkd sockets exposed in `/dev`. Apps like umbral word will use filesystemd through file based mmio ipc or syscalls.
+The main filesystem is [NeutronFS](neutronfs/index.md). The VFS is pretty much NeFS in-memory mode. NeFS is the on-disk representation. Other types of FS are supported through mounting its partition as a VFS file. And can be mounted automatically with an NeFS boot mount record.
 
-## VFS
+Most apps and background tasks (sparx) run in usermode. HTTP servers and stuff will utilise user kernel networkd sockets exposed in `/dev`. Apps like umbral word will use filesystemd through file based mmio ipc or syscalls.
 
-Any system IO requests and etc. should use the kernel's VFS. It wraps around all supported filesystems with driver implementations.
+## Installer
 
-### API
+The installer for neutron-quantii comes in 2 parts, one in the browser and one on the actual system.
 
-Shells and apps that want to use neutron functions directly should install the `neutron_api` lib and call its functions according to the type of file one is dealing with. Otherwise it is perfectly fine to use `std` implementations for userspace programs.
-
-```rust
-// in neutronapi::vfs
-
-enum StatusCode {
-    Success,
-    Fail,
-}
-
-// as long as the service call remains active
-// should be moved
-struct Status<'service> {
-    code: StatusCode,
-    message: &str
-}
-
-fn register_fs(fs: &Fs) -> Status;
-fn deregister_fs(fs: &Fs) -> Status;
-
-enum ConnectionMethod {
-    OneWay,
-    TwoWay,
-    MultiWay,
-}
-
-// open a connection to a list of processes
-fn open_connection(ConnectionMethod, processes: &[Process]) -> Status;
-```
-
-## Neutron Installer P1
+### Part 1
 
 Phase 1 of Neutron Installation takes place on the browser where a user uses a tool to flash a live image of arcboot + neutron onto a removable drive.
 
@@ -95,7 +47,7 @@ This uses the webusb standard and any wasm processes that does operations like `
 
 Here, large scale activities like choosing specific kernel modules to add can be done. If a user doesnt need wasm support, they dont need a kernel image with it loaded. If they want it later, they can do so in software by linking the module into an existing/new image and rebooting into it.
 
-## Neutron Installer P2
+### Part 2
 
 Phase 2 of Neutron Installation takes place locally on a supported machine for the flashed target. E.g. an aarch64 machine.
 

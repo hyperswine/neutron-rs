@@ -1,4 +1,8 @@
-# Architectures
+---
+layout: default
+title: Architectures
+parent: Updates
+---
 
 ## RISC V
 

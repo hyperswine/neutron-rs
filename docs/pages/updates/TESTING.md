@@ -1,4 +1,8 @@
-# Testing
+---
+layout: default
+title: Testing
+parent: Updates
+---
 
 Basically, build with `cargo t*` and then run the test config with:
 
