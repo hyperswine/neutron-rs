@@ -1,0 +1,6 @@
+
+build/neutron_kernel:     file format elf64-littleaarch64
+architecture: aarch64, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x000000000010102c
+
