@@ -1,7 +1,8 @@
 ---
 layout: default
 title: NeutronQuickFS
-parent: Neutron
+parent: NeFS
+grand_parent: Neutron
 ---
 
 ## Overview

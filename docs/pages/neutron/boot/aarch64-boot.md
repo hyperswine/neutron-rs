@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Boot Process (AARCH64)
-parent: Neutron
+parent: Boot
 ---
 
 ## Overview

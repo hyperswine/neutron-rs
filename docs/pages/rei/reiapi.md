@@ -1,10 +1,10 @@
 ---
 layout: default
 title: Rei API
-parent: Neutron
+parent: Rei
 ---
 
-## Rei API
+## Rei API for Neutron
 
 A generalised service interface using `extern rei`:
 

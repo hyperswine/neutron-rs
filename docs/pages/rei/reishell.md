@@ -1,12 +1,12 @@
 ---
 layout: default
 title: Rei Shell
-parent: Neutron
+parent: Rei
 ---
 
 ## Overview
 
-Rei shell is a shell application with a builtin gui as well as a default vga text buffer output.
+Rei shell is a shell application with a builtin gui as well as a default vga text buffer output. It is the default shell on neutron vanilla.
 
 On a default build, one can expect:
 

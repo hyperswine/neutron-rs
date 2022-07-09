@@ -1,10 +1,10 @@
 ---
 layout: default
-title: Default Config
+title: Configuration
 parent: Neutron
 ---
 
-## Overview
+## Configuring Neutron
 
 The default config for Neutron uses:
 
