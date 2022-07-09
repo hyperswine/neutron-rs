@@ -9,7 +9,7 @@ grand_parent: Spectre Hardware
 
 Basically, it is a circuit that combines different gates. Examples of combination circuits include encoders, decoders, multiplexers and demuxes.
 
-![](/docs/assets/img/combinational_circuit_blockdiagram.jpg)
+![](../../../assets/img/combinational_circuit_blockdiagram.jpg)
 
 Muxes take multiple inputs and 1 ouput. Demuxes take 1 input and multiple outputs.
 
