@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Neutron License
-parent: Neutron
+parent: Open Source
+grand_parent: Neutron
 ---
 
 ## Overview

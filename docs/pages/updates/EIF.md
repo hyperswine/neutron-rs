@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Everything is a Function
-parent: Neutron
+parent: Updates
 ---
 
 ## Everything is a Function?

@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Nevermind
-parent: Neutron
+parent: Updates
 ---
 
 ## Forget about it
