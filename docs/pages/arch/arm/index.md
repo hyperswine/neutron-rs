@@ -2,6 +2,7 @@
 layout: default
 title: Arm
 parent: Arch
+has_children: true
 ---
 
 ## Overview
