@@ -1,14 +1,60 @@
 ---
 layout: default
-title: Services
+title: Neutron API
 parent: Neutron
 ---
 
-## Neutron Services
+## Kernel Overview
 
-I took inspiration from Zircon's design, where you have kernel objects that have a specific lifetime. A kernel object manages device io memory, processor timeslots, interrupts, IPC, and main memory.
+When writing kernel level drivers or kernel modules, one should use `neutron_api`.
 
-## Rust API
+## NeutronAPI Userspace
+
+Most things can be built with `rust-std` or bare neutron service suite with rei. However apps that are graphical in nature should use `arckit` which bundles `arcwm`, general wrapper classes and an object persistence library for storing and manipulating data.
+
+When building executables/libraries with rust for `target_os=neutron_arc64`:
+
+```rust
+// in neutronapi::
+
+struct ServiceResult<T> {
+    data: Option<T>,
+    status_code,
+    // should actually make this a 'some_lifetime &str
+    // and give ownership to the return function
+    message: Option<String>,
+}
+
+// wrappers around asm calls and more checks (that arent in the kernel cause we want to keep it lean)
+fn sys_read(arg1, arg2) -> ServiceResult {
+    // checks
+    if arg1 is uninitialised or out of scope {
+        return fail
+    }
+
+    if arg1 + arg2 is uninitialised or out of scope {
+        return fail 
+    }
+
+    unsafe {
+        // make the syscall
+        asm!("...");
+
+        // asm should load the return val in r0, load it into a variable
+        let result = u64;
+        asm!("ld {result} r0");
+    }
+
+    ServiceResult {
+        result,
+        SUCCESS,
+        None,
+    }
+}
+
+```
+
+## Rust Syscall API
 
 Neutron syscalls are wrappers around asm `syscall/svc #0/scall` commands in x86/arm64/riscv. Syscalls are usually grouped into [6 major categories](https://en.wikipedia.org/wiki/System_call). But in Neutron, the syscall categories are simplified. And define a generic capability model for file management, device management and communication for higher level abstractions (languages) to develop policies for.
 
@@ -97,53 +143,3 @@ struct QuickTimeStamp {
 | sysinfo | `fn sysinfo() -> ServiceResult<SysInfo>` | Should be incorporated into __neutron_service_vdso |
 | gettimeofday | `fn gettimeofday() -> ServiceResult<QuickTimeStamp>` | Get the time of day of the current locale. Should be incorporated into __neutron_service_vdso |
 | setsysinfo | `fn setsysinfo(sysinfo: SysInfo) -> ServiceResult<()>` | Set system information. Requires root password |
-
-## Notes
-
-`spawn` is basically `fork` but more configurable. The child process still inherits the open fd tables and everything. It is CoW on default, although that can be turned off with CoW = false.
-
-Some syscalls like `fork` and `terminate` shouldn't be needed. So I removed them.
-
-In these syscalls, data is always moved in terms of ownership. There shouldnt be any copying because that wastes time. But maybe immutable borrow also works to ensure fastest performance. It just needs a lifetime `'a`.
-
-For process control, some of the functions are supposed to be used by root processes like `init`. And some by High/Trusted processes to do things like exit. Exit can technically be used as `signal(EXIT, pid)` but we assume the current process doesnt know its pid. The syscall `signal(EXIT)` is only allowed for Root processes only and is checked by the kernel through `/sys/proc_permissions`. `signal` itself is not restricted. If a process tries to make `signal(KILL)` call without having the privileges for it, the kernel should intercept that and `pause()` that process. If `arcde` is on, it should also send a `signal(PERMISSION, pid=ArcRuntime)` which is running in Root Mode. Then it should render a window popup to prompt the user to give the process permissions to `resume()`.
-
-The parent process should be able to enforce read only and etc. `__sparx_init` is running with root privileges. It should be able to set other process' rights to:
-
-```rust
-enum ProcessRights {
-    Root,
-    High
-    Trusted,
-    Untrusted
-}
-```
-
-Most software should be running in High/Trusted mode. If some sparx detects something funny with a service, it can lower it to `Untrusted` to let `init` know to stop it from running or deprioritise it.
-
-Processes running in `High` mode should not be able to do things like `rmdir` the entire root fs. The permissions of processes is stored in a privileged file in `/sys/proc_permissions`. If a process attempts to do something funny, it should just be stopped there and closed. Or with ArcDE, it shows a popup that asks the user to give the process permissions to do what it is trying to do. If granted, the process is allowed to keep going.
-
-## Process Permissions
-
-Process permissions are divided into 10 categories:
-
-- File reads
-- Modify files, change their location, delete them
-- Access location info
-- Access camera
-- Access microphone
-- Monitor input through /dev (basically read())
-- Bluetooth
-- Accessibility features
-
-If done properly, users should be downloading verified apps. Which run in `High` mode. These apps should not do anything funny to the PC. And malicious sites should not be visited at all and all site browses should always be HTTPS enabled. Also other things like SAFE mode that prevents any popups and redirections at all. So that websites cant do stupid things.
-
-Verified apps need to have a certificate and hash which can be checked. The hash is generated by the dev's 256-bit priv key with their software so it is practically infeasible to be an imposter.
-
-## vDSO
-
-Virtual Dynamic Shared Objects. An in memory data structure (basically an ELF .so file) that is linked to each program when they start running. Usually CoW and non-volatile so all programs should just be referencing those ~4 pages.
-
-Can be used for a bunch of things like less problematic syscalls, which simply fetch some file or data elsewhere and return that in a uniform way. No need to figure out what /dev/... or /sys/... thing you need to search up and what operation to do on it to get some information. Basically provides a great standard API for all programs to use.
-
-Like gettimeofday. Also in `/live/clock` with `read()` but why not just make the `gettimeofday` call to a vDSO function.

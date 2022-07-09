@@ -1,13 +1,13 @@
 ---
 layout: default
 title: Neutron Memory
-parent: Neutron
+parent: Design
+grand_parent: Neutron
 ---
 
 ## Virtual Memory Layout
 
-Based on: [linux riscv virtual memory](https://www.kernel.org/doc/html/latest/riscv/vm-layout.html).
-Basically, we have a top half kernel space for managing key infrastructure. And the bottom half is assigned to userspace applications. The virtual memory layout is the same for every process, which all think they are the only process with the only other being the kernel.
+Based on: [linux riscv virtual memory](https://www.kernel.org/doc/html/latest/riscv/vm-layout.html). Basically, we have a top half kernel space for managing key infrastructure. And the bottom half is assigned to userspace applications. The virtual memory layout is the same for every process, which all think they are the only process with the only other being the kernel.
 
 On a 64-bit system with 48/52-bit virtual memory, we have:
 
@@ -41,7 +41,7 @@ Before the kernel is loaded, we should also ensure it is linked at `. =  0xffff0
 
 ### Paging
 
-4 Level Page Tables.
+For the most part, 4 Level Page Tables and LRU for the replacement policy.
 
 Also must invalidate the TLB on context switch. Maybe restore if possible afterwards. Basically a per-core thing. Though there is also L2/L3 TLBs that are shared across multiple processes.
 

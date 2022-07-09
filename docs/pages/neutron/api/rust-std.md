@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Rust Standard Library
-parent: Neutron
+parent: Neutron API
+grand_parent: Neutron
 ---
 
 ## Neutron rust-std

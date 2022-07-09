@@ -1,7 +1,8 @@
 ---
 layout: default
 title: Interrupts
-parent: Neutron
+parent: Design
+grand_parent: Neutron
 ---
 
 ## ARM
