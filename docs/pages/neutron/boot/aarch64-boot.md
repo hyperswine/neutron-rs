@@ -11,6 +11,10 @@ Neutron's default config runs as a bare metal aarch64 ELF program. It assumes th
 
 The kernel is simply just another program. But runs in EL1 mode, having access to all possible instructions in the A64 ISA. It prob makes sense to think of it like a program that arbitrates other programs. It manages the creation, requests and lifecycle of all the other programs running alongside it.
 
+## Boot Process
+
+When not using UEFI, we dont assume anything is set. When not using Arcboot, we have to manually setup page tables.
+
 ### Higher Half
 
 Arcboot implements the multiboot protocol as well as the arcboot protocol. For each, Arcboot sets up identity mapped paging on aarch64.
