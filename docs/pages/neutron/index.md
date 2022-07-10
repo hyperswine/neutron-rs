@@ -137,3 +137,15 @@ Code running in kernel space should be mostly service handler calls that dictate
 Some code like the fs service could prob be a kernelspace only service. Its code could be considered privileged code, and have the ability to directly call kernel handlers. But IDK, that might be harder to manage overall. Putting it in userspace as any other process but with flags like `spx`, and predetermined privileges for what its doing sounds like a good idea. So if you code it wrong, it wont break the system, it will just be terminated by the kernel itself or the shell supervisor.
 
 The code in the kernel should be very secure and not doing too much. Attack surface and stuff too.
+
+## Programs
+
+All userspace programs should be an ELF file with `+x` program permissions. There is hardly any way for programs to execute themselves. Unless you use a browser or non verified app. You are exposing your system to anything if you use an unofficial browser or app. Esp if its not open source so it cant be checked anyway. The verification comes in two levels: full and checked. A checked app must be either provided by the devs if its closed source or the code provided as an open source repo. Tools will be used and manual checkers to gauge the code quality and if anything looks weird. The commit must be satisfactory to the checker group. Each time you publish a new version, you must provide a commit history to be checked again. Otherwise the new update wont be checked and the default version will stay the same.
+
+If you distrust a program, you can revoke execution and other permissions from it. All executable files have a list of permissions in `/sys/permissions` or on the file itself. It cannot change its own permissions metadata.
+
+If a program does not have the permissions it wants, it would either have to detect that and try something else, keep going without it, or prob crash/exit. A properly coded program should check the `Result` to see if it got the result it wanted. If not, its prob cause of permissions. Then it would `exit(FAIL)` and say it couldnt do what it wanted to do.
+
+### Inheritance of Permissions
+
+A child program may be granted the permissions that its parent has. By asking its parent. If the parent agrees, the the child will also gain the permissions. This is of interest with `spx:system` which has all the permissions available to it. `spx:arc` should be granted most if not all the permissions. And apps that run as a child of `arc` like a terminal emulator running a program, a browser, etc. must ask `arc` for the permissions.
