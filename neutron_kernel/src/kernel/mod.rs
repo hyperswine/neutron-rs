@@ -9,10 +9,10 @@ pub enum PrivilegeLevel {
     Unknown,
 }
 
-use crate::filesystem::VFS;
+use crate::filesystem::vfs;
 
 pub struct KernelManager {
-    vfs: VFS::RootFS,
+    vfs: vfs::RootFS,
 }
 
 impl KernelManager {
@@ -38,7 +38,7 @@ impl KernelManager {
     // create a default Kernel Manager with a single empty file (dir) in the HFS
     pub fn new() -> KernelManager {
         KernelManager {
-            vfs: VFS::RootFS {},
+            vfs: vfs::RootFS {},
         }
     }
 }
