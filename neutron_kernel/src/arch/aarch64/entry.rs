@@ -26,8 +26,7 @@ fn arch_init() {
         init_interrupt_handlers(0x80000);
     }
 
-    // Transition to common code in kernel. Maybe need kernel.rs after all
-    // final_setup();
+    // Return & transition to common code in kernel. Will need kernel.rs after all
 }
 
 #[test]

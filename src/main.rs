@@ -29,6 +29,7 @@ extern "C" fn _start() -> ! {
 // -----------------------
 
 use arcboot_api::ArcServices;
+use neutron_kernel::kernel::common;
 
 // An arcboot app is able to return
 // arcboot_entry -> no mangles it. Basically main() but without rust doing weird things
@@ -36,7 +37,7 @@ use arcboot_api::ArcServices;
 
 extern "C" fn arc_entry(arcservices: ArcServices) {
     // SHOULD BE CALLED BY THE ARCH INIT CODE, or maybe after the arch init code, it returns here
-    // common();
+    common();
 }
 
 // -----------------------

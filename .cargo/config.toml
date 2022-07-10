@@ -9,12 +9,12 @@ unstable-options = true
 barm = "build --target aarch64-unknown-none"
 
 # Arcboot
-barmarc = "build --target .neutron/x86/x86_64.json --features arcboot -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+barmarc = "build --target .neutron/x86/x86_64.json --features arcboot,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 brvarc = "build --target riscv64gc-unknown-none-elf --features arcboot"
 
 # Limine
 barml = "build --target aarch64-unknown-none --features limine"
-bx86l = "build --target .neutron/x86/x86_64.json --features limine -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+bx86l = "build --target .neutron/x86/x86_64.json --features limine,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 
 # ARCTEST. Run with arc test --neutron after cargo arctestb
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"

@@ -19,3 +19,5 @@ arcboot = []
 limine = []
 efi_stub = []
 multiboot = []
+# BUILTIN
+ll_alloc = ["neutron_kernel/ll_alloc"]
