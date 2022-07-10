@@ -74,6 +74,62 @@ The file browser or `ls` could subscribe to `spx:fs`. And be implemented as most
 
 To create a new window, you need to use the window api. So you need to create a process, then subscribe to `spx:arc` and request a window of size and location. Then you are given a surface which you can render a texture to. If using graphics acceleration, you might use wgpu, which uses `spx:arc/graphics`. This will send all wgpu/vulkan requests to arc/graphics, which will then format and send the data to `/dev/<gpu>` that it is targeting, which will then process that into command buffers (usually already processed quite well) that can be DMA'd to the GPU or read directly (unified memory).
 
+### Subscribing to Services
+
+When you subscribe to a service, you also have to specify the types of signals you want to subscribe to. For keyboard events, you would subscribe to `spx:arc` if using windowing/ArcDE. Or maybe Arc takes those spx as its own children.
+
+You subscribe to a service by making the right syscalls. Normally you would use neutronapi that contains the right order of calls in order to subscribe. The API also defines the abstracted structs that you pass in and receive. Processes may have a `key` that can be checked against to verify that they have access. This is all stored in `spx:arc` or `spx:system` memory.
+
+Normally, you would make a syscall to create a channel between your process and the service process. I dont think you would use a pipe. A socket could also work. And you write bytes to the channel or socket stream followed by EOF as usual. That should be a syscall like `write()` which would do a zero-copy operation, and share those new pages (virtual memory object) with the other process. It may then signal that other process or not, prob not. Services are usually idle loops that keep checking whether it has new data. So the next time the service is scheduled, it should have the new data. If that data would have to be changed during or after the write, it would use CoW semantics to create a new VMO, and point to it after its done. That would be done in the kernel write() handler if it detects an existing VMO is being written to.
+
+Services essentially are `loop { if new_data { do_something(new_data); } }`. And usually have low priority. But once you try to communicate with the service, the kernel may bump the priority of it up by a certain amount. The scheduler would then see the new priority value in its list of kernel threads waiting to execute.
+
+### Scheduler
+
+The scheduler itself is mostly a circular priority queue. It is a kernel subsystem with no userspace component. So theres not much space for a malicious process to do something stupid. Now older entries would be pushed out and lost. But theres not much you can do about it. Its quite efficient though and resistant against memory corruption.
+
+As a queue, it queues new kernel threads in O(1) time and outputs in O(1) time for the most part. It achieves this through randomisation hueristics. By assigning each thread `priority, ticks_passed` index. So the space it takes is around `N * u64 * u64`. The ticks passed is incremented each time the scheduler is automatically invoked by the clock interrupt. The clock interrupt is handled by one of the cores, and supersedes most interrupts by priority so a syscall or hardware handler be interrupted. The scheduler is mostly a single threaded process for simplicity and the fact that you are generating 8 random values and deciding which thread should go next on which core, could be harder to multithread.
+
+Once the scheduler decides, it will push the kthread ids to their respective cpu queue including its own, and return to the next thread waiting on its own cpu's queue.
+
+Each CPU has its own kthread queue. Each entry is simply a pointer to the actual kthread somewhere in kernelspace. The kthread contains a metadata about the register values and a pointer to the `.text` segment or `code` object that the cpu can jump to and start executing. Maybe just store the address (vaddr) of the instruction to start executing from.
+
+The problem is when you start relocating things. The CPU should deal with vaddr for the most part. The changes should mostly be in one place where things that reference it have access to. Like a page table. Relocating the page should be mostly automatic if your using vaddr.
+
+```python
+def scheduler_tick():
+    random_vals = random.vals(8)
+    for i,cpu in enumerate(cpus) {
+        cpu.queue(kthread[random_val[i]])
+    }
+
+    return cpu.this_thread.first
+```
+
+### spx:system
+
+Kind of like systemd, and contains something similar to udev, or maybe hands that off to `spx:dev`. It should maybe contain something like `dbus`. I think that would be nice. So you have a unified way of creating services and bidirectional communication. And you just have to ask your ancestor for it. If `arc` is enabled, it would then hand off most requests to it, which should then render as a dialog option asking the userr if they wish to grant the asking app the permissions it wants to communicate with other privileged processes or use system resources.
+
+Maybe when `arc` is started, it just disables its own handler and enables it to listen to those requests.
+
+### Cronjobs
+
+Services would make high use of cronjobs. Instead of the usual cronjob syntax, we use arc syntax. Its still possible to use legacy syntax, but you must convert it first.
+
+```toml
+# cron.toml
+# would be saved to somewhere and be read by spx:cron
+
+[name_of_cron_job]
+daily = true
+times = [
+    "11am"
+]
+scripts = [
+    "/sys/scripts/name_of_script.rsh"
+]
+```
+
 ### Userspace vs Kernelspace services
 
 Code running in kernel space should be mostly service handler calls that dictate mechanism, not policy. Otherwise the principle of least concern and modularity / data flow may be negatively impacted.
