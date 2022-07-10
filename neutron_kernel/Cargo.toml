@@ -25,6 +25,7 @@ neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true
     "types",
 ] }
 log = "0.4.17"
+arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -41,7 +42,7 @@ bootloader = "0.10.12"
 uart_16550 = "0.2.18"
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
-riscv-rt = "0.8.1"
+riscv-rt = "0.9.0"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]

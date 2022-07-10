@@ -1,4 +1,4 @@
-ENTRY(_setup)
+ENTRY(arc_entry)
 
 SECTIONS
 {

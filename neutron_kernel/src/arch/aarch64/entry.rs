@@ -18,7 +18,7 @@ use tock_registers::{
 // ? maybe pass the arc memory map here
 
 /// Call this right after arc entry
-fn arch_init() {
+pub fn arch_init() {
     info!("Entry into arch! Arch: AARCH64");
 
     // setup interrupts and handlers
