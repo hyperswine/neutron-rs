@@ -1,7 +1,6 @@
 #![cfg_attr(not(test), no_std)]
 #![feature(alloc_error_handler)]
 #![allow(named_asm_labels)]
-#![feature(global_asm)]
 #![feature(asm_const)]
 #![feature(step_trait)]
 #![feature(trait_alias)]

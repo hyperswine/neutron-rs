@@ -10,7 +10,7 @@ use tock_registers::{
 };
 
 use crate::{
-    exception::IRQContext,
+    arch::aarch64::exception::IRQContext,
     kernel::{final_setup, PrivilegeLevel},
     println, write_uart,
 };

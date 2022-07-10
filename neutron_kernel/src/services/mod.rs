@@ -1,4 +1,3 @@
-pub mod manager;
 pub mod syscall;
 
 // -------------
@@ -20,15 +19,13 @@ struct ServiceStatus {
     status: i8,
 }
 
-
-
 // ---------
 // TEST
 // ---------
 
 #[test]
 fn test_basic_mounting() {
-    // TODO: represent a device in drivers. A driver should correspond to a device type
+    // ? represent a device in drivers. A driver should correspond to a device type
     // A device type can be either generic (GenericDevice) or specific (DeviceSpec)
     struct Device;
     // create a device
