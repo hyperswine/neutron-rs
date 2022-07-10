@@ -56,3 +56,28 @@ Secure boot and other advanced BIOS features should be disabled. UEFI should be 
 From there, Arcboot loads the neutron kernel and a default userspace configuration (ArcConfig) through `/sys/config` files. Only single user root boot is supported. Multi users must be setup in software.
 
 If `/sys/config/new_user` is there (which it should be on a new install), Arc should load the minimal WM + DE config with the installer. The user is expected to go through installation of the files onto a permanent disk partition before being able to use the system. In this step, `/sys/config` is modified and files are copied from the live stick to the system drive.
+
+## Sparx
+
+List:
+
+- `spx:fs` => manages buffer cache and in memory filesystem view. Also logs events pushed to it by `spx:log` to disk. Since it keeps track of filesystem, its security is of concern. IDK I think a userspace/unprivileged service is fine, but it will also have to make syscalls and have userspace overhead
+- `spx:system` => manages software commandline shell and is always pid 1, and the parent of all other userspace processes
+- `spx:net` => manages network requests and buffers. Handles incoming packets and outgoing packets in a cache, where it will then publish the packets to listeners. Important as you dont want any random program to listen to your network activity
+- `spx:input` => manages user generated IO interrupts. Can subscribe to keyboard events, mouse events, microphone events, and other input sensory events. App must be allowed certain permissions in order to subscribe to `input/kb`, `input/mouse`, `input/mic`, `input/webcam`, etc
+- `spx:log` => logs diagnostic data to `/sys/log` every now and then. A pretty low priority service
+- `spx:arc` => should be usually the among the first sparx to be initialised after other core system services. Manages the GUI shell and subscribes itself to `spx:input`, `spx:net`, `sop
+
+Most events are pushed out as signals. So we use semaphore type semantics? Or more like signal-socket semantics, that are asynchronous in nature. So they can happen at any time, and your app should have a signal handler for that signal. Signals have high priority, and usually executes over what the current thread is doing. I think you can create a new user thread with a high priority for that process to execute the signal handler.
+
+The file browser or `ls` could subscribe to `spx:fs`. And be implemented as mostly a `read()` call to the cwd. Then get that metadata and child files and write it to the console/stdout. I think println uses write which is a stream. So it will make an anon pipe and stream until EOF like usual. The scheduler or listener should pick up the new data and call the framebuffer driver `/dev/fb` to output its new generated frame. For hardware accelerated graphics, then it would be quite a bit different...
+
+To create a new window, you need to use the window api. So you need to create a process, then subscribe to `spx:arc` and request a window of size and location. Then you are given a surface which you can render a texture to. If using graphics acceleration, you might use wgpu, which uses `spx:arc/graphics`. This will send all wgpu/vulkan requests to arc/graphics, which will then format and send the data to `/dev/<gpu>` that it is targeting, which will then process that into command buffers (usually already processed quite well) that can be DMA'd to the GPU or read directly (unified memory).
+
+### Userspace vs Kernelspace services
+
+Code running in kernel space should be mostly service handler calls that dictate mechanism, not policy. Otherwise the principle of least concern and modularity / data flow may be negatively impacted.
+
+Some code like the fs service could prob be a kernelspace only service. Its code could be considered privileged code, and have the ability to directly call kernel handlers. But IDK, that might be harder to manage overall. Putting it in userspace as any other process but with flags like `spx`, and predetermined privileges for what its doing sounds like a good idea. So if you code it wrong, it wont break the system, it will just be terminated by the kernel itself or the shell supervisor.
+
+The code in the kernel should be very secure and not doing too much. Attack surface and stuff too.
