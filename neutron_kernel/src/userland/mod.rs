@@ -11,12 +11,12 @@ pub enum PrivilegeLevel {
 
 use crate::filesystem::vfs;
 
-pub struct KernelManager {
+pub struct KernelTorch {
     vfs: vfs::RootFS,
 }
 
-impl KernelManager {
-    pub fn kernel_manager_entry(&self) -> ! {
+impl KernelTorch {
+    pub fn pass_torch(&self) -> ! {
         loop {}
     }
 
@@ -36,15 +36,15 @@ impl KernelManager {
     }
 
     // create a default Kernel Manager with a single empty file (dir) in the HFS
-    pub fn new() -> KernelManager {
-        KernelManager {
+    pub fn new() -> KernelTorch {
+        KernelTorch {
             vfs: vfs::RootFS {},
         }
     }
 }
 
 pub fn final_setup() -> ! {
-    let kernel_manager = KernelManager::new();
+    let kernel_manager = KernelTorch::new();
     kernel_manager.init();
 }
 
@@ -53,6 +53,6 @@ pub fn final_setup() -> ! {
 // --------------------
 
 #[test]
-fn test_kern_basics() {
-    let _kern = KernelManager::new();
+fn test_userland_pass() {
+    let _kern = KernelTorch::new();
 }

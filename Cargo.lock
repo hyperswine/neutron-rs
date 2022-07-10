@@ -21,6 +21,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "arcboot_api"
+version = "0.1.0"
+source = "git+https://github.com/hyperswine/Arcboot.git#8b83fac8abd1f9aa4f72901ba9597846627a1f52"
+
+[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -209,6 +214,7 @@ dependencies = [
 name = "neutron_main"
 version = "0.1.1"
 dependencies = [
+ "arcboot_api",
  "neutron_kernel",
  "stivale-boot",
 ]

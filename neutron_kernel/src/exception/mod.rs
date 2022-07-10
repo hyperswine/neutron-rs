@@ -7,6 +7,9 @@ use crate::arch::riscv64gc::exception;
 #[cfg(target_arch = "x86_64")]
 use crate::arch::x86::exception;
 
+// ABOVE: BAD IDEA, instead, call these functions from arch
+// And pass off to common code ASAP
+
 use core::{fmt, marker::PhantomData};
 
 // -----------
@@ -36,6 +39,7 @@ pub trait IRQHandler {
     fn handle(&self) -> Result<(), &'static str>;
 }
 
+/// Arch specific code should register its own IRQ handler
 pub trait IRQManager {
     type IRQNumberType;
 

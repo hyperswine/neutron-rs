@@ -19,7 +19,6 @@ extern crate goblin;
 // -----------------------
 
 pub mod drivers;
-// * for now, dont bother
 // pub mod exception;
 pub mod filesystem;
 pub mod kmod;
@@ -28,8 +27,8 @@ pub mod services;
 pub mod types;
 // ALLOCATOR AND THE REST
 pub mod memory;
-// Kernel Manager
-pub mod kernel;
+// Pass the torch
+pub mod userland;
 
 // -----------------------
 // ARCH DEPENDENT CODE

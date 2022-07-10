@@ -29,6 +29,14 @@ networks:
     back_tier:
 */
 
+/*
+NEW PROFILE uses TOML:
+[services]
+[volumes]
+[config]
+[networks]
+*/
+
 struct NeutronContainerCompose {
     // services: Services,
     // volumes: Volumes,

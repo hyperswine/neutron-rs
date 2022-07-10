@@ -8,6 +8,10 @@
 // RENDEVOUS POINT
 // -----------------------
 
+// BOOT FLOW:
+// Arch specific code jumps on, does its thing, calls common code
+// Pass off to common entry point
+
 // After arch specific entry mechanisms, they should always end up calling common(), which starts up the real initialisation of drivers and modules and subsystems
 
 fn common() -> ! {
@@ -27,6 +31,8 @@ extern "C" fn _start() -> ! {
 // -----------------------
 // ARCBOOT CONFIG
 // -----------------------
+
+use arcboot_api::ArcServices;
 
 // An arcboot app is able to return
 // arcboot_entry -> no mangles it. Basically main() but without rust doing weird things
