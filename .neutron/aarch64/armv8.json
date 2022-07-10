@@ -4,12 +4,18 @@
     "disable-redzone": true,
     "executables": true,
     "features": "+strict-align,+neon,+fp-armv8",
-    "is-builtin": true,
+    "is-builtin": false,
+    "os": "none",
     "linker": "rust-lld",
     "linker-flavor": "ld.lld",
     "llvm-target": "aarch64-unknown-none",
     "max-atomic-width": 128,
     "panic-strategy": "abort",
     "relocation-model": "static",
-    "target-pointer-width": "64"
+    "target-pointer-width": "64",
+    "pre-link-args": {
+        "ld.lld": [
+            "--script=.neutron/aarch64/arcboot.ld"
+        ]
+    }
 }

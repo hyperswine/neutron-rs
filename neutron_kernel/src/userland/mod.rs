@@ -3,6 +3,7 @@
 // Kernel Privilege Level, kind of like CPU but system wide/non arch dependent
 #[derive(PartialEq)]
 pub enum PrivilegeLevel {
+    Machine,
     User,
     Kernel,
     Hypervisor,

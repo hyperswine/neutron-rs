@@ -24,6 +24,7 @@ stivale-boot = { version = "0.3.1", optional = true, features = [
 neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true, features = [
     "types",
 ] }
+log = "0.4.17"
 
 [dependencies.lazy_static]
 version = "1.4.0"

@@ -1,71 +1,23 @@
-# This project should have minimal config here. Rely on Arcboot
+# This project should have minimal config here. Rely on Arcboot and Arcutils
 [unstable]
-# just use arc
-# build-std = ["core", "compiler_builtins", "alloc"]
-# build-std-features = ["compiler-builtins-mem"]
 unstable-options = true
 
 [alias]
-# BUILD. Maybe pass -Zstd for core/alloc/builtins & mem
-# Pass --release or --debug. Default is --debug with limine
+# BUILD. Uses -Zstd for core/alloc/builtins & mem. Pass --release or --debug. Default is --debug with limine
+
 # Defaults
 barm = "build --target aarch64-unknown-none"
+
 # Arcboot
-barma = "build --target aarch64-unknown-none --features arcboot"
+barmarc = "build --target .neutron/x86/x86_64.json --features arcboot -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+brvarc = "build --target riscv64gc-unknown-none-elf --features arcboot"
+
 # Limine
 barml = "build --target aarch64-unknown-none --features limine"
-brvl = "build --target riscv64gc-unknown-none-elf --features limine"
 bx86l = "build --target .neutron/x86/x86_64.json --features limine -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
-# BUILD TESTS (NO RUN)
-trv = "test --target riscv64gc-unknown-none-elf --no-run"
-tarm = "test --target aarch64-unknown-none --no-run"
-tx86 = "test --target x86_64-unknown-none --no-run"
-# BUILD ARCTEST (NO RUN)
-# Run with arc test --neutron after cargo arctestb
+
+# ARCTEST. Run with arc test --neutron after cargo arctestb
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
 
-# -----------------
-# GENERIC OPTIONS
-# -----------------
-
-# SEEMS LIKE rustflags is mutually exclusive
 [build]
 out-dir = "build"
-# runner = "arc run --neutron"
-# ! for now. Might just have to use arc build to specify the RUSTFLAGS on cli
-# and just keep out-dir and runner
-# rustflags = [
-#     "-Clink-arg=-T.neutron/aarch64/arcboot.ld",
-#     "-Cforce-frame-pointers=yes",
-# ]
-
-# [target.features.arcboot]
-
-# [target.features.multiboot]
-
-# [target.aarch64-unknown-none]
-
-# [target.riscv64gc-unknown-none-elf]
-
-# [target.x86_64-unknown-none]
-
-# -----------------
-# AARCH64
-# -----------------
-
-# x86 AND LIMINE
-# [target.'cfg(all(target_arch = "x86_64-unknown-none", feature = "limine"))']
-# # cargo searches for the first matching rustflags and uses that
-# # here = https://doc.rust-lang.org/cargo/reference/config.html#buildrustflags
-# rustflags = [
-#     "-Clink-arg=-T.neutron/aarch64/stivale2.ld",
-#     "-Cforce-frame-pointers=yes",
-# ]
-
-# -----------------
-# RISCV
-# -----------------
-
-# -----------------
-# x86_64
-# -----------------

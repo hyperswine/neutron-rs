@@ -13,13 +13,14 @@
 // NOTE: for tests, just use extern crate alloc and link to the hosts' alloc
 extern crate alloc;
 extern crate goblin;
+extern crate log;
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
 // -----------------------
 
 pub mod drivers;
-// pub mod exception;
+pub mod exception;
 pub mod filesystem;
 pub mod kmod;
 pub mod process;
@@ -29,6 +30,7 @@ pub mod types;
 pub mod memory;
 // Pass the torch
 pub mod userland;
+pub mod kernel;
 
 // -----------------------
 // ARCH DEPENDENT CODE

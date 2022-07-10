@@ -9,16 +9,12 @@
 // -----------------------
 
 // BOOT FLOW:
+// ? setup higher half kernel with #define if linking to C with limine, or assume if arcboot
+// for rust, maybe specify it in the linker script
 // Arch specific code jumps on, does its thing, calls common code
 // Pass off to common entry point
 
 // After arch specific entry mechanisms, they should always end up calling common(), which starts up the real initialisation of drivers and modules and subsystems
-
-fn common() -> ! {
-    // init_heap();
-
-    loop {}
-}
 
 // technically dont have to use _start, just need a linker script to specify a custom entry point just the entry point of choice if no feature flag for arcboot or other bootloaders are done
 // _start always exists, but might not be the actual entry point
@@ -36,18 +32,19 @@ use arcboot_api::ArcServices;
 
 // An arcboot app is able to return
 // arcboot_entry -> no mangles it. Basically main() but without rust doing weird things
+// Cant be bothered writing an [arc_entry] macro
 
-// #[arcboot_entry]
-// extern "C" fn arc_entry(arcservices: ArcServices) {
-//     common();
-// }
+extern "C" fn arc_entry(arcservices: ArcServices) {
+    // SHOULD BE CALLED BY THE ARCH INIT CODE, or maybe after the arch init code, it returns here
+    // common();
+}
 
 // -----------------------
 // LIMINE CONFIG
 // -----------------------
 
 // NOW: these symbols will still exist, but they are irrelevant
-// I could put it in a mod but eh
+// I could put it in a mod or another binary, but uh..
 
 #[macro_use]
 extern crate stivale_boot;
@@ -76,9 +73,6 @@ extern "C" fn limine_main(boot_info: &'static StivaleStruct) -> ! {
 
     loop {}
 }
-
-// ? setup higher half kernel with #define if linking to C
-// for rust, maybe specify it in the linker script
 
 // -----------------------
 // AUXILIARY CODE
