@@ -2,15 +2,9 @@
 // FILESYSTEM DRIVERS
 // ---------------
 
-// can prob be placed in drivers/generic
-
-pub mod neutronfs;
-pub mod quickfs;
-pub mod fat32;
-pub mod exfat;
-pub mod btrfs;
-pub mod hfs_v1;
-// pub mod ember;
-
-// VFS Abstractions for NeFS, FAT32 and BTRFS
+// NeFS drivers -> block interface + VFS Abstractions for NeFS and mounted fs
 pub mod VFS;
+pub mod neutronfs;
+
+// Other fs partitions that can be mounted or "pointed/stored" in an NeFS partition
+pub mod supported;
