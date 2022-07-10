@@ -2,7 +2,7 @@
 // COMMON
 // ---------------
 
-use crate::userland::PrivilegeLevel;
+use crate::{arch::aarch64::exception::init_interrupt_handlers};
 use core::{cell::UnsafeCell, fmt};
 use cortex_a::{asm::barrier, registers::*};
 use log::info;

@@ -1,11 +1,23 @@
 use aarch64::regs::MPIDR_EL1;
 use core::arch::asm;
-use cortex_a::registers::*;
-use tock_registers::interfaces::{Readable, Writeable};
+use cortex_a::{registers::*, asm::barrier};
+use tock_registers::{
+    interfaces::{Readable, Writeable},
+    registers::InMemoryRegister,
+};
 
 // -------------
 // EXCEPTIONS
 // -------------
+
+#[derive(PartialEq)]
+pub enum PrivilegeLevel {
+    Machine,
+    User,
+    Kernel,
+    Hypervisor,
+    Unknown,
+}
 
 /// Wrapper structs for memory copies of registers
 #[repr(transparent)]
