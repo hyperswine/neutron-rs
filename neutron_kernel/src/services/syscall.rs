@@ -34,6 +34,7 @@ pub enum Syscall {
 
     // Objects
     ObjectInfo,
+    ObjectSetProperties,
     ObjectSignal,
     ObjectWait,
 
@@ -46,7 +47,6 @@ pub enum Syscall {
     TaskSpawn,
     TaskSuspend,
     TaskKill,
-    TaskProfile,
     // User-kernel threads
     ThreadCreate,
     ThreadKill,
@@ -54,6 +54,7 @@ pub enum Syscall {
     // IPC
     PortCreate,
     PortClose,
+    PortConnect,
 }
 
 pub fn handle_syscall(syscall_number: Syscall) {}
