@@ -37,7 +37,7 @@ use neutron_kernel::{arch::aarch64::entry::arch_init, kernel::common};
 
 extern "C" fn arc_entry(arcservices: ArcServices) {
     #[cfg(target_arch = "aarch64")]
-    arch_init();
+    arch_init(arcservices);
 
     // SHOULD BE CALLED BY THE ARCH INIT CODE, or maybe after the arch init code, it returns here
     common();
