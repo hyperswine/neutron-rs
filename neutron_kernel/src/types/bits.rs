@@ -2,6 +2,8 @@
 // BITS AND BINARY CLASSES
 // -------------------
 
+// Prob best to just use bitfields
+
 use alloc::{vec, vec::Vec};
 
 // USEFUL CLASSES TO OPERATE ON BITS DIRECTLY
