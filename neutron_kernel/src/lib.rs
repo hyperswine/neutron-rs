@@ -5,6 +5,7 @@
 #![feature(step_trait)]
 #![feature(trait_alias)]
 #![feature(core_intrinsics)]
+#![feature(derive_default_enum)]
 
 // -----------------------
 // CRATE WIDE API
