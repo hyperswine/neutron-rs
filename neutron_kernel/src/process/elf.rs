@@ -43,7 +43,7 @@ pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
         Err(err) => panic!("Error! {err}"),
     };
 
-    // Addresses should start with 0s for userspace images
+    // Collect Sections
 
     let sections: Vec<&[u8]> = elf
         .program_headers
@@ -60,7 +60,8 @@ pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
         })
         .collect();
 
-    // Load sections
+    // Load sections into memory using NeutronMemory per-process protocol
+    // Addresses should start with 0s for userspace images
 
     elf.program_headers.iter().enumerate().for_each(|(ind, p)| {
         // map_segment(sections[ind], p.p_vaddr);
