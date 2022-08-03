@@ -1,12 +1,12 @@
+use alloc::vec::Vec;
+use core::{arch::asm, intrinsics::transmute};
 use goblin::{
     container::{Container, Ctx},
     elf::{program_header, Elf, ProgramHeader},
 };
-use core::{arch::asm, intrinsics::transmute};
-use alloc::vec::Vec;
 use log::info;
 
-const ELF64_HDR_SIZE: usize = 64;
+const ELF64_HDR_SIZE: usize = 0x40;
 pub const USERSPACE_STACK_START: u64 = 0x0000_FFFF_FFFF_FFFF;
 
 pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
@@ -18,13 +18,10 @@ pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
         Err(err) => panic!("Error! {err}"),
     };
 
-    info!("header = {header:?}");
-
-    let program_hdr_table_size = (header.e_phnum * header.e_phentsize) as usize;
-    let program_table = &elf_img_bytes[ELF64_HDR_SIZE..ELF64_HDR_SIZE + program_hdr_table_size];
+    info!("ELF Header = {header:?}");
 
     let mut elf = Elf::lazy_parse(header)
-        .map_err(|_| "cannot parse ELF file")
+        .map_err(|_| "Cannot parse ELF file!")
         .unwrap();
 
     let ctx = Ctx {
@@ -35,12 +32,12 @@ pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
     // Parse and assemble the program headers
 
     elf.program_headers = match ProgramHeader::parse(
-        &program_table,
+        elf_img_bytes,
         header.e_phoff as usize,
         header.e_phnum as usize,
         ctx,
     )
-    .map_err(|_| "parse program headers error")
+    .map_err(|_| "Parse program headers error!")
     {
         Ok(r) => r,
         Err(err) => panic!("Error! {err}"),
@@ -78,6 +75,5 @@ pub fn load_elf_userspace(elf_img_bytes: &[u8]) {
 
     // arcboot api function
     // set_stack(USERSPACE_STACK_START);
-
-    entry();
+    // entry();
 }
