@@ -5,7 +5,7 @@ pub mod scheduler;
 use crate::types::KPriorityQueue;
 use lazy_static::lazy_static;
 
-use alloc::{vec, vec::Vec, string::String};
+use alloc::{string::String, vec, vec::Vec};
 
 pub type ThreadID = u64;
 pub type TaskID = usize;
@@ -48,6 +48,8 @@ pub enum ProcessExitStatus {
     PANICKED,
 }
 
+// Instead of space allocated, own an AddrSpace instead that manages it
+
 impl Process {
     pub fn new(
         id: u32,
@@ -69,15 +71,13 @@ impl Process {
 
     /// A process has 5 regions, https://en.wikipedia.org/wiki/File:Program_memory_layout.pdf. Should return process exit code
     pub fn execute_elf64(&self, validated_elf_bin: &ElfBinary) -> ProcessExitStatus {
-        // call elf function. When it returns, return success to the kernel process subsystem (manager) / sched    
-    
+        // call elf function. When it returns, return success to the kernel process subsystem (manager) / sched
+
         ProcessExitStatus::SUCCESS
     }
 
-    /// Called when userspace process calls thread.create() or any async/await code that generates a new user thread. Backs up that user thread with a kernel thread in kheap, 
-    pub fn create_thread(&self) {
-        
-    }
+    /// Called when userspace process calls thread.create() or any async/await code that generates a new user thread. Backs up that user thread with a kernel thread in kheap,
+    pub fn create_thread(&self) {}
 }
 
 // -------------
