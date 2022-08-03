@@ -26,6 +26,7 @@ neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true
 ] }
 log = "0.4.17"
 arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
+simple_logger = "2.2.0"
 
 [dependencies.lazy_static]
 version = "1.4.0"
@@ -35,6 +36,10 @@ features = ["spin_no_std"]
 cortex-a = "7.4.0"
 aarch64 = "0.0.7"
 
+[dependencies.scroll]
+version = "0.11"
+default_features = false
+
 # arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 x86_64 = "0.14.10"
@@ -43,6 +48,9 @@ uart_16550 = "0.2.18"
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
 riscv-rt = "0.9.0"
+
+[dev-dependencies]
+rstest = "0.15.0"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
