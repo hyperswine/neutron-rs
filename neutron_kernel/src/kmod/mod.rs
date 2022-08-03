@@ -1,5 +1,5 @@
 // enable by default for testing
-// TODO: move most of it to userspace arc/graphics
+// A lot of graphics functionality is in userspace arc/graphics
 // #[cfg(feature = "graphics")]
 pub mod graphics;
 
