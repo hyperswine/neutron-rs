@@ -27,7 +27,6 @@ pub struct Process {
     priority: i64,
 }
 
-// Kind of like Sparc but not really
 pub enum ProcessStatus {
     UP,
     DOWN,
@@ -41,7 +40,7 @@ pub enum ProcessPrivilege {
     NONE,
 }
 
-pub struct ElfBinary;
+pub struct ElfBinary(Vec<u8>);
 
 pub enum ProcessExitStatus {
     SUCCESS,
@@ -68,18 +67,16 @@ impl Process {
         }
     }
 
-    /// A process has 5 regions, https://en.wikipedia.org/wiki/File:Program_memory_layout.pdf
-    /// Should return process exit code
+    /// A process has 5 regions, https://en.wikipedia.org/wiki/File:Program_memory_layout.pdf. Should return process exit code
     pub fn execute_elf64(&self, validated_elf_bin: &ElfBinary) -> ProcessExitStatus {
-        
-
+        // call elf function. When it returns, return success to the kernel process subsystem (manager) / sched    
+    
         ProcessExitStatus::SUCCESS
     }
-    // callable by kernel only, when userspace process calls thread.create() or any async/await code that generates a new std::thread
+
+    /// Called when userspace process calls thread.create() or any async/await code that generates a new user thread. Backs up that user thread with a kernel thread in kheap, 
     pub fn create_thread(&self) {
-        // create another software thread from the thread pool
-        // and queue for execution based on process priority (kernel priority queue / KPrioQueue)
-        // THREAD_POOL.
+        
     }
 }
 
