@@ -6,6 +6,7 @@ parent: Updates
 
 ## List
 
+- uhh, build ontop of arcservices where possible. For things like memory regions. But dont rely on it to be somewhat freestanding? Nah I like a bootloader, a boot stub would make things messy. So what should be abstracted? Memory, access to devices through memory, a device tree in the form of arc devices cross-arch. You just have to read/write to it. Arcboot does all the heavy lifting (?) no it doesnt. It does all the wrapping to make the interface uniform across arches. Like logging to serial out, like the framebuffer device. Like the gpu device. You can interact with it by reading/writing to it through arcboot methods (zero overhead, inlined) without checking for arch
 - get it **working** on aarch64 with something at least pi 4 to current arm (v9??)
 - make rust wrappers around the VC6 and valhall kernel drivers and maybe wifi/ethernet. Also specifically the multimedia card has stuff like crypto and compression which I'd like to use
 
