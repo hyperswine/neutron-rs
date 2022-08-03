@@ -1,23 +1,10 @@
-// pub mod manager;
 pub mod elf;
 pub mod scheduler;
-
-use crate::types::KPriorityQueue;
-use lazy_static::lazy_static;
+pub mod thread;
 
 use alloc::{string::String, vec, vec::Vec};
 
-pub type ThreadID = u64;
-pub type TaskID = usize;
-
-lazy_static! {
-    pub static ref THREAD_POOL: Vec<ThreadID> = Vec::from([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-}
-
-pub struct ProcessManager {
-    processes: Vec<Process>, //could sort by id, name, space,
-}
-
+#[derive(Debug, Default)]
 pub struct Process {
     id: u32,
     name: String,
@@ -27,22 +14,29 @@ pub struct Process {
     priority: i64,
 }
 
+#[derive(Debug, Default)]
 pub enum ProcessStatus {
+    #[default]
     UP,
     DOWN,
     BLOCKED,
 }
 
+#[derive(Debug, Default)]
 pub enum ProcessPrivilege {
+    #[default]
     FULL,
     RD_ONLY,
     RD_WRITE,
     NONE,
 }
 
+#[derive(Debug)]
 pub struct ElfBinary(Vec<u8>);
 
+#[derive(Debug, Default)]
 pub enum ProcessExitStatus {
+    #[default]
     SUCCESS,
     BAD,
     PANICKED,
@@ -86,6 +80,6 @@ impl Process {
 
 #[test]
 fn test_process() {
-    // Process::new(0);
-    std::println!("Process succesfully created!");
+    let process = Process::default();
+    std::println!("Process succesfully created: {process:?}!");
 }
