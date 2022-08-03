@@ -6,11 +6,11 @@ description = "Neutron logic"
 
 [dependencies]
 volatile = "0.4.5"
-spin = "0.9.3"
-linked_list_allocator = { version = "0.9.1", optional = true }
+spin = "0.9.4"
+linked_list_allocator = { version = "0.10.1", optional = true }
 tock-registers = "0.7.0"
 embedded-graphics = { version = "0.7.1", optional = true }
-goblin = { version = "0.5.1", default-features = false, features = [
+goblin = { version = "0.5.3", default-features = false, features = [
     "elf64",
     "elf32",
     "archive",
@@ -32,12 +32,12 @@ version = "1.4.0"
 features = ["spin_no_std"]
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
-cortex-a = "7.2.0"
+cortex-a = "7.4.0"
 aarch64 = "0.0.7"
 
 # arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
 [target.'cfg(target_arch = "x86_64")'.dependencies]
-x86_64 = "0.14.9"
+x86_64 = "0.14.10"
 bootloader = "0.10.12"
 uart_16550 = "0.2.18"
 

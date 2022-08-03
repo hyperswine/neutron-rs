@@ -11,3 +11,10 @@ fn test_sanity() {
 fn tests_basics() {
     // Process::new(0);
 }
+
+#[test]
+fn test_elf_load() {
+    // load an elf file from tests/elf into the function
+    // see whether the function correctly identifies each section
+    // and would load it to the right addrs
+}
