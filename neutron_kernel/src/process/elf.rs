@@ -1,5 +1,5 @@
 use alloc::vec::Vec;
-use core::{arch::asm, intrinsics::transmute};
+use core::{intrinsics::transmute};
 use goblin::{
     container::{Container, Ctx},
     elf::{program_header, Elf, ProgramHeader},
