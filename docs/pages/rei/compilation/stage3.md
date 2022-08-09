@@ -23,5 +23,3 @@ A DAG for an expression identifies the common subexpr of the expr. DAGs can be c
 A DAG has leaf nodes corresponding to atomic operands (tokens) and interior nodes correspond to operators. The difference is that a node N has more than one parent P if N represents a common subexpr. In a syntax tree, the tree for the common subexpr would be replicated as many times as the subexpr appears in the original expr.
 
 So a DAG not only represents expressions more succintly. It gives the compiler important clues to generate efficient code to evaluate the expressions.
-
-Instead of an AST, we would build a DAG when parsing. Where the leaf nodes have the most precedence. And the root expr is done last.
