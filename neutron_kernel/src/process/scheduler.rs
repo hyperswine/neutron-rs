@@ -12,9 +12,24 @@ impl KScheduler {
         Self { processes }
     }
 
-    /// Schedule the next lot of KThreads
-    pub fn tick(&mut self) {}
+    /// Schedule the next lot of KThreads. Register this to the interval timer interrupt
+    pub fn tick(&mut self) {
+        // randomised scheduling
+    }
 }
+
+/// A threadqueue with a max of e.g. 1000 kthreads. Maybe impl From iter for it?
+pub type ThreadQueue<const N: usize> = ([u64; N], [f32; N]);
+
+// impl FromIterator for ThreadQueue {
+// }
+
+pub fn randomised_scheduling(threads: ThreadQueue<1000>) {
+    // schedule each thread according to their priority and some RNG generation (hardware?)
+}
+
+#[test]
+fn test_scheduler() {}
 
 // NOTES:
 
@@ -33,3 +48,7 @@ impl KScheduler {
 
 // via something like schedulerd/spx:sched
 // And kernel maps its privileged vmobject containing a list of processes into the proc addr space
+
+// extern "C" {
+//     pub fn register_programmable_interrupt();
+// }
