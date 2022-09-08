@@ -44,7 +44,7 @@ extern "C" fn arc_entry(arcservices: ArcServices) {
 }
 
 // -----------------------
-// LIMINE CONFIG
+// STIVALE CONFIG
 // -----------------------
 
 // NOW: these symbols will still exist, but they are irrelevant
@@ -72,11 +72,67 @@ static STIVALE_HDR: StivaleHeader = StivaleHeader::new()
     .tags((&STIVALE_FB as *const StivaleFramebufferHeaderTag).cast());
 
 #[no_mangle]
-extern "C" fn limine_main(boot_info: &'static StivaleStruct) -> ! {
-    boot_info.terminal().unwrap().term_write()("Hello, rusty world!");
+extern "C" fn stivale_main(boot_info: &'static StivaleStruct) -> ! {
+    boot_info.terminal().unwrap().term_write()("Hello, world!");
 
     loop {}
 }
+
+// -----------------------
+// LIMINE CONFIG
+// -----------------------
+
+use limine::*;
+
+static TERMINAL_REQUEST: LimineTerminalRequest = LimineTerminalRequest::new(0);
+static BOOTLOADER_INFO: LimineBootInfoRequest = LimineBootInfoRequest::new(0);
+static MMAP: LimineMemmapRequest = LimineMemmapRequest::new(0);
+
+#[no_mangle]
+extern "C" fn limine_main() -> ! {
+
+    let bootloader_info = BOOTLOADER_INFO
+        .get_response()
+        .get()
+        .expect("barebones: recieved no bootloader info");
+
+    let mmap = MMAP
+        .get_response()
+        .get()
+        .expect("barebones: recieved no mmap")
+        .memmap();
+
+    loop {}
+}
+
+// -----------------
+// MULTIBOOT
+// -----------------
+
+/*
+.section .multiboot_header
+header_start:
+    .quad 0xe85250d6
+    .quad 0
+    .quad header_end - header_start
+    .quad 0x100000000 - (0xe85250d6 + 0 + (header_end - header_start))
+    .word 0
+    .word 0
+    .quad 8
+header_end:
+*/
+
+struct MultibootHeaderSpec2 {
+    magic: u128,
+    zero: u128,
+    size: u128,
+    align_constant: u128,
+    zero_two: u32,
+    zero_three: u32,
+    eight: u128,
+}
+
+// const NEUTRON_MULTIBOOT_HEADER: MultibootHeaderSpec = MultibootHeaderSpec2 { magic: 0xe85250d6 };
 
 // -----------------------
 // AUXILIARY CODE

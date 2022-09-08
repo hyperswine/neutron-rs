@@ -313,6 +313,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "349d5a591cd28b49e1d1037471617a32ddcda5731b99419008085f72d5a53836"
 
 [[package]]
+name = "limine"
+version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eac64618e505bab2387986e5b1014f5d344130d609685bbd8b71a10af3ee599d"
+
+[[package]]
 name = "linked_list_allocator"
 version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -398,6 +404,7 @@ name = "neutron_main"
 version = "0.1.1"
 dependencies = [
  "arcboot_api",
+ "limine",
  "neutron_kernel",
  "stivale-boot",
 ]
