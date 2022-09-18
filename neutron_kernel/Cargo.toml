@@ -5,35 +5,35 @@ edition = "2021"
 description = "Neutron logic"
 
 [dependencies]
-volatile = "0.4.5"
-spin = "0.9.4"
-linked_list_allocator = { version = "0.10.1", optional = true }
-tock-registers = "0.7.0"
-embedded-graphics = { version = "0.7.1", optional = true }
-goblin = { version = "0.5.3", default-features = false, features = [
+volatile = "0.4"
+spin = "0.9"
+linked_list_allocator = { version = "0.10", optional = true }
+tock-registers = "0.7"
+embedded-graphics = { version = "0.7", optional = true }
+goblin = { version = "0.5", default-features = false, features = [
     "elf64",
     "elf32",
     "archive",
     "endian_fd",
     "alloc",
 ] }
-stivale-boot = { version = "0.3.1", optional = true, features = [
+stivale-boot = { version = "0.3", optional = true, features = [
     "helper-macros",
 ] }
 # REQUIRED FOR INTERFACING
 neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true, features = [
     "types",
 ] }
-log = "0.4.17"
+log = "0.4"
 arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
-simple_logger = "2.2.0"
+simple_logger = "2"
 
 [dependencies.lazy_static]
-version = "1.4.0"
+version = "1.4"
 features = ["spin_no_std"]
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
-cortex-a = "7.4.0"
+cortex-a = "7.5"
 aarch64 = "0.0.7"
 
 [dependencies.scroll]
@@ -42,15 +42,15 @@ default_features = false
 
 # arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
 [target.'cfg(target_arch = "x86_64")'.dependencies]
-x86_64 = "0.14.10"
-bootloader = "0.10.12"
-uart_16550 = "0.2.18"
+x86_64 = "0.14"
+bootloader = "0.10"
+uart_16550 = "0.2"
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
-riscv-rt = "0.9.0"
+riscv-rt = "0.9"
 
 [dev-dependencies]
-rstest = "0.15.0"
+rstest = "0.15"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]

@@ -10,7 +10,7 @@ members = ["neutron_kernel"]
 
 [dependencies]
 neutron_kernel = { path = "neutron_kernel" }
-stivale-boot = { version = "0.3.1", features = ["helper-macros"] }
+stivale-boot = { version = "0.3", features = ["helper-macros"] }
 arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
 limine = "0.1"
 
