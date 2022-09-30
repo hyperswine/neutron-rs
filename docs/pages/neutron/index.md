@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: math
 title: Neutron
 has_children: true
 ---
@@ -10,6 +10,10 @@ Neutron is a minimalist data driven kernel. As a program, its main purpose is to
 
 - [Services](services.md)
 - [Rust Std](rust-std.md)
+
+$$
+x \lt 5
+$$
 
 ### Movement of Data
 
