@@ -8,17 +8,6 @@
 // RENDEVOUS POINT
 // -----------------------
 
-// BOOT FLOW:
-// ? setup higher half kernel with #define if linking to C with limine, or assume if arcboot
-// for rust, maybe specify it in the linker script
-// Arch specific code jumps on, does its thing, calls common code
-// Pass off to common entry point
-
-// After arch specific entry mechanisms, they should always end up calling common(), which starts up the real initialisation of drivers and modules and subsystems
-
-// technically dont have to use _start, just need a linker script to specify a custom entry point just the entry point of choice if no feature flag for arcboot or other bootloaders are done
-// _start always exists, but might not be the actual entry point
-
 #[no_mangle]
 extern "C" fn _start() -> ! {
     loop {}
