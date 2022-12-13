@@ -4,15 +4,42 @@
 #![allow(dead_code)]
 #![allow(named_asm_labels)]
 
+use core::{arch::asm, panic::PanicInfo};
+use neutron_kernel::arch::riscv64gc::begin_riscv;
+
 // -----------------------
 // RENDEVOUS POINT
 // -----------------------
 
-use neutron_kernel::arch::riscv64gc::begin_riscv;
-
+#[cfg(not(target_arch = "riscv64"))]
 #[no_mangle]
 extern "C" fn _start() -> ! {
-    #[cfg(target_arch="riscv64")]
+    loop {}
+}
+
+extern crate riscv;
+extern crate riscv_rt;
+
+use riscv::asm::wfi;
+use riscv::register::{mie, mip};
+use riscv_rt::entry;
+
+#[cfg(target_arch = "riscv64")]
+#[entry]
+fn main(hartid: usize) -> ! {
+    if hartid == 0 {
+        // Waking hart 1...
+        let addr = 0x02000004;
+        unsafe {
+            (addr as *mut u32).write_volatile(1);
+        }
+    }
+
+    // setup stack pointer and global pointer
+    // #[cfg(target_arch = "riscv64")]
+    // unsafe {}
+
+    #[cfg(target_arch = "riscv64")]
     begin_riscv();
 
     loop {}
@@ -71,9 +98,6 @@ struct MultibootHeaderSpec2 {
 // -----------------------
 // AUXILIARY CODE
 // -----------------------
-
-// required for main.rs
-use core::{arch::asm, panic::PanicInfo};
 
 #[cfg(not(test))]
 #[panic_handler]

@@ -624,6 +624,8 @@ dependencies = [
  "arcboot-api",
  "limine",
  "neutron_kernel",
+ "riscv",
+ "riscv-rt",
  "stivale-boot",
 ]
 
