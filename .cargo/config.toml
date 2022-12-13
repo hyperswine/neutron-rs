@@ -7,6 +7,7 @@ unstable-options = true
 
 # Defaults
 barm = "build --target aarch64-unknown-none"
+brv = "build --target riscv64gc-unknown-none-elf"
 
 # Arcboot
 barmarc = "build --target .neutron/x86/x86_64.json --features arcboot,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
