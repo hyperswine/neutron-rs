@@ -4,7 +4,7 @@ pub mod power;
 // Apparently this doesnt link properly?
 // use riscv_rt::entry;
 
-pub const UART0: u64 = 0x10000000;
+pub const UART0: u64 = 0x1000_0000;
 pub const REG_OFFSET: u64 = UART0;
 
 static GREETING: &[u8] = b"Hello World!\n";
@@ -28,11 +28,11 @@ macro_rules! write_reg {
 macro_rules! write_uart {
     ($exact:expr) => {
         let p = 0x10000000 as *mut u8;
-        let _bytes = $exact.bytes();
+        let _bytes = $exact;
         for byte in _bytes {
             unsafe {
                 match byte {
-                    0x20..=0x7e | b'\n' => core::ptr::write(p, byte),
+                    0x20..=0x7e | b'\n' => core::ptr::write(p, *byte),
                     _ => core::ptr::write(p, 0xfe),
                 }
             }
@@ -67,10 +67,8 @@ pub fn init_uart() {
     // initlock(&uart_tx_lock, "uart");
 }
 
-#[cfg(not(test))]
-#[no_mangle]
-extern "C" fn _start() -> ! {
-    init_uart();
+pub fn begin_riscv() -> ! {
+    // init_uart();
 
     write_uart!(b"Hello World!\n");
     write_uart!(b"Hello World!\n");

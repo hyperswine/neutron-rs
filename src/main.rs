@@ -8,8 +8,13 @@
 // RENDEVOUS POINT
 // -----------------------
 
+use neutron_kernel::arch::riscv64gc::begin_riscv;
+
 #[no_mangle]
 extern "C" fn _start() -> ! {
+    #[cfg(target_arch="riscv64")]
+    begin_riscv();
+
     loop {}
 }
 

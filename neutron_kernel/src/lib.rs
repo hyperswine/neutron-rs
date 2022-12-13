@@ -30,7 +30,6 @@ pub mod types;
 pub mod memory;
 // Pass the torch
 pub mod userland;
-pub mod kernel;
 
 // -----------------------
 // ARCH DEPENDENT CODE
