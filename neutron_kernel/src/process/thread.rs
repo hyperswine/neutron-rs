@@ -1,5 +1,4 @@
 use alloc::vec::Vec;
-use lazy_static::lazy_static;
 
 pub type KThreadID = u64;
 pub type TaskID = usize;

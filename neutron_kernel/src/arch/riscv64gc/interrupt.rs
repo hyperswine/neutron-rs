@@ -11,8 +11,6 @@ const SUPERVISOR_INTERRUPT_CAUSE: u64 = 0x0142;
 
 struct IDT;
 
-use lazy_static::lazy_static;
-
 use crate::alloc::{vec, vec::Vec};
 
 // define interrupt handler function type

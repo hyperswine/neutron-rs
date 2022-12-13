@@ -17,20 +17,9 @@ goblin = { version = "0.6", default-features = false, features = [
     "endian_fd",
     "alloc",
 ] }
-stivale-boot = { version = "0.3", optional = true, features = [
-    "helper-macros",
-] }
-# REQUIRED FOR INTERFACING
-neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true, features = [
-    "types",
-] }
 log = "0.4"
-arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
+arcboot-api = { version = "*", git = "https://github.com/hyperswine/arcboot-rs.git", optional = true }
 simple_logger = "4"
-
-[dependencies.lazy_static]
-version = "1.4"
-features = ["spin_no_std"]
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
 cortex-a = "8"
@@ -55,15 +44,10 @@ rstest = "0.16.0"
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
 # DEFAULT
-default = ["types"]
+default = []
+ll_alloc = ["linked_list_allocator"]
+arc = ["dep:arcboot-api"]
 # KERNEL EXTS
 arctest = []
 graphics = []
 driver_ext = []
-# CORE
-ll_alloc = ["linked_list_allocator"]
-types = ["neutronapi"]
-# requires neutronfs crate
-neutronfs = []
-qfs = []
-fatfs = []

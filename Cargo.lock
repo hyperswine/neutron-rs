@@ -36,9 +36,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "216261ddc8289130e551ddcd5ce8a064710c0d064a4d2895c67151c92b5443f6"
 
 [[package]]
-name = "arcboot_api"
+name = "arcboot-api"
 version = "0.1.0"
-source = "git+https://github.com/hyperswine/Arcboot.git#52e6b4630a674dbb365e47c63b947b08a4939475"
+source = "git+https://github.com/hyperswine/arcboot-rs.git#c5f7b51adec2fdb3ee3fd2e479c00af21c1b8d1c"
+dependencies = [
+ "cortex-a 7.5.0",
+ "derive-new",
+ "tock-registers 0.7.0",
+]
 
 [[package]]
 name = "atty"
@@ -260,10 +265,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "either"
-version = "1.7.0"
+name = "derive-new"
+version = "0.5.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f107b87b6afc2a64fd13cac55fe06d6c8859f12d4b14cbcdd2c67d0976781be"
+checksum = "3418329ca0ad70234b9735dc4ceed10af4df60eff9c8e7b06cb5e520d92c3535"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "embedded-graphics"
@@ -506,15 +516,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "itertools"
-version = "0.10.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9a9d19fa1e79b6215ff29b9d6880b706147f16e9b1dbb1e4e5947b5b02bc5e3"
-dependencies = [
- "either",
-]
-
-[[package]]
 name = "itoa"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -534,9 +535,6 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
-dependencies = [
- "spin 0.5.2",
-]
 
 [[package]]
 name = "libc"
@@ -638,21 +636,18 @@ name = "neutron_kernel"
 version = "0.1.0"
 dependencies = [
  "aarch64",
- "arcboot_api",
+ "arcboot-api",
  "bootloader",
  "cortex-a 8.1.1",
  "embedded-graphics",
  "goblin",
- "lazy_static",
  "linked_list_allocator",
  "log",
- "neutronapi",
  "riscv-rt",
  "rstest",
  "scroll",
  "simple_logger",
- "spin 0.9.4",
- "stivale-boot",
+ "spin",
  "tock-registers 0.8.1",
  "uart_16550",
  "volatile",
@@ -663,18 +658,10 @@ dependencies = [
 name = "neutron_main"
 version = "0.1.1"
 dependencies = [
- "arcboot_api",
+ "arcboot-api",
  "limine",
  "neutron_kernel",
  "stivale-boot",
-]
-
-[[package]]
-name = "neutronapi"
-version = "0.1.0"
-source = "git+https://github.com/hyperswine/neutronapi#c1f7a37ebc4a69f08d06789a207df04aa4d0fcf7"
-dependencies = [
- "itertools",
 ]
 
 [[package]]
@@ -967,12 +954,6 @@ checksum = "4614a76b2a8be0058caa9dbbaf66d988527d86d003c11a94fbd335d7661edcef"
 dependencies = [
  "autocfg",
 ]
-
-[[package]]
-name = "spin"
-version = "0.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
 
 [[package]]
 name = "spin"
