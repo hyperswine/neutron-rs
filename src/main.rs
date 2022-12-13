@@ -11,36 +11,17 @@ use neutron_kernel::arch::riscv64gc::begin_riscv;
 // RENDEVOUS POINT
 // -----------------------
 
-#[cfg(not(target_arch = "riscv64"))]
 #[no_mangle]
 extern "C" fn _start() -> ! {
-    loop {}
-}
-
-extern crate riscv;
-extern crate riscv_rt;
-
-use riscv::asm::wfi;
-use riscv::register::{mie, mip};
-use riscv_rt::entry;
-
-#[cfg(target_arch = "riscv64")]
-#[entry]
-fn main(hartid: usize) -> ! {
-    if hartid == 0 {
-        // Waking hart 1...
-        let addr = 0x02000004;
-        unsafe {
-            (addr as *mut u32).write_volatile(1);
-        }
-    }
-
-    // setup stack pointer and global pointer
-    // #[cfg(target_arch = "riscv64")]
-    // unsafe {}
-
     #[cfg(target_arch = "riscv64")]
-    begin_riscv();
+    unsafe {
+        // basically that asm file
+        core::arch::asm!("
+        
+        ");
+
+        begin_riscv();
+    }
 
     loop {}
 }
