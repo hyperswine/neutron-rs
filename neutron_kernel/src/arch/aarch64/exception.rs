@@ -63,15 +63,15 @@ pub unsafe fn init_interrupt_handlers(vector_table_start: u64) {
 }
 
 /// Return the executing core's id
-#[inline(always)]
-pub fn core_id<T>() -> T
-where
-    T: From<u8>,
-{
-    const CORE_MASK: u64 = 0b11;
+// #[inline(always)]
+// pub fn core_id<T>() -> T
+// where
+//     T: From<u8>,
+// {
+//     const CORE_MASK: u64 = 0b11;
 
-    T::from((MPIDR_EL1.get() & CORE_MASK) as u8)
-}
+//     T::from((MPIDR_EL1.get() & CORE_MASK) as u8)
+// }
 
 // -------------
 // DAIF

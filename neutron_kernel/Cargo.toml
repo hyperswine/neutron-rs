@@ -8,9 +8,9 @@ description = "Neutron logic"
 volatile = "0.4"
 spin = "0.9"
 linked_list_allocator = { version = "0.10", optional = true }
-tock-registers = "0.7"
+tock-registers = "0.8"
 embedded-graphics = { version = "0.7", optional = true }
-goblin = { version = "0.5", default-features = false, features = [
+goblin = { version = "0.6", default-features = false, features = [
     "elf64",
     "elf32",
     "archive",
@@ -26,14 +26,14 @@ neutronapi = { git = "https://github.com/hyperswine/neutronapi", optional = true
 ] }
 log = "0.4"
 arcboot_api = { version = "*", git = "https://github.com/hyperswine/Arcboot.git" }
-simple_logger = "2"
+simple_logger = "4"
 
 [dependencies.lazy_static]
 version = "1.4"
 features = ["spin_no_std"]
 
 [target.'cfg(target_arch = "aarch64")'.dependencies]
-cortex-a = "7.5"
+cortex-a = "8"
 aarch64 = "0.0.7"
 
 [dependencies.scroll]
@@ -43,14 +43,14 @@ default_features = false
 # arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 x86_64 = "0.14"
-bootloader = "0.10"
+bootloader = "0.11.0"
 uart_16550 = "0.2"
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
-riscv-rt = "0.9"
+riscv-rt = "0.10.0"
 
 [dev-dependencies]
-rstest = "0.15"
+rstest = "0.16.0"
 
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
