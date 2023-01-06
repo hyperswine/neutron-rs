@@ -36,7 +36,7 @@ bootloader = "0.11.0"
 uart_16550 = "0.2"
 
 [target.'cfg(target_arch = "riscv64")'.dependencies]
-riscv-rt = "0.10.0"
+# riscv-rt = "0.10.0"
 rustsbi = "0"
 
 [dev-dependencies]

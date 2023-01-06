@@ -16,9 +16,7 @@ extern "C" fn _start() -> ! {
     #[cfg(target_arch = "riscv64")]
     unsafe {
         // basically that asm file
-        core::arch::asm!("
-        
-        ");
+        core::arch::asm!("");
 
         begin_riscv();
     }

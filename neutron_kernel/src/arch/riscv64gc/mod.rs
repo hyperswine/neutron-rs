@@ -67,8 +67,19 @@ pub fn init_uart() {
     // initlock(&uart_tx_lock, "uart");
 }
 
+fn set_sp(sp: u64) {
+    unsafe { core::arch::asm!("") }
+}
+
+fn set_gp(gp: u64) {
+    unsafe { core::arch::asm!("") }
+}
+
 pub fn begin_riscv() -> ! {
     // init_uart();
+
+    // setup sp
+    // gp
 
     write_uart!(b"Hello World!\n");
     write_uart!(b"Hello World!\n");
