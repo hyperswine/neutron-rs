@@ -12,5 +12,11 @@
     "disable-redzone": true,
     "panic-strategy": "abort",
     "features": "-mmx,-sse,+soft-float",
-    "code-model": "kernel"
+    "code-model": "kernel",
+    "pre-link-args": {
+        "ld.lld": [
+            "--gc-sections",
+            "--script=.neutron/x86/stivale2.ld"
+        ]
+    }
 }

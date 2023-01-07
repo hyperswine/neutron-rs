@@ -1,5 +1,7 @@
 # Neutron
 
+DEVELOPMENT ON THE /dev branch!
+
 A rust based kernel written with the minimalism in mind.
 
 - supports multiboot and stivale2. Should be able to use Limine, GRUB, U-boot, oreboot to boot kernel ELF img in S-Mode/Ring-1

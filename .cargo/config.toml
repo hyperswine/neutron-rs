@@ -9,6 +9,7 @@ unstable-options = true
 barm = "build --target aarch64-unknown-none -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 brv = "build --target riscv64gc-unknown-none-elf -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 brv64 = "build --target .neutron/riscv/riscv64.json -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+bx86 = "build --target .neutron/x86/x86_64.json --features ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 
 # Arcboot
 barmarc = "build --target .neutron/aarch64/armv8.json --features arcboot,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
@@ -16,7 +17,7 @@ brvarc = "build --target riscv64gc-unknown-none-elf --features arcboot"
 
 # Limine
 barml = "build --target aarch64-unknown-none --features limine"
-bx86l = "build --target .neutron/x86/x86_64.json --features limine,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+bx86l = "build --target .neutron/x86/stivale.json --features limine,ll_alloc -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 
 # ARCTEST. Run with arc test --neutron after cargo arctestb
 arctestb = "rustc --target=riscv64gc-unknown-none-elf --features arctest"
