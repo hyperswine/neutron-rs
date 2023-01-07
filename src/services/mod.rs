@@ -1,4 +1,5 @@
 pub mod syscall;
+pub mod time;
 
 // -------------
 // INTERFACE
