@@ -7,6 +7,7 @@
 #![feature(core_intrinsics)]
 #![feature(abi_x86_interrupt)]
 #![feature(const_mut_refs)]
+#![feature(used_with_arg)]
 
 use core::alloc::Layout;
 

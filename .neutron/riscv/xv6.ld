@@ -12,7 +12,7 @@ SECTIONS
     _trampoline = .;
     *(trampsec)
     . = ALIGN(0x1000);
-    /* ASSERT(. - _trampoline == 0x1000, "error: trampoline larger than one page"); */
+    ASSERT(. - _trampoline == 0x1000, "error: trampoline larger than one page");
     PROVIDE(etext = .);
   }
 
@@ -45,14 +45,14 @@ SECTIONS
     > end
   }
 
-  .heap (NOLOAD) : {
+  /* .heap (NOLOAD) : {
     . = ALIGN(16);
     _heap = .;
     *(.heap)
     > stack
-  }
+  } */
 
   PROVIDE(end = _end);
   PROVIDE(stack = _stack);
-  PROVIDE(heap = _heap);
+  /* PROVIDE(heap = _heap); */
 }

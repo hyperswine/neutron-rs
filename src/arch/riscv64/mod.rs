@@ -1,4 +1,5 @@
 core::arch::global_asm!(include_str!("xv6-trampoline.S"));
+core::arch::global_asm!(include_str!("xv6-kernelvec.S"));
 
 use riscv::register::{self, *};
 
@@ -59,7 +60,7 @@ extern "C" {
     fn timervec();
 }
 
-fn timerinit() {
+pub fn timerinit() {
     // each CPU has a separate source of timer interrupts.
     let id = mhartid::read();
 
@@ -107,14 +108,19 @@ pub const PLIC_SPRIORITY: u64 = PLIC + 0x201000;
 pub const PLIC_MCLAIM: u64 = PLIC + 0x200004;
 pub const PLIC_SCLAIM: u64 = PLIC + 0x201004;
 
+pub const SIE_SEIE: usize = 1 << 9;
+pub const SIE_STIE: usize = 1 << 5;
+pub const SIE_SSIE: usize = 1 << 1;
+
 pub const KERNBASE: u64 = 0x80000000;
 pub const PHYSTOP: u64 = KERNBASE + 128 * 1024 * 1024;
 
 pub const TRAMPOLINE: u64 = MAXVA - PGSIZE;
 
 #[no_mangle]
-#[link_section = ".rodata.trapframe"]
-pub static TRAPFRAME: i64 = (TRAMPOLINE - PGSIZE) as i64;
+#[link_section = ".rodata"]
+#[used(linker)]
+pub static TRAPFRAME: u64 = TRAMPOLINE - PGSIZE;
 
 pub fn clint_mtimecmp(hartid: u64) -> u64 {
     CLINT_MTIMECMP + 8 * hartid
