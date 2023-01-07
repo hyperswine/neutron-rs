@@ -5,7 +5,7 @@ trampoline:
 .globl uservec
 uservec:    
         csrw sscratch, a0
-        li a0, TRAPFRAME
+        la a0, TRAPFRAME
         
         # save the user registers in TRAPFRAME
         sd ra, 40(a0)
@@ -60,7 +60,7 @@ userret:
     sfence.vma zero, zero
     csrw satp, a0
     sfence.vma zero, zero
-    li a0, TRAPFRAME
+    la a0, TRAPFRAME
     ld ra, 40(a0)
     ld sp, 48(a0)
     ld gp, 56(a0)

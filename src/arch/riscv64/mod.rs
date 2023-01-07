@@ -1,6 +1,5 @@
 core::arch::global_asm!(include_str!("xv6-trampoline.S"));
 
-use self::xv6_mem::{clint_mtimecmp, CLINT_MTIME, CLINT_MTIMECMP};
 use riscv::register::{self, *};
 
 /* -------------
@@ -37,29 +36,13 @@ macro_rules! write_uart {
 }
 
 pub fn init_uart() {
-    // disable interrupts
     write_reg!(1, 0x00);
-
-    // BAUD
-
-    // set baud rate (rate of signal change/clock) with line control reg
     write_reg!(3, 1 << 7);
-    // least sig bit 0b011
     write_reg!(0, 0x03);
-    // most sig bit 0b000
     write_reg!(1, 0x00);
-
-    // OTHER
-
-    // word len. = 8bits
     write_reg!(3, 3 << 0);
-
-    // reset and enable FIFOs (FCR = 2)
     write_reg!(2, (1 << 0) | (3 << 1));
-
-    // enable transmit and receive interrupts
     write_reg!(1, (1 << 1) | (1 << 0));
-
     // initlock(&uart_tx_lock, "uart");
 }
 
@@ -72,6 +55,10 @@ pub fn test_uart() {
     XV6 TIMER
 ------------- */
 
+extern "C" {
+    fn timervec();
+}
+
 fn timerinit() {
     // each CPU has a separate source of timer interrupts.
     let id = mhartid::read();
@@ -80,18 +67,20 @@ fn timerinit() {
     // cycles; about 1/10th second in qemu.
     let interval = 1000000;
     unsafe {
-        *(clint_mtimecmp(id as u64) as *mut u64) =
-            *(CLINT_MTIME as *const u64) + interval;
+        *(clint_mtimecmp(id as u64) as *mut u64) = *(CLINT_MTIME as *const u64) + interval;
     }
 
-    // prepare information in scratch[] for timervec.
-    let scratch = &mut TIMER_SCRATCH[id][0];
-    scratch[3] = clint_mtimecmp(id as u64);
-    scratch[4] = interval;
+    // 8 cpu system
+    let mut timer_scratch = [[0 as u64; 5]; 8];
 
+    // prepare information in scratch[] for timervec.
+    let scratch = &mut timer_scratch[id][0];
     unsafe {
-        mscratch::write(scratch as *const _ as u64);
-        mtvec::write(timervec as u64, utvec::TrapMode::Direct);
+        core::ptr::write_volatile((scratch as *mut u64).offset(3), clint_mtimecmp(id as u64));
+        core::ptr::write_volatile((scratch as *mut u64).offset(4), interval);
+
+        mscratch::write(scratch as *const _ as usize);
+        mtvec::write(timervec as usize, utvec::TrapMode::Direct);
     }
 
     // enable machine-mode interrupts
@@ -123,7 +112,9 @@ pub const PHYSTOP: u64 = KERNBASE + 128 * 1024 * 1024;
 
 pub const TRAMPOLINE: u64 = MAXVA - PGSIZE;
 
-pub const TRAPFRAME: u64 = TRAMPOLINE - PGSIZE;
+#[no_mangle]
+#[link_section = ".rodata.trapframe"]
+pub static TRAPFRAME: i64 = (TRAMPOLINE - PGSIZE) as i64;
 
 pub fn clint_mtimecmp(hartid: u64) -> u64 {
     CLINT_MTIMECMP + 8 * hartid
@@ -161,17 +152,17 @@ pub fn kstack(pages: u64) -> u64 {
     XV6 DEFINED
 ------------- */
 
-pub const MSTATUS_MPP_MASK: u64 = (3L << 11);
-pub const MSTATUS_MPP_M: u64 = (3L << 11);
-pub const MSTATUS_MPP_S: u64 = (1L << 11);
-pub const MSTATUS_MPP_U: u64 = (0L << 11);
-pub const MSTATUS_MIE: u64 = (1L << 3);
+pub const MSTATUS_MPP_MASK: u64 = 3 << 11;
+pub const MSTATUS_MPP_M: u64 = 3 << 11;
+pub const MSTATUS_MPP_S: u64 = 1 << 11;
+pub const MSTATUS_MPP_U: u64 = 0 << 11;
+pub const MSTATUS_MIE: u64 = 1 << 3;
 
-pub const PTE_V: u64 = (1L << 0);
-pub const PTE_R: u64 = (1L << 1);
-pub const PTE_W: u64 = (1L << 2);
-pub const PTE_X: u64 = (1L << 3);
-pub const PTE_U: u64 = (1L << 4);
+pub const PTE_V: u64 = 1 << 0;
+pub const PTE_R: u64 = 1 << 1;
+pub const PTE_W: u64 = 1 << 2;
+pub const PTE_X: u64 = 1 << 3;
+pub const PTE_U: u64 = 1 << 4;
 
 pub const PGSIZE: u64 = 4096;
 pub const PGSHIFT: u64 = 12;
