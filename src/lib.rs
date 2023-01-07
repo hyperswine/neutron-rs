@@ -20,3 +20,8 @@ pub mod userspace;
 pub mod time;
 // ARCH DEPENDENT CODE
 pub mod arch;
+
+#[alloc_error_handler]
+fn alloc_error_handler(layout: Layout) -> ! {
+    panic!("allocation error: {:?}", layout)
+}
