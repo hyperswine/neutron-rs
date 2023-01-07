@@ -17,5 +17,6 @@ pub mod process;
 pub mod services;
 pub mod memory;
 pub mod userspace;
+pub mod time;
 // ARCH DEPENDENT CODE
 pub mod arch;

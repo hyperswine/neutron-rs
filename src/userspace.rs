@@ -1,5 +1,7 @@
 // INTERFACE FOR CONTROLLING ALL KERNEL MODULES TOGETHER AND LAUNCHING USERSPACE
 
+use crate::filesystem::neutronfs::RootFS;
+
 pub struct KernelTorch {
     fs: RootFS,
 }

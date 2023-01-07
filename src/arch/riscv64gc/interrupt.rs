@@ -22,8 +22,8 @@ type InterruptHandlerType = fn(i32, i32) -> i32;
 // initialise a lazy static vector
 // lazy_static!{
 //     static ref INTERRUPT_DESCRIPTOR_TABLE: Vec<InterruptHandlerType> = Vec::new(
-        // syscall 0 -> open
-        // NeutronService::open
+// syscall 0 -> open
+// NeutronService::open
 //     );
 // }
 
@@ -42,6 +42,4 @@ fn initialize_interrupts() {
 }
 
 // Need to register this function in the IDT
-fn syscall_interrupt_handler() {
-    
-}
+fn syscall_interrupt_handler() {}
