@@ -5,6 +5,10 @@
 #![feature(step_trait)]
 #![feature(trait_alias)]
 #![feature(core_intrinsics)]
+#![feature(abi_x86_interrupt)]
+#![feature(const_mut_refs)]
+
+use core::alloc::Layout;
 
 extern crate alloc;
 extern crate goblin;

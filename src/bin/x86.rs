@@ -3,10 +3,13 @@
 
 extern crate alloc;
 
-use crate::println;
-use crate::arch::amd64::{executor::Executor, keyboard, Task};
+use neutron_kernel::{print, println};
+use neutron_kernel::arch::amd64::{Executor, Task, print_keypresses, init_gdt, init_idt, init_heap, init_offset_page_table, PICS};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+use x86_64::VirtAddr;
+use neutron_kernel::arch::amd64::BootInfoFrameAllocator;
+use neutron_kernel::arch::amd64::hlt_loop;
 
 entry_point!(kernel_main);
 
@@ -15,37 +18,30 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     init_x86();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut mapper = unsafe { init_offset_page_table(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 
-    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
+    init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     let mut executor = Executor::new();
     executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.spawn(Task::new(print_keypresses()));
     executor.run();
 }
 
 pub fn init_x86() {
-    gdt::init();
-    interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize() };
+    init_gdt();
+    init_idt();
+    unsafe { PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }
 
-/// This function is called on panic.
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
     hlt_loop();
 }
-
-// #[cfg(test)]
-// #[panic_handler]
-// fn panic(info: &PanicInfo) -> ! {
-//     test_panic_handler(info)
-// }
 
 async fn async_number() -> u32 {
     42

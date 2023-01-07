@@ -5,9 +5,9 @@ edition = "2021"
 description = "Neutron Kernel"
 
 [dependencies]
-volatile = "0.4"
-spin = "0.9"
-linked_list_allocator = { version = "0.10", optional = true }
+volatile = "0.2.6"
+spin = "0.5.2"
+linked_list_allocator = "0.9.0"
 tock-registers = "0.8"
 embedded-graphics = { version = "0.7", optional = true }
 goblin = { version = "0.6", default-features = false, features = [
@@ -48,9 +48,9 @@ aarch64 = "0.0.7"
 
 # arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
 [target.'cfg(target_arch = "x86_64")'.dependencies]
-x86_64 = "0.14"
+x86_64 = "0.14.2"
 uart_16550 = "0.2"
-bootloader = { version = "*", features = ["map_physical_memory"] }
+bootloader = { version = "0.9.8", features = ["map_physical_memory"] }
 pic8259 = "0.10.1"
 pc-keyboard = "0.5.0"
 
@@ -76,5 +76,4 @@ rstest = "0.16.0"
 # Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
 default = []
-ll_alloc = ["dep:linked_list_allocator"]
 arctest = []

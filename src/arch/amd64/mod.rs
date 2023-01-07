@@ -1,10 +1,69 @@
-/* ------------
-    SERIAL
------------- */
+use alloc::alloc::{GlobalAlloc, Layout};
+use bootloader::bootinfo::{MemoryRegionType, MemoryMap};
+use core::ptr::null_mut;
+use x86_64::{
+    structures::paging::{
+        mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB, PageTable, OffsetPageTable, PhysFrame,
+    },
+    VirtAddr, PhysAddr,
+};
+
+use core::{
+    mem,
+    ptr::{self, NonNull},
+};
 
 use lazy_static::lazy_static;
 use spin::Mutex;
 use uart_16550::SerialPort;
+
+use core::fmt::Write;
+use x86_64::instructions::interrupts::{self, enable_and_hlt};
+
+use x86_64::registers::control::Cr3;
+
+use alloc::boxed::Box;
+use core::{
+    future::Future,
+    pin::Pin,
+    sync::atomic::{AtomicU64, Ordering},
+    task::{Context, Poll},
+};
+
+use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
+use crossbeam_queue::ArrayQueue;
+
+use alloc::collections::VecDeque;
+use core::task::{RawWaker, RawWakerVTable, Waker};
+use x86_64::structures::gdt::{Descriptor, GlobalDescriptorTable, SegmentSelector};
+use x86_64::structures::tss::TaskStateSegment;
+
+use x86_64::instructions::segmentation::{Segment, CS};
+use x86_64::instructions::tables::load_tss;
+
+use pic8259::ChainedPics;
+use spin;
+use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
+
+use x86_64::registers::control::Cr2;
+
+use conquer_once::spin::OnceCell;
+use core::fmt;
+use volatile::Volatile;
+use x86_64::instructions::port::Port;
+
+use futures_util::{
+    stream::{Stream, StreamExt},
+    task::AtomicWaker,
+};
+use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+
+pub mod macros;
+use crate::{print, println};
+
+/* ------------
+    SERIAL
+------------ */
 
 lazy_static! {
     pub static ref SERIAL1: Mutex<SerialPort> = {
@@ -14,11 +73,7 @@ lazy_static! {
     };
 }
 
-#[doc(hidden)]
 pub fn _print(args: ::core::fmt::Arguments) {
-    use core::fmt::Write;
-    use x86_64::instructions::interrupts;
-
     interrupts::without_interrupts(|| {
         SERIAL1
             .lock()
@@ -49,15 +104,13 @@ macro_rules! serial_println {
 ------------ */
 
 /// Initialize a new OffsetPageTable.
-pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
+pub unsafe fn init_offset_page_table(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
     let level_4_table = active_level_4_table(physical_memory_offset);
     OffsetPageTable::new(level_4_table, physical_memory_offset)
 }
 
 /// Returns a mutable reference to the active level 4 table.
 unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
-    use x86_64::registers::control::Cr3;
-
     let (level_4_table_frame, _) = Cr3::read();
 
     let phys = level_4_table_frame.start_address();
@@ -113,31 +166,10 @@ unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
     ALLOCATOR
 ------------ */
 
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::ptr::null_mut;
-use fixed_size_block::FixedSizeBlockAllocator;
-use x86_64::{
-    structures::paging::{
-        mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,
-    },
-    VirtAddr,
-};
-
-use alloc::alloc::{GlobalAlloc, Layout};
-use core::{
-    mem,
-    ptr::{self, NonNull},
-};
-
 /// The block sizes to use.
-///
-/// The sizes must each be power of 2 because they are also used as
-/// the block alignment (alignments must be always powers of 2).
 const BLOCK_SIZES: &[usize] = &[8, 16, 32, 64, 128, 256, 512, 1024, 2048];
 
 /// Choose an appropriate block size for the given layout.
-///
-/// Returns an index into the `BLOCK_SIZES` array.
 fn list_index(layout: &Layout) -> Option<usize> {
     let required_block_size = layout.size().max(layout.align());
     BLOCK_SIZES.iter().position(|&s| s >= required_block_size)
@@ -292,14 +324,6 @@ fn align_up(addr: usize, align: usize) -> usize {
     TASKS
 ------------ */
 
-use alloc::boxed::Box;
-use core::{
-    future::Future,
-    pin::Pin,
-    sync::atomic::{AtomicU64, Ordering},
-    task::{Context, Poll},
-};
-
 pub struct Task {
     id: TaskId,
     future: Pin<Box<dyn Future<Output = ()>>>,
@@ -327,10 +351,6 @@ impl TaskId {
         TaskId(NEXT_ID.fetch_add(1, Ordering::Relaxed))
     }
 }
-
-use alloc::{collections::BTreeMap, sync::Arc, task::Wake};
-use core::task::{Context, Poll, Waker};
-use crossbeam_queue::ArrayQueue;
 
 pub struct Executor {
     tasks: BTreeMap<TaskId, Task>,
@@ -391,8 +411,6 @@ impl Executor {
     }
 
     fn sleep_if_idle(&self) {
-        use x86_64::instructions::interrupts::{self, enable_and_hlt};
-
         interrupts::disable();
         if self.task_queue.is_empty() {
             enable_and_hlt();
@@ -433,9 +451,6 @@ impl Wake for TaskWaker {
 /* ------------
     SIMPLE EXECUTOR
 ------------ */
-
-use alloc::collections::VecDeque;
-use core::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
 
 pub struct SimpleExecutor {
     task_queue: VecDeque<Task>,
@@ -482,11 +497,6 @@ fn dummy_waker() -> Waker {
     GDT (For Global Variables)
 ------------ */
 
-use lazy_static::lazy_static;
-use x86_64::structures::gdt::{Descriptor, GlobalDescriptorTable, SegmentSelector};
-use x86_64::structures::tss::TaskStateSegment;
-use x86_64::VirtAddr;
-
 pub const DOUBLE_FAULT_IST_INDEX: u16 = 0;
 
 lazy_static! {
@@ -524,10 +534,7 @@ struct Selectors {
     tss_selector: SegmentSelector,
 }
 
-pub fn init() {
-    use x86_64::instructions::segmentation::{Segment, CS};
-    use x86_64::instructions::tables::load_tss;
-
+pub fn init_gdt() {
     GDT.0.load();
     unsafe {
         CS::set_reg(GDT.1.code_selector);
@@ -538,11 +545,6 @@ pub fn init() {
 /* ------------
     INTERRUPTS
 ------------ */
-
-use lazy_static::lazy_static;
-use pic8259::ChainedPics;
-use spin;
-use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
 pub const PIC_1_OFFSET: u8 = 32;
 pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
@@ -575,7 +577,7 @@ lazy_static! {
         unsafe {
             idt.double_fault
                 .set_handler_fn(double_fault_handler)
-                .set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
+                .set_stack_index(DOUBLE_FAULT_IST_INDEX);
         }
         idt[InterruptIndex::Timer.as_usize()].set_handler_fn(timer_interrupt_handler);
         idt[InterruptIndex::Keyboard.as_usize()].set_handler_fn(keyboard_interrupt_handler);
@@ -595,8 +597,6 @@ extern "x86-interrupt" fn page_fault_handler(
     stack_frame: InterruptStackFrame,
     error_code: PageFaultErrorCode,
 ) {
-    use x86_64::registers::control::Cr2;
-
     println!("EXCEPTION: PAGE FAULT");
     println!("Accessed Address: {:?}", Cr2::read());
     println!("Error Code: {:?}", error_code);
@@ -620,11 +620,9 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    use x86_64::instructions::port::Port;
-
     let mut port = Port::new(0x60);
     let scancode: u8 = unsafe { port.read() };
-    crate::task::keyboard::add_scancode(scancode);
+    add_scancode(scancode);
 
     unsafe {
         PICS.lock()
@@ -635,11 +633,6 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
 /* ------------
     VGA BUFFER
 ------------ */
-
-use core::fmt;
-use lazy_static::lazy_static;
-use spin::Mutex;
-use volatile::Volatile;
 
 lazy_static! {
     /// A global `Writer` instance that can be used for printing to the VGA text buffer.
@@ -777,51 +770,15 @@ impl fmt::Write for Writer {
     }
 }
 
-/// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
-#[macro_export]
-macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
-}
-
-/// Like the `println!` macro in the standard library, but prints to the VGA text buffer.
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
-}
-
-/// Prints the given formatted string to the VGA text buffer
-#[doc(hidden)]
-pub fn _print(args: fmt::Arguments) {
-    use core::fmt::Write;
-    use x86_64::instructions::interrupts;
-
-    interrupts::without_interrupts(|| {
-        WRITER.lock().write_fmt(args).unwrap();
-    });
-}
-
 /* ------------
     KEYBOARD
 ------------ */
-
-use conquer_once::spin::OnceCell;
-use core::{
-    pin::Pin,
-    task::{Context, Poll},
-};
-use crossbeam_queue::ArrayQueue;
-use futures_util::{
-    stream::{Stream, StreamExt},
-    task::AtomicWaker,
-};
-use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
 
 /// Called by the keyboard interrupt handler
-pub(crate) fn add_scancode(scancode: u8) {
+pub fn add_scancode(scancode: u8) {
     if let Ok(queue) = SCANCODE_QUEUE.try_get() {
         if let Err(_) = queue.push(scancode) {
             println!("WARNING: scancode queue full; dropping keyboard input");
@@ -898,8 +855,6 @@ pub enum QemuExitCode {
 }
 
 pub fn exit_qemu(exit_code: QemuExitCode) {
-    use x86_64::instructions::port::Port;
-
     unsafe {
         let mut port = Port::new(0xf4);
         port.write(exit_code as u32);
