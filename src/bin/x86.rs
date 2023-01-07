@@ -12,7 +12,7 @@ entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     println!("Hello World{}", "!");
-    init();
+    init_x86();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
@@ -26,7 +26,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     executor.run();
 }
 
-pub fn init() {
+pub fn init_x86() {
     gdt::init();
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };

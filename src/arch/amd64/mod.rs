@@ -1,14 +1,4 @@
-// 100 KiB by default for the kernel. For programs, idk
-// pub const HEAP_START: usize = 0x_4444_4444_0000;
-// pub const HEAP_SIZE: usize = 100 * 1024;
-
-use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
-use x86_64::{
-    structures::paging::{FrameAllocator, OffsetPageTable, PageTable, PhysFrame, Size4KiB},
-    PhysAddr, VirtAddr,
-};
-
-/* -----------
+/* ------------
     SERIAL
 ------------ */
 
@@ -54,9 +44,9 @@ macro_rules! serial_println {
         concat!($fmt, "\n"), $($arg)*));
 }
 
-/*
+/* ------------
     MEMORY
-*/
+------------ */
 
 /// Initialize a new OffsetPageTable.
 pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
@@ -119,9 +109,9 @@ unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
     }
 }
 
-/*
+/* ------------
     ALLOCATOR
-*/
+------------ */
 
 use alloc::alloc::{GlobalAlloc, Layout};
 use core::ptr::null_mut;
@@ -173,10 +163,6 @@ impl FixedSizeBlockAllocator {
     }
 
     /// Initialize the allocator with the given heap bounds.
-    ///
-    /// This function is unsafe because the caller must guarantee that the given
-    /// heap bounds are valid and that the heap is unused. This method must be
-    /// called only once.
     pub unsafe fn init(&mut self, heap_start: usize, heap_size: usize) {
         self.fallback_allocator.init(heap_start, heap_size);
     }
@@ -221,7 +207,6 @@ unsafe impl GlobalAlloc for Locked<FixedSizeBlockAllocator> {
                 let new_node = ListNode {
                     next: allocator.list_heads[index].take(),
                 };
-                // verify that block has size and alignment required for storing node
                 assert!(mem::size_of::<ListNode>() <= BLOCK_SIZES[index]);
                 assert!(mem::align_of::<ListNode>() <= BLOCK_SIZES[index]);
                 let new_node_ptr = ptr as *mut ListNode;
@@ -237,7 +222,7 @@ unsafe impl GlobalAlloc for Locked<FixedSizeBlockAllocator> {
 }
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
-pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
+pub const HEAP_SIZE: usize = 100 * 1024;
 
 #[global_allocator]
 static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
@@ -303,9 +288,9 @@ fn align_up(addr: usize, align: usize) -> usize {
     (addr + align - 1) & !(align - 1)
 }
 
-/*
+/* ------------
     TASKS
-*/
+------------ */
 
 use alloc::boxed::Box;
 use core::{
@@ -445,9 +430,9 @@ impl Wake for TaskWaker {
     }
 }
 
-/*
+/* ------------
     SIMPLE EXECUTOR
-*/
+------------ */
 
 use alloc::collections::VecDeque;
 use core::task::{Context, Poll, RawWaker, RawWakerVTable, Waker};
@@ -493,9 +478,9 @@ fn dummy_waker() -> Waker {
     unsafe { Waker::from_raw(dummy_raw_waker()) }
 }
 
-/*
+/* ------------
     GDT (For Global Variables)
-*/
+------------ */
 
 use lazy_static::lazy_static;
 use x86_64::structures::gdt::{Descriptor, GlobalDescriptorTable, SegmentSelector};
@@ -550,9 +535,9 @@ pub fn init() {
     }
 }
 
-/*
+/* ------------
     INTERRUPTS
-*/
+------------ */
 
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
@@ -647,9 +632,9 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     }
 }
 
-/*
+/* ------------
     VGA BUFFER
-*/
+------------ */
 
 use core::fmt;
 use lazy_static::lazy_static;
@@ -816,9 +801,9 @@ pub fn _print(args: fmt::Arguments) {
     });
 }
 
-/*
+/* ------------
     KEYBOARD
-*/
+------------ */
 
 use conquer_once::spin::OnceCell;
 use core::{
@@ -898,5 +883,31 @@ pub async fn print_keypresses() {
                 }
             }
         }
+    }
+}
+
+/* --------------
+    SUPPORT
+-------------- */
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
+}
+
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
     }
 }
