@@ -1,27 +1,79 @@
 [package]
-name = "neutron_main"
-version = "0.1.1"
+name = "neutron_kernel"
+version = "0.1.0"
 edition = "2021"
-description = "A full minimal kernel for risc systems"
-license = "GPL-3.0-only"
-
-[workspace]
-members = ["neutron_kernel"]
+description = "Neutron Kernel"
 
 [dependencies]
-neutron_kernel = { path = "neutron_kernel" }
-stivale-boot = { version = "0.3", features = ["helper-macros"], optional = true }
-arcboot-api = { version = "*", git = "https://github.com/hyperswine/arcboot-rs.git", optional = true }
-limine = { version = "0.1", optional = true }
-riscv = "*"
-# riscv-rt = "*"
+volatile = "0.2.6"
+spin = "0.5.2"
+linked_list_allocator = "0.9.0"
+tock-registers = "0.8"
+embedded-graphics = { version = "0.7", optional = true }
+goblin = { version = "0.6", default-features = false, features = [
+    "elf64",
+    "elf32",
+    "archive",
+    "endian_fd",
+    "alloc",
+] }
+log = "0.4"
+arcboot-api = { version = "*", git = "https://github.com/hyperswine/arcboot-rs.git" }
 
+[dependencies.lazy_static]
+version = "1.0"
+features = ["spin_no_std"]
+
+[dependencies.crossbeam-queue]
+version = "0.2.1"
+default-features = false
+features = ["alloc"]
+
+[dependencies.conquer-once]
+version = "0.2.0"
+default-features = false
+
+[dependencies.futures-util]
+version = "0.3.4"
+default-features = false
+features = ["alloc"]
+
+[dependencies.scroll]
+version = "0.11"
+default_features = false
+
+[target.'cfg(target_arch = "aarch64")'.dependencies]
+cortex-a = "8"
+aarch64 = "0.0.7"
+
+# arcboot should already have those libraries in its runtime but keep for now in case of testing with qemu
+[target.'cfg(target_arch = "x86_64")'.dependencies]
+x86_64 = "0.14.2"
+uart_16550 = "0.2"
+bootloader = { version = "0.9.8", features = ["map_physical_memory"] }
+pic8259 = "0.10.1"
+pc-keyboard = "0.5.0"
+
+[target.'cfg(target_arch = "riscv64")'.dependencies]
+# riscv-rt = "0.10.0"
+rustsbi = "0"
+riscv = "*"
+
+[package.metadata.bootimage]
+test-args = [
+    "-device",
+    "isa-debug-exit,iobase=0xf4,iosize=0x04",
+    "-serial",
+    "stdio",
+    "-display",
+    "none",
+]
+test-success-exit-code = 33
+
+[dev-dependencies]
+rstest = "0.16.0"
+
+# Used by arcutils `arcutils test --neutron` for higher level testing
 [features]
-# BOOT PROTOCOLS
-arcboot = ["dep:arcboot-api"]
-limine = ["dep:limine"]
-stivale = ["dep:stivale-boot"]
-efi_stub = []
-multiboot = []
-# BUILTIN
-ll_alloc = ["neutron_kernel/ll_alloc"]
+default = []
+arctest = []

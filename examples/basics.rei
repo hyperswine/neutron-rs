@@ -1,0 +1,36 @@
+#!reis
+
+# all commands apply to the current shell process
+# to spawn a new process, do spawn $(command) with sync primitives
+
+# General
+
+cd /Documents
+mkdir temp
+cd temp && touch temp
+echo "Hello, World!" > temp
+del temp
+if file("temp"): echo "temp still exists, something went wrong" and exit
+echo "Temp is gone!"
+
+# Math
+
+1 + 1
+if $result != 2: echo "something went wrong with math" and exit
+$var = $result
+$var = $var + 3
+assert $var = 5
+
+# Programs
+
+echo f"
+echo \"Hello, Reis!\"
+" > 1
+
+echo "$PATH=$PATH:/Desktop"
+1
+expect multiline "Did you mean '1' or '/Desktop/1'?
+1. '1'
+2. '/Desktop/1'"
+enter 2
+expect "Hello, Reis!"

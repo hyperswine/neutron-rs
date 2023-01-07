@@ -1,6 +1,5 @@
 [toolchain]
 channel = "nightly"
 components = [ "rust-src", "rust-std", "llvm-tools-preview", "rustfmt", "rustc-dev" ]
-# I dont want to support x86 or arm
-targets = [ "riscv64gc-unknown-none-elf" ]
+targets = [ "riscv64gc-unknown-none-elf", "x86_64-unknown-none" ]
 profile = "default"
