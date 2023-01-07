@@ -591,6 +591,7 @@ dependencies = [
  "goblin",
  "linked_list_allocator",
  "log",
+ "riscv",
  "rstest",
  "rustsbi",
  "scroll",

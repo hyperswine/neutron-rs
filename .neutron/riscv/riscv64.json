@@ -18,7 +18,7 @@
     "target-pointer-width": "64",
     "pre-link-args": {
         "ld.lld": [
-            "--script=.neutron/riscv/link.ld"
+            "--script=.neutron/riscv/xv6.ld"
         ]
     }
 }

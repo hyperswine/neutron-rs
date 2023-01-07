@@ -12,14 +12,9 @@ use neutron_kernel::arch::riscv64gc::begin_riscv;
 // -----------------------
 
 #[no_mangle]
-extern "C" fn _start() -> ! {
+extern "C" fn start() -> ! {
     #[cfg(target_arch = "riscv64")]
-    unsafe {
-        // basically that asm file
-        core::arch::asm!("");
-
-        begin_riscv();
-    }
+    begin_riscv();
 
     loop {}
 }

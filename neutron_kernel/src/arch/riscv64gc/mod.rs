@@ -1,6 +1,7 @@
 pub mod interrupt;
 pub mod memory;
 pub mod power;
+pub mod xv6_mem;
 // Apparently this doesnt link properly?
 // use riscv_rt::entry;
 
@@ -75,14 +76,46 @@ fn set_gp(gp: u64) {
     unsafe { core::arch::asm!("") }
 }
 
+core::arch::global_asm!(include_str!("xv6-entry.S"));
+
 pub fn begin_riscv() -> ! {
     // init_uart();
-
-    // setup sp
-    // gp
 
     write_uart!(b"Hello World!\n");
     write_uart!(b"Hello World!\n");
 
     loop {}
+}
+
+use riscv::register::{self, mhartid};
+use self::xv6_mem::{CLINT_MTIMECMP, CLINT_MTIME, clint_mtimecmp};
+
+// arrange to receive timer interrupts.
+// they will arrive in machine mode at
+// at timervec in kernelvec.S,
+// which turns them into software interrupts for
+// devintr() in trap.c.
+fn timerinit() {
+    // each CPU has a separate source of timer interrupts.
+    let id = mhartid::read();
+
+    // ask the CLINT for a timer interrupt.
+    let interval = 1000000; // cycles; about 1/10th second in qemu.
+    unsafe {
+        *(clint_mtimecmp(id.try_into().unwrap()) as *mut u64) = *(CLINT_MTIME as *const u64) + interval;
+    }
+
+    // prepare information in scratch[] for timervec.
+    // scratch[0..2] : space for timervec to save registers.
+    // scratch[3] : address of CLINT MTIMECMP register.
+    // scratch[4] : desired interval (in cycles) between timer interrupts.
+    let scratch = &mut TIMER_SCRATCH[id][0];
+    scratch[3] = CLINT_MTIMECMP(id);
+    scratch[4] = interval;
+    w_mscratch(scratch as *const _ as u64);
+
+    // set the machine-mode trap handler.
+    w_mtvec(timervec as u64);
+
+    // enable machine-mode interrupts
 }

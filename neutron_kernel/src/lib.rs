@@ -14,6 +14,7 @@
 extern crate alloc;
 extern crate goblin;
 extern crate log;
+extern crate riscv;
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
