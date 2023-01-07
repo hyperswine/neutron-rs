@@ -42,6 +42,14 @@ const SUPERBLOCK_PRIMARY_PLACEMENT: u64 = 0x10_000;
 const SUPERBLOCK_SECONDARY_PLACEMENT: u64 = 0x20_000;
 const SUPERBLOCK_TERTIARY_PLACEMENT: u64 = 0x30_000;
 
+use alloc::{collections::btree_map::BTreeMap, vec};
+
+// there can be 1.8 quintillion users
+type NeutronUUID = u64;
+
+const MAX_FILE_SIZE_BYTES: u64 = 1024_u64.pow(6);
+const BLOCK_SIZE_BYTES: usize = 4192;
+
 // might have to be the same size as btrfs superblock for checksums to work properly. Make sure to place this at 0x10_000
 // should be exactly 65536 Bytes. So 256 256-blocks for CRC32C or SHA-2 (slower)
 #[repr(C)]
@@ -98,17 +106,6 @@ struct Superblock {
     super_roots: [u8; 0x2A0],
     unused: [u8; 0x235],
 }
-
-use alloc::{collections::btree_map::BTreeMap, vec};
-
-use crate::types::KTimestamp;
-
-// there can be 1.8 quintillion users
-type NeutronUUID = u64;
-
-const MAX_FILE_SIZE_BYTES: u64 = 1024_u64.pow(6);
-// TODO: technically, the sector size should be 4KiB. But the 'Node' size should be 16KiB
-const BLOCK_SIZE_BYTES: usize = 4192;
 
 // ------------------
 // Nodes

@@ -1,11 +1,8 @@
 pub mod syscall;
-pub mod time;
 
 // -------------
 // INTERFACE
 // -------------
-
-// use UNIX like constructs for file descriptors (Descriptor)
 
 type Descriptor = u64;
 type FileDescriptor = Descriptor;
@@ -20,14 +17,8 @@ struct ServiceStatus {
     status: i8,
 }
 
-// ---------
-// TEST
-// ---------
-
 #[test]
 fn test_basic_mounting() {
-    // ? represent a device in drivers. A driver should correspond to a device type
-    // A device type can be either generic (GenericDevice) or specific (DeviceSpec)
     struct Device;
     // create a device
     let device = Device;

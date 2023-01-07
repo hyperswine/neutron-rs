@@ -1,4 +1,3 @@
-use super::vmo::VirtualMemObject;
 use alloc::vec::Vec;
 
 pub struct AddressSpace {

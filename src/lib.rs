@@ -6,32 +6,16 @@
 #![feature(trait_alias)]
 #![feature(core_intrinsics)]
 
-// -----------------------
-// CRATE WIDE API
-// -----------------------
-
-// NOTE: for tests, just use extern crate alloc and link to the hosts' alloc
 extern crate alloc;
 extern crate goblin;
 extern crate log;
-// extern crate riscv;
-
-// -----------------------
-// NON ARCH DEPENDENT CODE
-// -----------------------
 
 pub mod drivers;
 pub mod exception;
 pub mod filesystem;
-pub mod kmod;
 pub mod process;
 pub mod services;
-pub mod types;
 pub mod memory;
 pub mod userspace;
-
-// -----------------------
 // ARCH DEPENDENT CODE
-// -----------------------
-
 pub mod arch;

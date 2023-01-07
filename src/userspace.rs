@@ -1,9 +1,7 @@
 // INTERFACE FOR CONTROLLING ALL KERNEL MODULES TOGETHER AND LAUNCHING USERSPACE
 
-use crate::filesystem::vfs;
-
 pub struct KernelTorch {
-    vfs: vfs::RootFS,
+    fs: RootFS,
 }
 
 impl KernelTorch {
@@ -29,7 +27,7 @@ impl KernelTorch {
     // create a default Kernel Manager with a single empty file (dir) in the HFS
     pub fn new() -> KernelTorch {
         KernelTorch {
-            vfs: vfs::RootFS {},
+            fs: RootFS {},
         }
     }
 }
@@ -38,10 +36,6 @@ pub fn final_setup() -> ! {
     let kernel_manager = KernelTorch::new();
     kernel_manager.init();
 }
-
-// --------------------
-// TESTS
-// --------------------
 
 #[test]
 fn test_userland_pass() {

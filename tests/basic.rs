@@ -1,10 +1,10 @@
 use neutron_kernel::process::{elf::load_elf_userspace, Process};
 use std::fs;
-// use simple_logger::SimpleLogger;
 
-extern crate std;
-
-// does a lazy_static work for log?
+/*
+I got `cm.so` from user `S01den` [here](https://crackmes.one/crackme/62d08a7a33c5d44a934e97bb).
+I got `keygen_me` from [Deskarponne](https://crackmes.one/user/Deskarponne).
+*/
 
 #[test]
 fn test_sanity() {
