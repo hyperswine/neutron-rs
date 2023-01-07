@@ -1,6 +1,4 @@
 QEMU=qemu-system-aarch64
 
-cargo barm && \
-$QEMU -M raspi3b \
-    -serial stdio \
-    -kernel build/arm
+cargo barm --release && \
+$QEMU -machine virt -cpu cortex-a57 -kernel build/arm -serial stdio -display none

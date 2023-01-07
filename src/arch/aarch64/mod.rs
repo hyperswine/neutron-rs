@@ -1,7 +1,3 @@
-// pub mod exception;
-
-core::arch::global_asm!(include_str!("boot.S"));
-
 use core::alloc::Layout;
 use linked_list_allocator::LockedHeap;
 

@@ -7,55 +7,60 @@ use core::intrinsics::volatile_load;
 use core::intrinsics::volatile_store;
 use core::panic::PanicInfo;
 
-const UART_DR: u32 = 0x3F201000;
-const UART_FR: u32 = 0x3F201018;
+const UART: *mut u8 = 0x09000000 as *mut u8;
 
-fn mmio_write(reg: u32, val: u32) {
-    unsafe { volatile_store(reg as *mut u32, val) }
+fn putchar(c: u8) {
+    unsafe { *UART = c };
 }
 
-fn mmio_read(reg: u32) -> u32 {
-    unsafe { volatile_load(reg as *const u32) }
+fn print(s: &str) {
+    for c in s.chars() {
+        putchar(c as u8);
+    }
 }
 
-fn transmit_fifo_full() -> bool {
-    mmio_read(UART_FR) & (1 << 5) > 0
-}
-
-fn receive_fifo_empty() -> bool {
-    mmio_read(UART_FR) & (1 << 4) > 0
-}
-
-fn writec(c: u8) {
-    while transmit_fifo_full() {}
-    mmio_write(UART_DR, c as u32);
-}
-
-fn getc() -> u8 {
-    while receive_fifo_empty() {}
-    mmio_read(UART_DR) as u8
-}
-
-fn write(msg: &str) {
-    for c in msg.chars() {
-        writec(c as u8)
+fn read_char() -> u8 {
+    unsafe { 
+        while volatile_load(0x3F201018 as *const u32) & (1 << 4) > 0 {}
+        volatile_load(0x3F201000 as *const u32) as u8
     }
 }
 
 #[no_mangle]
-pub extern fn kernel_main() {
-    write("Hello Rust Kernel world!");
+pub extern "C" fn _start() -> ! {
+    unsafe {
+        core::arch::asm!(
+            "
+            ldr x5, =_start
+            mov sp, x5
+            ldr x30, =stack_top
+            mov sp, x30
+            ldr     x5, =__bss_start
+            ldr     w6, =__bss_size
+            1:  cbz     w6, 2f
+                str     xzr, [x5], #8
+                sub     w6, w6, #1
+                cbnz    w6, 1b
+            2:
+        "
+        );
+    }
+
+    print("Hello Rust!\n");
+
     loop {
-        writec(getc())
+        putchar(read_char())
     }
 }
 
 #[no_mangle]
-pub extern fn __aeabi_unwind_cpp_pr0() {}
+pub extern "C" fn __aeabi_unwind_cpp_pr0() {}
 
+#[cfg(not(test))]
 #[lang = "eh_personality"]
-pub extern fn eh_personality() {}
+pub extern "C" fn eh_personality() {}
 
+#[cfg(not(test))]
 #[panic_handler]
 fn panic(_info: &PanicInfo) -> ! {
     unsafe { abort() }
@@ -63,4 +68,6 @@ fn panic(_info: &PanicInfo) -> ! {
 
 #[allow(non_snake_case)]
 #[no_mangle]
-pub extern fn _Unwind_Resume() { loop {} }
+pub extern "C" fn _Unwind_Resume() {
+    loop {}
+}
