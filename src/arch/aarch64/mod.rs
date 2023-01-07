@@ -1,6 +1,19 @@
-pub mod entry;
-pub mod exception;
+// pub mod exception;
 
-// NOTE: use the logger from arcboot, or the entire terminal
-// Its possible to just debug to UART while the kernel subsystems start, until userspace shows up
-// And you can launch spx:system that sets up a system/software shell and everything else, then info! gets piped to an actual console
+core::arch::global_asm!(include_str!("boot.S"));
+
+use core::alloc::Layout;
+use linked_list_allocator::LockedHeap;
+
+#[global_allocator]
+static ALLOCATOR: LockedHeap = LockedHeap::empty();
+
+pub fn init_heap() {
+    // heap grows up
+    let heap_start = 0xFFFF_FFFF_0000_0000;
+    let heap_end = 0xFFFF_FFFF_FFFF_0000;
+    let heap_size = heap_end - heap_start;
+    unsafe {
+        ALLOCATOR.lock().init(heap_start, heap_size);
+    }
+}

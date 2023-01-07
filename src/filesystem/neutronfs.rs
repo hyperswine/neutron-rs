@@ -24,7 +24,6 @@ impl MMIO_API {
     }
 }
 
-// TODO: query kernel device tree (not firmware) for partition num
 // and extra details
 fn get_mmio_api_from_partition() -> MMIO_API {
     MMIO_API::new(0, 0)
@@ -115,7 +114,6 @@ type FilePermissions = u16;
 
 // not to be confused with dir item, when you know the node is a dir
 // all NeutronItem must have a NeutronItemType
-// TODO: could just make this a trait and just do the vital types
 enum NeutronItemType {
     // Vital type
     InodeItem,
