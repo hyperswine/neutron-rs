@@ -25,6 +25,7 @@ pub mod time;
 // ARCH DEPENDENT CODE
 pub mod arch;
 
+#[cfg(no_std)]
 #[alloc_error_handler]
 fn alloc_error_handler(layout: Layout) -> ! {
     panic!("allocation error: {:?}", layout)
