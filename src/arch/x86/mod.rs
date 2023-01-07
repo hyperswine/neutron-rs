@@ -1,36 +1,97 @@
 // EXPERIMENTAL x86 SUPPORT FOR EASE OF TESTING ON QEMU
 
-// A lot of nice crates on x86_64 we could rip off, I meant use
-
-pub mod virtual_memory;
 pub mod exception;
-
-// TODO: memory allocator
-// TODO: boot entry asm and linker script
-
-// use alloc::alloc::{GlobalAlloc, Layout};
-// use core::ptr::null_mut;
-
-// struct OptimalAllocator;
-
-// unsafe impl GlobalAlloc for OptimalAllocator {
-//     unsafe fn alloc(&self, _layout: Layout) -> *mut u8 {
-//         null_mut()
-//     }
-
-//     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
-//         panic!("dealloc should be never called")
-//     }
-// }
-
-// #[global_allocator]
-// static ALLOCATOR: OptimalAllocator = OptimalAllocator;
-
-// #[alloc_error_handler]
-// fn alloc_error_handler(layout: alloc::alloc::Layout) -> ! {
-//     panic!("allocation error: {:?}", layout)
-// }
+pub mod virtual_memory;
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 // 100 KiB by default for the kernel. For programs, idk
-pub const HEAP_SIZE: usize = 100 * 1024; 
+pub const HEAP_SIZE: usize = 100 * 1024;
+
+use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
+use x86_64::{
+    structures::paging::{FrameAllocator, OffsetPageTable, PageTable, PhysFrame, Size4KiB},
+    PhysAddr, VirtAddr,
+};
+
+/*
+    MEMORY
+*/
+
+/// Initialize a new OffsetPageTable.
+///
+/// This function is unsafe because the caller must guarantee that the
+/// complete physical memory is mapped to virtual memory at the passed
+/// `physical_memory_offset`. Also, this function must be only called once
+/// to avoid aliasing `&mut` references (which is undefined behavior).
+pub unsafe fn init(physical_memory_offset: VirtAddr) -> OffsetPageTable<'static> {
+    let level_4_table = active_level_4_table(physical_memory_offset);
+    OffsetPageTable::new(level_4_table, physical_memory_offset)
+}
+
+/// Returns a mutable reference to the active level 4 table.
+///
+/// This function is unsafe because the caller must guarantee that the
+/// complete physical memory is mapped to virtual memory at the passed
+/// `physical_memory_offset`. Also, this function must be only called once
+/// to avoid aliasing `&mut` references (which is undefined behavior).
+unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
+    use x86_64::registers::control::Cr3;
+
+    let (level_4_table_frame, _) = Cr3::read();
+
+    let phys = level_4_table_frame.start_address();
+    let virt = physical_memory_offset + phys.as_u64();
+    let page_table_ptr: *mut PageTable = virt.as_mut_ptr();
+
+    &mut *page_table_ptr // unsafe
+}
+
+/// A FrameAllocator that always returns `None`.
+pub struct EmptyFrameAllocator;
+
+unsafe impl FrameAllocator<Size4KiB> for EmptyFrameAllocator {
+    fn allocate_frame(&mut self) -> Option<PhysFrame> {
+        None
+    }
+}
+
+/// A FrameAllocator that returns usable frames from the bootloader's memory map.
+pub struct BootInfoFrameAllocator {
+    memory_map: &'static MemoryMap,
+    next: usize,
+}
+
+impl BootInfoFrameAllocator {
+    /// Create a FrameAllocator from the passed memory map.
+    ///
+    /// This function is unsafe because the caller must guarantee that the passed
+    /// memory map is valid. The main requirement is that all frames that are marked
+    /// as `USABLE` in it are really unused.
+    pub unsafe fn init(memory_map: &'static MemoryMap) -> Self {
+        BootInfoFrameAllocator {
+            memory_map,
+            next: 0,
+        }
+    }
+
+    /// Returns an iterator over the usable frames specified in the memory map.
+    fn usable_frames(&self) -> impl Iterator<Item = PhysFrame> {
+        // get usable regions from memory map
+        let regions = self.memory_map.iter();
+        let usable_regions = regions.filter(|r| r.region_type == MemoryRegionType::Usable);
+        // map each region to its address range
+        let addr_ranges = usable_regions.map(|r| r.range.start_addr()..r.range.end_addr());
+        // transform to an iterator of frame start addresses
+        let frame_addresses = addr_ranges.flat_map(|r| r.step_by(4096));
+        // create `PhysFrame` types from the start addresses
+        frame_addresses.map(|addr| PhysFrame::containing_address(PhysAddr::new(addr)))
+    }
+}
+
+unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
+    fn allocate_frame(&mut self) -> Option<PhysFrame> {
+        let frame = self.usable_frames().nth(self.next);
+        self.next += 1;
+        frame
+    }
+}

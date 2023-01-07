@@ -1,6 +1,8 @@
 pub mod common;
-// pub mod gicv2;
-// pub mod bcm;
+pub mod gicv2;
+pub mod bcm;
+pub mod pi3;
+pub mod pi4b;
 
 // -------------------------
 // State for ARM CPUs
@@ -66,4 +68,3 @@ impl StateManager {
         }
     }
 }
-

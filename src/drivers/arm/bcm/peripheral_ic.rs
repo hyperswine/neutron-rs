@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 // Copyright (c) 2020-2022 Andre Richter <andre.o.richter@gmail.com>
-
 // Peripheral Interrupt Controller Driver.
 
 use super::{InterruptController, PendingIRQs, PeripheralIRQ};
@@ -9,8 +8,6 @@ use tock_registers::{
     register_structs,
     registers::{ReadOnly, WriteOnly},
 };
-
-// Private Definitions
 
 register_structs! {
     #[allow(non_snake_case)]
@@ -39,20 +36,12 @@ type ReadOnlyRegisters = MMIODerefWrapper<RORegisterBlock>;
 type HandlerTable =
     [Option<exception::asynchronous::IRQDescriptor>; InterruptController::NUM_PERIPHERAL_IRQS];
 
-// Public Definitions
-
-
 pub struct PeripheralIC {
     mmio_descriptor: MMIODescriptor,
-
     wo_registers: IRQSafeNullLock<WriteOnlyRegisters>,
-
     ro_registers: InitStateLock<ReadOnlyRegisters>,
-
     handler_table: InitStateLock<HandlerTable>,
 }
-
-// Public Code
 
 impl PeripheralIC {
     pub const unsafe fn new(mmio_descriptor: MMIODescriptor) -> Self {
@@ -66,7 +55,6 @@ impl PeripheralIC {
         }
     }
 
-    
     fn pending_irqs(&self) -> PendingIRQs {
         self.ro_registers.read(|regs| {
             let pending_mask: u64 =
@@ -77,9 +65,6 @@ impl PeripheralIC {
     }
 }
 
-//------------------------------------------------------------------------------
-// OS Interface Code
-//------------------------------------------------------------------------------
 use synchronization::interface::{Mutex, ReadWriteEx};
 
 impl driver::interface::DeviceDriver for PeripheralIC {
@@ -130,16 +115,11 @@ impl exception::asynchronous::interface::IRQManager for PeripheralIC {
             };
 
             let enable_bit: u32 = 1 << (irq.get() % 32);
-
-            // Writing a 1 to a bit will set the corresponding IRQ enable bit.
             enable_reg.set(enable_bit);
         });
     }
 
-    fn handle_pending_irqs<'irq_context>(
-        &'irq_context self,
-        _ic: &IRQContext<'irq_context>,
-    ) {
+    fn handle_pending_irqs<'irq_context>(&'irq_context self, _ic: &IRQContext<'irq_context>) {
         self.handler_table.read(|table| {
             for irq_number in self.pending_irqs() {
                 match table[irq_number] {
