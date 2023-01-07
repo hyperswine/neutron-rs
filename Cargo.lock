@@ -180,6 +180,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fdt"
+version = "0.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "964f5becd44d069dca0beea2b4bc05639ae7bf3b3f5369c295aff360bb57cca2"
+
+[[package]]
 name = "float-cmp"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -375,6 +381,7 @@ dependencies = [
  "cortex-a 8.1.1",
  "crossbeam-queue",
  "embedded-graphics",
+ "fdt",
  "futures-util",
  "goblin",
  "lazy_static",

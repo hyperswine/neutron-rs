@@ -672,7 +672,6 @@ pub enum Color {
 struct ColorCode(u8);
 
 impl ColorCode {
-    /// Create a new `ColorCode` with the given foreground and background colors.
     fn new(foreground: Color, background: Color) -> ColorCode {
         ColorCode((background as u8) << 4 | (foreground as u8))
     }
@@ -686,9 +685,7 @@ struct ScreenChar {
     color_code: ColorCode,
 }
 
-/// The height of the text buffer (normally 25 lines).
 const BUFFER_HEIGHT: usize = 25;
-/// The width of the text buffer (normally 80 columns).
 const BUFFER_WIDTH: usize = 80;
 
 /// A structure representing the VGA text buffer.

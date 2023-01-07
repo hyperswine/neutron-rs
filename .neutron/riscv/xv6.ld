@@ -1,18 +1,9 @@
-OUTPUT_ARCH( "riscv" )
-ENTRY( _entry )
-
-/* PROVIDE(NCPU = 2);
-stack_size = 4096 * NCPU;
-stack0 = [stack_size] */
-
-/* Make stack size the rest of the memory available after .bss (growing down) */
+OUTPUT_ARCH("riscv")
+ENTRY(_start)
 
 SECTIONS
 {
-  /*
-   * ensure that entry.S / _entry is at 0x80000000,
-   * where qemu's -kernel jumps.
-   */
+  /* ensure _start gets loaded at 0x80000000 */
   . = 0x80000000;
 
   .text : {
@@ -27,21 +18,21 @@ SECTIONS
 
   .rodata : {
     . = ALIGN(16);
-    *(.srodata .srodata.*) /* do not need to distinguish this from .rodata */
+    *(.srodata .srodata.*)
     . = ALIGN(16);
     *(.rodata .rodata.*)
   }
 
   .data : {
     . = ALIGN(16);
-    *(.sdata .sdata.*) /* do not need to distinguish this from .data */
+    *(.sdata .sdata.*)
     . = ALIGN(16);
     *(.data .data.*)
   }
 
   .bss : {
     . = ALIGN(16);
-    *(.sbss .sbss.*) /* do not need to distinguish this from .bss */
+    *(.sbss .sbss.*)
     . = ALIGN(16);
     *(.bss .bss.*)
     _end = .;

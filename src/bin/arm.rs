@@ -7,6 +7,8 @@ use core::intrinsics::volatile_load;
 use core::intrinsics::volatile_store;
 use core::panic::PanicInfo;
 
+use fdt::Fdt;
+
 const UART: *mut u8 = 0x09000000 as *mut u8;
 
 fn putchar(c: u8) {
@@ -20,7 +22,7 @@ fn print(s: &str) {
 }
 
 fn read_char() -> u8 {
-    unsafe { 
+    unsafe {
         while volatile_load(0x3F201018 as *const u32) & (1 << 4) > 0 {}
         volatile_load(0x3F201000 as *const u32) as u8
     }
@@ -48,8 +50,18 @@ pub extern "C" fn _start() -> ! {
 
     print("Hello Rust!\n");
 
+    // read fdt at 0x4000_0000
+    unsafe {
+        match Fdt::from_ptr(0x4000_0000 as *const u8) {
+            Ok(f) => {
+                print("FDT FOUND AT 0x4000_0000")
+            },
+            Err(e) => print("FDT NOT FOUND AT 0x4000_0000..."),
+        }
+    }
+
     loop {
-        putchar(read_char())
+        // putchar(read_char())
     }
 }
 

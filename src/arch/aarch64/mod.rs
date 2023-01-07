@@ -1,6 +1,8 @@
 use core::alloc::Layout;
 use linked_list_allocator::LockedHeap;
 
+// pub mod leos_qemu;
+
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 

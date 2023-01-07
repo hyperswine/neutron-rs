@@ -1,17 +1,16 @@
-pub mod xv6_mem;
-// Apparently this doesnt link properly?
-// use riscv_rt::entry;
+core::arch::global_asm!(include_str!("xv6-trampoline.S"));
+
+use self::xv6_mem::{clint_mtimecmp, CLINT_MTIME, CLINT_MTIMECMP};
+use riscv::register::{self, *};
+
+/* -------------
+    UART
+------------- */
 
 pub const UART0: u64 = 0x1000_0000;
 pub const REG_OFFSET: u64 = UART0;
 
 static GREETING: &[u8] = b"Hello World!\n";
-
-// REGISTERS
-const IER_REG: u64 = 1;
-// queue FIFO for UART streams
-const FCR_REG: u64 = 2;
-const LCR_REG: u64 = 3;
 
 macro_rules! write_reg {
     ($reg:expr, $val:expr) => {
@@ -21,7 +20,6 @@ macro_rules! write_reg {
 }
 
 // when debugging, can use uart0 or framebuffer
-// no color coding though
 #[macro_export]
 macro_rules! write_uart {
     ($exact:expr) => {
@@ -65,79 +63,44 @@ pub fn init_uart() {
     // initlock(&uart_tx_lock, "uart");
 }
 
-fn set_sp(sp: u64) {
-    unsafe { core::arch::asm!("") }
-}
-
-fn set_gp(gp: u64) {
-    unsafe { core::arch::asm!("") }
-}
-
-core::arch::global_asm!(include_str!("xv6-entry.S"));
-
-pub fn begin_riscv() -> ! {
-    // init_uart();
-
+pub fn test_uart() {
     write_uart!(b"Hello World!\n");
-    write_uart!(b"Hello World!\n");
-
-    loop {}
+    write_uart!(b"Hello World 2!\n");
 }
 
-use riscv::register::{self, mhartid};
-use self::xv6_mem::{CLINT_MTIMECMP, CLINT_MTIME, clint_mtimecmp};
+/* -------------
+    XV6 TIMER
+------------- */
 
-// arrange to receive timer interrupts.
-// they will arrive in machine mode at
-// at timervec in kernelvec.S,
-// which turns them into software interrupts for
-// devintr() in trap.c.
 fn timerinit() {
     // each CPU has a separate source of timer interrupts.
     let id = mhartid::read();
 
     // ask the CLINT for a timer interrupt.
-    let interval = 1000000; // cycles; about 1/10th second in qemu.
+    // cycles; about 1/10th second in qemu.
+    let interval = 1000000;
     unsafe {
-        *(clint_mtimecmp(id.try_into().unwrap()) as *mut u64) = *(CLINT_MTIME as *const u64) + interval;
+        *(clint_mtimecmp(id as u64) as *mut u64) =
+            *(CLINT_MTIME as *const u64) + interval;
     }
 
     // prepare information in scratch[] for timervec.
-    // scratch[0..2] : space for timervec to save registers.
-    // scratch[3] : address of CLINT MTIMECMP register.
-    // scratch[4] : desired interval (in cycles) between timer interrupts.
     let scratch = &mut TIMER_SCRATCH[id][0];
-    scratch[3] = CLINT_MTIMECMP(id);
+    scratch[3] = clint_mtimecmp(id as u64);
     scratch[4] = interval;
-    w_mscratch(scratch as *const _ as u64);
 
-    // set the machine-mode trap handler.
-    w_mtvec(timervec as u64);
+    unsafe {
+        mscratch::write(scratch as *const _ as u64);
+        mtvec::write(timervec as u64, utvec::TrapMode::Direct);
+    }
 
     // enable machine-mode interrupts
 }
 
-pub struct SingleAddressPT {
-    n_frames: u64,
-    n_free_frames: u64,
-    frames: Vec<FrameAddress>,
-}
+/* -------------
+    XV6 RISCV
+------------- */
 
-const MAX_FRAMES_64b: usize = 32768;
-// kernel only needs 4 frames at boot
-const FRAMES_USED_KERN: usize = 4;
-
-impl SingleAddressPT {
-    fn new() -> SingleAddressPT {
-        SingleAddressPT {
-            n_frames: MAX_FRAMES_64b,
-            n_free_frames: MAX_FRAMES_64b - FRAMES_USED_KERN,
-            frames: FrameAddress::all(),
-        }
-    }
-}
-
-pub const UART0: u64 = 0x10000000;
 pub const UART0_IRQ: u64 = 10;
 
 pub const VIRTIO0: u64 = 0x10001000;
@@ -190,11 +153,49 @@ pub fn plic_sclaim(hart: u64) -> u64 {
     PLIC + 0x201004 + hart * 0x2000
 }
 
-pub const PGSIZE: u64 = 4096;
-pub const PGSHIFT: u64 = 12;
-
-pub const MAXVA: u64 = 1 << (9 + 9 + 9 + 12 - 1);
-
 pub fn kstack(pages: u64) -> u64 {
     TRAMPOLINE - (pages + 1) * 2 * PGSIZE
+}
+
+/* -------------
+    XV6 DEFINED
+------------- */
+
+pub const MSTATUS_MPP_MASK: u64 = (3L << 11);
+pub const MSTATUS_MPP_M: u64 = (3L << 11);
+pub const MSTATUS_MPP_S: u64 = (1L << 11);
+pub const MSTATUS_MPP_U: u64 = (0L << 11);
+pub const MSTATUS_MIE: u64 = (1L << 3);
+
+pub const PTE_V: u64 = (1L << 0);
+pub const PTE_R: u64 = (1L << 1);
+pub const PTE_W: u64 = (1L << 2);
+pub const PTE_X: u64 = (1L << 3);
+pub const PTE_U: u64 = (1L << 4);
+
+pub const PGSIZE: u64 = 4096;
+pub const PGSHIFT: u64 = 12;
+pub const MAXVA: u64 = 1 << (9 + 9 + 9 + 12 - 1);
+pub const PXMASK: u64 = 0x1FF;
+
+pub fn page_round_up(size: u64) -> u64 {
+    ((size) + PGSIZE - 1) & !(PGSIZE - 1)
+}
+pub fn page_round_down(a: u64) -> u64 {
+    (a) & !(PGSIZE - 1)
+}
+pub fn px_shift(level: u64) -> u64 {
+    PGSHIFT + (9 * (level))
+}
+pub fn px(level: u64, va: u64) -> u64 {
+    ((va) >> px_shift(level)) & PXMASK
+}
+pub fn physical_addr_to_pte_shift(pa: u64) -> u64 {
+    ((pa) >> 12) << 10
+}
+pub fn pte_to_physical_addr(pte: u64) -> u64 {
+    ((pte) >> 10) << 12
+}
+pub fn pte_flags(pte: u64) -> u64 {
+    (pte) & 0x3FF
 }
