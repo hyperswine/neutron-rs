@@ -1,0 +1,36 @@
+use alloc::{
+    borrow::ToOwned,
+    fmt,
+    string::{String, ToString},
+    vec,
+    vec::Vec,
+};
+use core::option::Option;
+
+// ----------------
+// ALIGNMENT
+// ----------------
+
+/// Check if a value is aligned to a given size.
+#[inline(always)]
+pub const fn is_aligned(value: usize, alignment: usize) -> bool {
+    assert!(alignment.is_power_of_two());
+
+    (value & (alignment - 1)) == 0
+}
+
+/// Align down.
+#[inline(always)]
+pub const fn align_down(value: usize, alignment: usize) -> usize {
+    assert!(alignment.is_power_of_two());
+
+    value & !(alignment - 1)
+}
+
+/// Align up.
+#[inline(always)]
+pub const fn align_up(value: usize, alignment: usize) -> usize {
+    assert!(alignment.is_power_of_two());
+
+    (value + alignment - 1) & !(alignment - 1)
+}

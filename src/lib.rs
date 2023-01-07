@@ -14,7 +14,7 @@
 extern crate alloc;
 extern crate goblin;
 extern crate log;
-extern crate riscv;
+// extern crate riscv;
 
 // -----------------------
 // NON ARCH DEPENDENT CODE
@@ -27,10 +27,8 @@ pub mod kmod;
 pub mod process;
 pub mod services;
 pub mod types;
-// ALLOCATOR AND THE REST
 pub mod memory;
-// Pass the torch
-pub mod userland;
+pub mod userspace;
 
 // -----------------------
 // ARCH DEPENDENT CODE
