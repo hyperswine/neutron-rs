@@ -14,6 +14,7 @@ use core::alloc::Layout;
 extern crate alloc;
 extern crate goblin;
 extern crate log;
+// extern crate termion;
 
 pub mod drivers;
 pub mod exception;

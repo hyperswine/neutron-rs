@@ -20,7 +20,7 @@ goblin = { version = "0.6", default-features = false, features = [
 log = "0.4"
 arcboot-api = { version = "*", git = "https://github.com/hyperswine/arcboot-rs.git" }
 fdt = "0.1"
-# termion = "2"
+# termion = { version = "2", default-features = false }
 
 [dependencies.lazy_static]
 version = "1.0"
