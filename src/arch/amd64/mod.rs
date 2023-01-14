@@ -868,7 +868,10 @@ pub async fn shell() {
                         _ => print!("{character}"),
                     },
                     // e.g. LeftArrow
-                    DecodedKey::RawKey(key) => print!("{key:?}"),
+                    DecodedKey::RawKey(key) => match key {
+                        KeyCode::Backspace => print!("{}", 0x8),
+                        _ => print!("{key:?}"),
+                    },
                 }
             }
         }
