@@ -1,11 +1,12 @@
 use alloc::alloc::{GlobalAlloc, Layout};
-use bootloader::bootinfo::{MemoryRegionType, MemoryMap};
+use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
 use core::ptr::null_mut;
 use x86_64::{
     structures::paging::{
-        mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB, PageTable, OffsetPageTable, PhysFrame,
+        mapper::MapToError, FrameAllocator, Mapper, OffsetPageTable, Page, PageTable,
+        PageTableFlags, PhysFrame, Size4KiB,
     },
-    VirtAddr, PhysAddr,
+    PhysAddr, VirtAddr,
 };
 
 use core::{
@@ -612,7 +613,7 @@ extern "x86-interrupt" fn double_fault_handler(
 }
 
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    print!(".");
+    // print!(".");
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());
@@ -706,6 +707,14 @@ impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
+            // backspace
+            0x8 => {
+                self.buffer.chars[BUFFER_HEIGHT - 1][self.column_position - 1].write(ScreenChar {
+                    ascii_character: b' ',
+                    color_code: self.color_code,
+                });
+                self.column_position -= 1;
+            }
             byte => {
                 if self.column_position >= BUFFER_WIDTH {
                     self.new_line();
@@ -714,10 +723,9 @@ impl Writer {
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
 
-                let color_code = self.color_code;
                 self.buffer.chars[row][col].write(ScreenChar {
                     ascii_character: byte,
-                    color_code,
+                    color_code: self.color_code,
                 });
                 self.column_position += 1;
             }
@@ -758,6 +766,9 @@ impl Writer {
             self.buffer.chars[row][col].write(blank);
         }
     }
+
+    // delete the current character and put the row or column position back one
+    fn delete_char(&mut self) {}
 }
 
 impl fmt::Write for Writer {
@@ -834,6 +845,30 @@ pub async fn print_keypresses() {
                 match key {
                     DecodedKey::Unicode(character) => print!("{}", character),
                     DecodedKey::RawKey(key) => print!("{:?}", key),
+                }
+            }
+        }
+    }
+}
+
+use pc_keyboard::KeyCode;
+
+// SIMPLE SHELL
+pub async fn shell() {
+    let mut scancodes = ScancodeStream::new();
+    let mut keyboard = Keyboard::new(layouts::Us104Key, ScancodeSet1, HandleControl::Ignore);
+    print!("> ");
+
+    while let Some(scancode) = scancodes.next().await {
+        if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+            if let Some(key) = keyboard.process_keyevent(key_event) {
+                match key {
+                    DecodedKey::Unicode(character) => match character {
+                        '\n' => print!("{character}> "),
+                        _ => print!("{character}"),
+                    },
+                    // e.g. LeftArrow
+                    DecodedKey::RawKey(key) => print!("{key:?}"),
                 }
             }
         }

@@ -4,7 +4,7 @@
 extern crate alloc;
 
 use neutron_kernel::{print, println};
-use neutron_kernel::arch::amd64::{Executor, Task, print_keypresses, init_gdt, init_idt, init_heap, init_offset_page_table, PICS};
+use neutron_kernel::arch::amd64::{Executor, Task, print_keypresses, init_gdt, init_idt, init_heap, init_offset_page_table, PICS, shell};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use x86_64::VirtAddr;
@@ -14,7 +14,7 @@ use neutron_kernel::arch::amd64::hlt_loop;
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    println!("Hello World{}", "!");
+    println!("Welcome to Neutron{}", "!");
     init_x86();
 
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
@@ -24,8 +24,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     let mut executor = Executor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(print_keypresses()));
+    // executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(shell()));
     executor.run();
 }
 
