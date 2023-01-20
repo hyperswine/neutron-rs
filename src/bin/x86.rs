@@ -5,6 +5,7 @@ extern crate alloc;
 
 use neutron_kernel::{print, println};
 use neutron_kernel::arch::amd64::{Executor, Task, print_keypresses, init_gdt, init_idt, init_heap, init_offset_page_table, PICS, shell};
+use neutron_kernel::arch::amd64::vga_fb::draw_20_circle;
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use x86_64::VirtAddr;
@@ -25,7 +26,12 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let mut executor = Executor::new();
     // executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(shell()));
+    // executor.spawn(Task::new(shell()));
+
+    // go directly into vga color 16
+
+    // run the vga framebuffer process
+    executor.spawn(Task::new(draw_20_circle()));
     executor.run();
 }
 

@@ -381,6 +381,7 @@ dependencies = [
  "cortex-a 8.1.1",
  "crossbeam-queue",
  "embedded-graphics",
+ "embedded-graphics-core",
  "fdt",
  "futures-util",
  "goblin",

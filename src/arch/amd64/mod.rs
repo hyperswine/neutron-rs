@@ -60,6 +60,7 @@ use futures_util::{
 use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
 
 pub mod macros;
+pub mod vga_fb;
 use crate::{print, println};
 
 /* ------------
