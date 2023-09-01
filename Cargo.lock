@@ -12,16 +12,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "arcboot-api"
-version = "0.1.0"
-source = "git+https://github.com/hyperswine/arcboot-rs.git#c5f7b51adec2fdb3ee3fd2e479c00af21c1b8d1c"
-dependencies = [
- "cortex-a 7.5.0",
- "derive-new",
- "tock-registers 0.7.0",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -133,17 +123,6 @@ checksum = "c3c7c73a2d1e9fc0886a08b93e98eb643461230d5f1925e4036204d5f2e261a8"
 dependencies = [
  "autocfg",
  "cfg-if 0.1.10",
-]
-
-[[package]]
-name = "derive-new"
-version = "0.5.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3418329ca0ad70234b9735dc4ceed10af4df60eff9c8e7b06cb5e520d92c3535"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
 ]
 
 [[package]]
@@ -369,7 +348,6 @@ name = "neutron_kernel"
 version = "0.1.0"
 dependencies = [
  "aarch64",
- "arcboot-api",
  "bootloader",
  "conquer-once",
  "cortex-a 8.1.1",
