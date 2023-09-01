@@ -1,12 +1,14 @@
 # This project should have minimal config here. Rely on Arcboot and Arcutils
 [unstable]
 unstable-options = true
+build-std = ["core", "alloc", "compiler_builtins"]
+build-std-features = ["compiler-builtins-mem"]
 
 [alias]
 # BUILD. Uses -Zstd for core/alloc/builtins & mem. Pass --release or --debug. Default is --debug with limine
 
 # Defaults
-barm = "build --target aarch64-unknown-none -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
+barm = "build --bin arm --target aarch64-unknown-none -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 brv = "build --target riscv64gc-unknown-none-elf -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 brv64 = "build --target .neutron/riscv/riscv64.json -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"
 bx86 = "build --bin x86 --target .neutron/x86/x86_64.json -Z build-std=core,alloc,compiler_builtins -Z build-std-features=compiler-builtins-mem"

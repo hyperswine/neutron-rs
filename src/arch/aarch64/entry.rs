@@ -2,8 +2,8 @@
 // COMMON
 // ---------------
 
-use crate::arch::aarch64::exception::init_interrupt_handlers;
-use arcboot_api::ArcServices;
+// use crate::arch::aarch64::exception::init_interrupt_handlers;
+// use arcboot_api::ArcServices;
 use core::{cell::UnsafeCell, fmt};
 use cortex_a::{asm::barrier, registers::*};
 use log::info;
@@ -31,16 +31,16 @@ pub fn page_fault_handler() {
 // maybe a field interrupt_table_start or vbar_start (virtually mapped into kernel's addr space)
 
 /// Call this right after arc entry
-pub fn arch_init(arcservices: ArcServices) {
-    info!("Entry into arch! Arch: AARCH64");
+// pub fn arch_init(arcservices: ArcServices) {
+//     info!("Entry into arch! Arch: AARCH64");
 
-    // setup interrupts and handlers
-    unsafe {
-        init_interrupt_handlers(0x80000);
-    }
+//     // setup interrupts and handlers
+//     unsafe {
+//         init_interrupt_handlers(0x80000);
+//     }
 
-    // Return & transition to common code in kernel. Will need kernel.rs after all
-}
+//     // Return & transition to common code in kernel. Will need kernel.rs after all
+// }
 
 #[test]
 fn test_entry() {
