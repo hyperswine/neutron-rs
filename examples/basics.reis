@@ -5,7 +5,7 @@
 
 # General
 
-cd /Documents
+cd Documents
 mkdir temp
 cd temp && touch temp
 echo "Hello, World!" > temp
